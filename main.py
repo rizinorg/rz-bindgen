@@ -2,7 +2,7 @@ from typing import cast
 from argparse import ArgumentParser
 
 import os
-from pathlib import Path
+import shlex # clang_arg string -> argv
 
 from clang.cindex import Config
 
@@ -11,11 +11,14 @@ from binder import rizin
 from binder_class import BinderClass
 
 parser = ArgumentParser()
+parser.add_argument("--output", "-o", required=True)
 parser.add_argument("--clang-path", required=True)
+parser.add_argument("--clang-args", required=True)
 parser.add_argument("--rizin-inc-path", required=True)
-args, clang_args = parser.parse_known_args()
+args = parser.parse_args()
 
 Config.set_library_path(cast(str, args.clang_path))
+clang_args = shlex.split(cast(str, args.clang_args))
 
 # Populate include directories
 rizin_inc_path = os.path.abspath(cast(str, args.rizin_inc_path))
@@ -27,9 +30,9 @@ for segments in [
     ["..", "..", "subprojects", "sdb", "src"],
     ["..", "..", "build", "subprojects", "sdb"],
 ]:
-    path = Path(rizin_inc_path, *segments)
-    if path.exists():
-        clang_args.append(f"-I{path.resolve()}")
+    path = os.path.abspath(os.path.join(rizin_inc_path, *segments))
+    if os.path.exists(path):
+        clang_args.append(f"-I{path}")
 
 clang_args.append(f"-DRZ_BINDINGS")
 Header.clang_args = clang_args
@@ -58,5 +61,5 @@ rz_core.add_prefixed_funcs(core_h, "rz_core_")
 # rz_core_file = rizin.Class(core_h, "RzCoreFile")
 
 
-with open("rizin.i", "w") as output:
+with open(cast(str, args.output), "w") as output:
     rizin.write(output)

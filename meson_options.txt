@@ -1,0 +1,3 @@
+option('clang_path', type: 'string', value: '')
+option('clang_args', type: 'string', value: '')
+option('rizin_inc_path', type: 'string', value: '')
