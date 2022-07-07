@@ -2,13 +2,14 @@ from typing import cast
 from argparse import ArgumentParser
 
 import os
-import shlex # clang_arg string -> argv
+import shlex  # clang_arg string -> argv
 
 from clang.cindex import Config
 
 from header import Header
 from binder import rizin
 from binder_class import BinderClass
+from binder_generic import BinderGeneric
 
 parser = ArgumentParser()
 parser.add_argument("--output", "-o", required=True)
@@ -38,6 +39,19 @@ clang_args.append(f"-DRZ_BINDINGS")
 Header.clang_args = clang_args
 Header.rizin_inc_path = rizin_inc_path
 
+"""
+RzList, RzVector, RzPVector
+"""
+list_h = Header("rz_list.h")
+rz_list = BinderGeneric(list_h, "RzList")
+
+vector_h = Header("rz_vector.h")
+rz_vector = BinderGeneric(vector_h, "RzVector")
+rz_pvector = BinderGeneric(vector_h, "RzPVector")
+
+"""
+rz_core_t
+"""
 core_h = Header("rz_core.h")
 rz_core = BinderClass(core_h, struct="rz_core_t", rename="RzCore")
 rz_core.add_constructor(core_h, "rz_core_new")
@@ -58,7 +72,15 @@ for func_name in [
 rz_core.add_prefixed_methods(core_h, "rz_core_")
 rz_core.add_prefixed_funcs(core_h, "rz_core_")
 
-# rz_core_file = rizin.Class(core_h, "RzCoreFile")
+"""
+rz_bin_t
+"""
+bin_h = Header("rz_bin.h")
+rz_bin = BinderClass(bin_h, typedef="RzBin")
+rz_bin.add_prefixed_methods(bin_h, "rz_bin_")
+rz_bin.add_prefixed_funcs(bin_h, "rz_bin_")
+rz_bin_options = BinderClass(bin_h, typedef="RzBinOptions")
+rz_bin_info = BinderClass(bin_h, typedef="RzBinInfo")
 
 
 with open(cast(str, args.output), "w") as output:

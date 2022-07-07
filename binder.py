@@ -16,9 +16,9 @@ class Module:
     classes: List["BinderClass"]
     generics: List["BinderGeneric"]
 
-    generic_names: Dict[
-        str, str
-    ]  # maps struct name -> generic name (eg. rz_list_t -> RzList)
+    # maps struct name -> generic name (eg. rz_list_t -> RzList)
+    generic_names: Dict[str, str]
+    # tracks specializations, eg. (RzList, char*)
     generic_specializations: Set[Tuple[str, str]]
 
     def __init__(self) -> None:
@@ -132,6 +132,12 @@ class Module:
         for header in self.headers:
             writer.line(f"#include <{header.name}>")
         writer.line("%}")
+
+        for generic in self.generics:
+            generic.merge(writer)
+
+        for generic_name, specialization in self.generic_specializations:
+            writer.line(f"%{generic_name}({specialization})")
 
         for cls in self.classes:
             cls.merge(writer)

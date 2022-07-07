@@ -17,7 +17,7 @@ class FuncKind(Enum):
 class BinderFunc:
     writer: BufferedWriter
 
-    def __init__(self, func: Func, kind: FuncKind, *, struct: Optional[Struct] = None):
+    def __init__(self, func: Func, kind: FuncKind, *, name: Optional[str] = None):
         writer = BufferedWriter()
         self.writer = writer
 
@@ -30,24 +30,22 @@ class BinderFunc:
             args_outer.append(rizin.stringify_decl(arg, arg.type))
 
         if kind == FuncKind.CONSTRUCTOR:
-            assert struct
             args_inner_str = ", ".join(args_inner)
             args_outer_str = ", ".join(args_outer)
-            writer.line(f"{struct.spelling}({args_outer_str}) {{")
+            writer.line(f"{name}({args_outer_str}) {{")
         elif kind == FuncKind.DESTRUCTOR:
-            assert struct
             args_outer_str = ", ".join(args_outer[1:])
             args_inner_str = ", ".join(["$self"] + args_inner[1:])
-            writer.line(f"~{struct.spelling}({args_outer_str}) {{")
+            writer.line(f"~{name}({args_outer_str}) {{")
         elif kind == FuncKind.THIS:
             args_outer_str = ", ".join(args_outer[1:])
             args_inner_str = ", ".join(["$self"] + args_inner[1:])
-            decl = rizin.stringify_decl(func, func.result_type)
+            decl = rizin.stringify_decl(func, func.result_type, name=name)
             writer.line(f"{decl}({args_outer_str}) {{")
         elif kind == FuncKind.STATIC:
             args_outer_str = ", ".join(args_outer)
             args_inner_str = ", ".join(args_inner)
-            decl = rizin.stringify_decl(func, func.result_type)
+            decl = rizin.stringify_decl(func, func.result_type, name=name)
             writer.line(f"static {decl}({args_outer_str}) {{")
 
         with writer.indent():

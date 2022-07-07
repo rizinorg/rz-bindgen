@@ -64,12 +64,16 @@ class BinderClass:
 
     def add_constructor(self, header: Header, name: str) -> None:
         rizin.headers.add(header)
-        func = BinderFunc(header.funcs[name], FuncKind.CONSTRUCTOR, struct=self.struct)
+        func = BinderFunc(
+            header.funcs[name], FuncKind.CONSTRUCTOR, name=self.struct.spelling
+        )
         self.funcs.append(func)
 
     def add_destructor(self, header: Header, name: str) -> None:
         rizin.headers.add(header)
-        func = BinderFunc(header.funcs[name], FuncKind.DESTRUCTOR, struct=self.struct)
+        func = BinderFunc(
+            header.funcs[name], FuncKind.DESTRUCTOR, name=self.struct.spelling
+        )
         self.funcs.append(func)
 
     def add_prefixed_methods(self, header: Header, prefix: str) -> None:
@@ -98,7 +102,9 @@ class BinderClass:
 
         for func in filter(predicate, header.funcs.values()):
             header.used.add(func.spelling)
-            binderfunc = BinderFunc(func, FuncKind.THIS)
+            binderfunc = BinderFunc(
+                func, FuncKind.THIS, name=func.spelling[len(prefix) :]
+            )
             self.funcs.append(binderfunc)
 
     def add_prefixed_funcs(self, header: Header, prefix: str) -> None:
@@ -115,9 +121,11 @@ class BinderClass:
 
         for func in filter(predicate, header.funcs.values()):
             header.used.add(func.spelling)
-            binderfunc = BinderFunc(func, FuncKind.STATIC)
+            binderfunc = BinderFunc(
+                func, FuncKind.STATIC, name=func.spelling[len(prefix) :]
+            )
             self.funcs.append(binderfunc)
-            
+
     def gen_struct(self, struct: Struct) -> None:
         def gen_field(field: StructField) -> None:
             decl = rizin.stringify_decl(field, field.type)
