@@ -155,6 +155,12 @@ class Module:
         writer.line("typedef char* String;")
         writer.line("%}")
 
+        # Deprecation warning
+        writer.line("bool rizin_warn_deprecate; // enable deprecation warnings")
+        writer.line("%{")
+        writer.line("bool rizin_warn_deprecate = true;")
+        writer.line("%}")
+
         for generic_name, specialization in self.generic_specializations:
             if generic_name in self.generic_dependencies:
                 for dependency_name in self.generic_dependencies[generic_name]:

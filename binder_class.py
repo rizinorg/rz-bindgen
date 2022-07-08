@@ -1,4 +1,4 @@
-from typing import List, Set, Optional
+from typing import List, Optional
 
 from clang.wrapper import (
     CursorKind,
@@ -13,15 +13,6 @@ from header import Header
 from writer import BufferedWriter, DirectWriter
 from binder import rizin
 from binder_func import BinderFunc, FuncKind
-
-
-def get_function_attrs(func: Func) -> Set[str]:
-    attrs = set()
-    for child in func.get_children():
-        if child.kind != CursorKind.ANNOTATE_ATTR:
-            continue
-        attrs.add(child.spelling)
-    return attrs
 
 
 class BinderClass:
@@ -90,7 +81,7 @@ class BinderClass:
                 return False  # not used
             if not func.spelling.startswith(prefix):
                 return False  # correct prefix
-            if "RZ_API" not in get_function_attrs(func):
+            if "RZ_API" not in BinderFunc.get_function_attrs(func):
                 return False  # RZ_API
 
             args = list(func.get_arguments())
@@ -121,7 +112,7 @@ class BinderClass:
                 return False  # not used
             if not func.spelling.startswith(prefix):
                 return False  # correct prefix
-            if "RZ_API" not in get_function_attrs(func):
+            if "RZ_API" not in BinderFunc.get_function_attrs(func):
                 return False  # RZ_API
             return True
 

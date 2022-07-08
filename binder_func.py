@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List, Set, Optional
 from enum import Enum
 
 from clang.wrapper import CursorKind, Func
@@ -29,7 +29,7 @@ class BinderFunc:
         writer = BufferedWriter()
         self.writer = writer
 
-        # Args
+        ### Args ###
         args_outer = []
         args_inner = []
 
@@ -52,6 +52,9 @@ class BinderFunc:
 
         for generic_arg in generic_args:
             assert generic_arg in args_inner, "nonexistent generic argument specified"
+
+        ### Attrs ###
+        attrs = BinderFunc.get_function_attrs(func)
 
         if kind == FuncKind.CONSTRUCTOR:
             args_inner_str = ", ".join(args_inner)
@@ -77,8 +80,28 @@ class BinderFunc:
             writer.line(f"static {decl}({args_outer_str}) {{")
 
         with writer.indent():
+            if "RZ_DEPRECATE" in attrs:
+                writer.line("if (rizin_warn_deprecate) {")
+                with writer.indent():
+                    writer.line(
+                        f"""puts("Warning: `{name}` calls deprecated function `{func.spelling}`");"""
+                    )
+                writer.line("}")
             writer.line(f"return {func.spelling}({args_inner_str});")
         writer.line("}")
+
+    @staticmethod
+    def get_function_attrs(func: Func) -> Set[str]:
+        if hasattr(func, "attrs"):
+            return func.attrs
+
+        attrs = set()
+        for child in func.get_children():
+            if child.kind != CursorKind.ANNOTATE_ATTR:
+                continue
+            attrs.add(child.spelling)
+            func.attrs = attrs
+        return attrs
 
     def merge(self, writer: DirectWriter) -> None:
         writer.merge(self.writer)

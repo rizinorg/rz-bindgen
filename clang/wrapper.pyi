@@ -1,6 +1,6 @@
 from enum import Enum as PyEnum
 import enum
-from typing import Union, Literal, Iterator, final
+from typing import Set, Union, Literal, Iterator
 
 from clang.cindex import SourceRange, TranslationUnit
 
@@ -128,6 +128,8 @@ class Func(CursorBase):
     def get_children(self) -> Iterator[Cursor]:
         pass
     result_type: Type
+
+    attrs: Set[str] # Addiitonal attr to store RZ_* annotations
 
 class Struct(CursorBase):
     kind: Literal[CursorKind.STRUCT_DECL]
