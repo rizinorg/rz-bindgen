@@ -7,9 +7,9 @@ import shlex  # clang_arg string -> argv
 from clang.cindex import Config
 
 from header import Header
-from binder import rizin
-from binder_class import BinderClass
-from binder_generic import BinderGeneric
+from module import rizin
+from module_class import ModuleClass
+from module_generic import ModuleGeneric
 
 ### Parser ###
 parser = ArgumentParser()
@@ -42,7 +42,7 @@ Header.rizin_inc_path = rizin_inc_path
 
 ### RzList
 list_h = Header("rz_list.h")
-rz_list_iter = BinderGeneric(list_h, "RzListIter")
+rz_list_iter = ModuleGeneric(list_h, "RzListIter")
 rz_list_iter.add_method(
     list_h, "rz_list_iter_get_next", rename="next", generic_ret=True
 )
@@ -50,7 +50,7 @@ rz_list_iter.add_method(
     list_h, "rz_list_iter_get_data", rename="data", generic_ret=True
 )
 
-rz_list = BinderGeneric(list_h, "RzList")
+rz_list = ModuleGeneric(list_h, "RzList")
 rizin.generic_dependencies["RzList"].append(
     "RzListIter"
 )  # Produce an RzListIter<T> for every RzList<T>
@@ -68,12 +68,12 @@ rz_list.add_method(
 
 ### RzVector, RzPVector ###
 vector_h = Header("rz_vector.h")
-rz_vector = BinderGeneric(vector_h, "RzVector")
+rz_vector = ModuleGeneric(vector_h, "RzVector")
 rz_vector.add_method(vector_h, "rz_vector_len", rename="len")
 rz_vector.add_method(vector_h, "rz_vector_head", rename="head", generic_ret=True)
 rz_vector.add_method(vector_h, "rz_vector_tail", rename="tail", generic_ret=True)
 
-rz_pvector = BinderGeneric(vector_h, "RzPVector")
+rz_pvector = ModuleGeneric(vector_h, "RzPVector")
 rz_pvector.add_method(vector_h, "rz_pvector_len", rename="len")
 rz_pvector.add_method(vector_h, "rz_pvector_head", rename="head", generic_ret=True)
 rz_pvector.add_method(vector_h, "rz_pvector_tail", rename="tail", generic_ret=True)
@@ -82,7 +82,7 @@ rz_pvector.add_method(vector_h, "rz_pvector_at", rename="at", generic_ret=True)
 ### rz_core_t ###
 core_h = Header("rz_core.h")
 rizin.headers.add(Header("rz_cmp.h"))  # RzCoreCmpWatcher
-rz_core = BinderClass(core_h, struct="rz_core_t", rename="RzCore")
+rz_core = ModuleClass(core_h, struct="rz_core_t", rename="RzCore")
 rz_core.add_constructor(core_h, "rz_core_new")
 rz_core.add_destructor(core_h, "rz_core_free")
 
@@ -103,11 +103,11 @@ rz_core.add_prefixed_funcs(core_h, "rz_core_")
 
 ### rz_bin_t ###
 bin_h = Header("rz_bin.h")
-rz_bin = BinderClass(bin_h, typedef="RzBin")
+rz_bin = ModuleClass(bin_h, typedef="RzBin")
 rz_bin.add_prefixed_methods(bin_h, "rz_bin_")
 rz_bin.add_prefixed_funcs(bin_h, "rz_bin_")
-rz_bin_options = BinderClass(bin_h, typedef="RzBinOptions")
-rz_bin_info = BinderClass(bin_h, typedef="RzBinInfo")
+rz_bin_options = ModuleClass(bin_h, typedef="RzBinOptions")
+rz_bin_info = ModuleClass(bin_h, typedef="RzBinInfo")
 
 
 with open(cast(str, args.output), "w") as output:

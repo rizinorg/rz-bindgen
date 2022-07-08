@@ -1,9 +1,9 @@
-from typing import List, Set, Optional
+from typing import List, Optional
 from enum import Enum
 
 from clang.wrapper import CursorKind, Func
 
-from binder import rizin
+from module import rizin
 from writer import BufferedWriter, DirectWriter
 
 
@@ -14,7 +14,7 @@ class FuncKind(Enum):
     STATIC = 3
 
 
-class BinderFunc:
+class ModuleFunc:
     writer: BufferedWriter
     contract: BufferedWriter
 
@@ -81,14 +81,14 @@ class BinderFunc:
                 writer.line("if (rizin_warn_deprecate) {")
                 with writer.indent():
                     writer.line(
-                        f"""puts("Warning: `{name}` calls deprecated function `{func.spelling}`");"""
+                        f'puts("Warning: `{name}` calls deprecated function `{func.spelling}`");'
                     )
                     writer.line("if (rizin_warn_deprecate_instructions) {")
                     with writer.indent():
                         writer.line(
-                            f"""puts("To disable this warning, set rizin_warn_deprecate to false");""",
-                            f"""puts("The method depends on the language being used");""",
-                            f"""puts("For python ");""",
+                            'puts("To disable this warning, set rizin_warn_deprecate to false");',
+                            'puts("The method depends on the language being used");',
+                            'puts("For python ");',
                         )
                     writer.line("}")
                 writer.line("}")
@@ -106,10 +106,10 @@ class BinderFunc:
                 args_nonnull.append(arg.spelling)
 
         if args_nonnull:
-            contract.line(f"%contract {name}({args_outer_str}) {{", f"require:")
+            contract.line(f"%contract {name}({args_outer_str}) {{", "require:")
             with contract.indent():
-                for arg in args_nonnull:
-                    contract.line(f"{arg} != NULL;")
+                for contract_arg in args_nonnull:
+                    contract.line(f"{contract_arg} != NULL;")
             contract.line("}")
 
     def merge(self, writer: DirectWriter) -> None:

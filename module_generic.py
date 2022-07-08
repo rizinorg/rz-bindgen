@@ -1,24 +1,38 @@
+"""
+Specifies a generic class
+"""
+
 from typing import List, Optional
 
 from clang.wrapper import CursorKind
 
 from header import Header
 from writer import DirectWriter
-from binder import rizin
-from binder_func import BinderFunc, FuncKind
+from module import rizin
+from module_func import ModuleFunc, FuncKind
 
 
-class BinderGeneric:
+class ModuleGeneric:
+    """
+    Represents a generic class
+
+    Implemented as a SWIG macro definition (eg. %RzList)
+    Specializations are created by calling the macro with a type (eg. %RzList(int))
+    """
+
     name: str
-    funcs: List[BinderFunc]
+    funcs: List[ModuleFunc]
 
     def __init__(self, header: Header, name: str):
-        rizin.headers.add(header)
+        """
+        Construct a generic from a typedef
+        """
         rizin.generics.append(self)
 
+        # typedef -> struct
         struct = header.typedefs[name].underlying_typedef_type.get_declaration()
         assert struct.kind == CursorKind.STRUCT_DECL
-        rizin.generic_names[struct.spelling] = name
+        rizin.generic_names[struct.spelling] = name  # add to mappings
 
         self.name = name
         self.funcs = []
@@ -32,10 +46,9 @@ class BinderGeneric:
         generic_ret: bool = False,
         generic_args: Optional[List[str]] = None,
     ) -> None:
-        rizin.headers.add(header)
         header.used.add(name)
 
-        func = BinderFunc(
+        func = ModuleFunc(
             header.funcs[name],
             FuncKind.THIS,
             name=rename,
@@ -47,12 +60,12 @@ class BinderGeneric:
     def merge(self, writer: DirectWriter) -> None:
         writer.line(f"%define %{self.name}(TYPE)")
         with writer.indent():
-            writer.line(
-                "%{",
-                f"typedef {self.name} {self.name}_##TYPE;",
-                "%}",
-                f"typedef struct {{}} {self.name}_##TYPE;",
-            )
+            # The generic and its specializations are equal in C
+            # eg. RzList_int == RzList
+            writer.line("%{", f"typedef {self.name} {self.name}_##TYPE;", "%}")
+
+            # Treat them differently in SWIG only
+            writer.line(f"typedef struct {{}} {self.name}_##TYPE;")
 
             writer.line(f"%extend {self.name}_##TYPE {{")
             with writer.indent():

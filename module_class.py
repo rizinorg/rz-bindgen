@@ -1,3 +1,7 @@
+"""
+Specifies a SWIG class
+"""
+
 from typing import List, Optional
 
 from clang.wrapper import (
@@ -11,14 +15,20 @@ from clang.wrapper import (
 
 from header import Header
 from writer import BufferedWriter, DirectWriter
-from binder import rizin
-from binder_func import BinderFunc, FuncKind
+from module import rizin
+from module_func import ModuleFunc, FuncKind
 
 
-class BinderClass:
+class ModuleClass:
+    """
+    Represents a SWIG class
+
+    Contains a struct and SWIG %extend
+    """
+
     struct: Struct
     struct_writer: BufferedWriter
-    funcs: List[BinderFunc]
+    funcs: List[ModuleFunc]
 
     def __init__(
         self,
@@ -28,7 +38,6 @@ class BinderClass:
         struct: Optional[str] = None,
         rename: Optional[str] = None,
     ):
-        rizin.headers.add(header)
         rizin.classes.append(self)
 
         # Get STRUCT_DECL cursor
@@ -55,25 +64,26 @@ class BinderClass:
             )
 
     def add_constructor(self, header: Header, name: str) -> None:
-        rizin.headers.add(header)
         header.used.add(name)
 
-        func = BinderFunc(
+        func = ModuleFunc(
             header.funcs[name], FuncKind.CONSTRUCTOR, name=self.struct.spelling
         )
         self.funcs.append(func)
 
     def add_destructor(self, header: Header, name: str) -> None:
-        rizin.headers.add(header)
         header.used.add(name)
 
-        func = BinderFunc(
+        func = ModuleFunc(
             header.funcs[name], FuncKind.DESTRUCTOR, name=self.struct.spelling
         )
         self.funcs.append(func)
 
     def add_prefixed_methods(self, header: Header, prefix: str) -> None:
-        rizin.headers.add(header)
+        """
+        Adds functions with the specified prefix and who have $self
+        as the first argument, as methods of the class
+        """
 
         def predicate(func: Func) -> bool:
             if func.spelling in header.used:
@@ -98,13 +108,15 @@ class BinderClass:
 
         for func in filter(predicate, header.funcs.values()):
             header.used.add(func.spelling)
-            binderfunc = BinderFunc(
+            binderfunc = ModuleFunc(
                 func, FuncKind.THIS, name=func.spelling[len(prefix) :]
             )
             self.funcs.append(binderfunc)
 
     def add_prefixed_funcs(self, header: Header, prefix: str) -> None:
-        rizin.headers.add(header)
+        """
+        Adds functions with the specified prefix as static methods of the class
+        """
 
         def predicate(func: Func) -> bool:
             if func.spelling in header.used:
@@ -117,26 +129,31 @@ class BinderClass:
 
         for func in filter(predicate, header.funcs.values()):
             header.used.add(func.spelling)
-            binderfunc = BinderFunc(
+            modulefunc = ModuleFunc(
                 func, FuncKind.STATIC, name=func.spelling[len(prefix) :]
             )
-            self.funcs.append(binderfunc)
+            self.funcs.append(modulefunc)
 
     def gen_struct(self, struct: Struct) -> None:
+        """
+        Generates the struct portion of the class
+        """
+        writer = self.struct_writer
+
         def gen_field(field: StructField) -> None:
             decl = rizin.stringify_decl(field, field.type)
-            self.struct_writer.line(f"{decl};")
+            writer.line(f"{decl};")
 
         def gen_union(field: StructUnionField) -> None:
-            self.struct_writer.line("union {")
-            with self.struct_writer.indent():
+            writer.line("union {")
+            with writer.indent():
                 for union_field in field.get_children():
                     assert union_field.kind == CursorKind.FIELD_DECL
                     gen_field(union_field)
-            self.struct_writer.line("}")
+            writer.line("}")
 
-        self.struct_writer.line(f"struct {struct.spelling} {{")
-        with self.struct_writer.indent():
+        writer.line(f"struct {struct.spelling} {{")
+        with writer.indent():
             for field in struct.get_children():
                 if field.kind == CursorKind.STRUCT_DECL:
                     self.gen_struct(field)
@@ -148,7 +165,7 @@ class BinderClass:
                     raise Exception(
                         f"Unexpected struct child of kind: {field.kind} at {field.location}"
                     )
-        self.struct_writer.line("};")
+        writer.line("};")
 
     def merge(self, writer: DirectWriter) -> None:
         writer.merge(self.struct_writer)

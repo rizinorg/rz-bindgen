@@ -9,8 +9,14 @@ import os
 from clang.cindex import TranslationUnit
 from clang.wrapper import Cursor, CursorKind, Macro, Var, Func, Struct, Enum, Typedef
 
+from module import rizin
+
 
 class Header:
+    """
+    Represents a header in the librz/includes directory
+    """
+
     # Class variables
     clang_args: List[str] = []
     rizin_inc_path: str
@@ -28,6 +34,7 @@ class Header:
     typedefs: OrderedDict[str, Typedef]
 
     def __init__(self, header_name: str):
+        rizin.headers.add(self)
         self.name = header_name
 
         translation_unit = TranslationUnit.from_source(

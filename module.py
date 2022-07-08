@@ -1,20 +1,28 @@
+"""
+Specifies the rizin SWIG %module
+"""
+
 from typing import List, Dict, DefaultDict, Set, Tuple, Optional, TextIO, TYPE_CHECKING
 
 from clang.cindex import SourceRange
 from clang.wrapper import Cursor, CursorKind, Type, TypeKind
 
-from header import Header
 from writer import DirectWriter
 
 if TYPE_CHECKING:
-    from binder_class import BinderClass
-    from binder_generic import BinderGeneric
+    from module_class import ModuleClass
+    from module_generic import ModuleGeneric
+    from header import Header
 
 
 class Module:
-    headers: Set[Header]
-    classes: List["BinderClass"]
-    generics: List["BinderGeneric"]
+    """
+    Represents a SWIG %module
+    """
+
+    headers: Set["Header"]
+    classes: List["ModuleClass"]
+    generics: List["ModuleGeneric"]
 
     # maps struct name -> generic name (eg. rz_list_t -> RzList)
     generic_names: Dict[str, str]
@@ -53,7 +61,7 @@ class Module:
 
     def add_generic_specialization(self, cursor: Cursor, generic_name: str) -> str:
         """
-        Extract generic /*<type>*/ comment
+        Extract generic /*<type>*/ comment and add to generic_specializations
         """
         assert (
             cursor.kind == CursorKind.FIELD_DECL
@@ -99,8 +107,7 @@ class Module:
         If the type is generic, get the inner type from the comment
         and generate the correct specialization
 
-        If being called from a generic %define, use ##TYPE as the
-        inner type
+        If being called from a generic %define, use ##TYPE as the inner type
         """
 
         # Get generic typename if applicable
@@ -140,6 +147,10 @@ class Module:
         return f"{type_name or type_.spelling} {name}"
 
     def write(self, output: TextIO) -> None:
+        """
+        Write self to an opened file or stdout
+        """
+
         writer = DirectWriter(output)
         writer.line("%module rizin")
         writer.line("%{")
@@ -153,7 +164,7 @@ class Module:
         # Special case for char* -> String
         writer.line("%{", "typedef char* String;", "%}")
 
-        # Deprecation warning
+        # Deprecation warning settings
         writer.line(
             "bool rizin_warn_deprecate; // enable deprecation warnings",
             "bool rizin_warn_deprecate_instructions; // instructions to disable warnings",
@@ -173,4 +184,5 @@ class Module:
             cls.merge(writer)
 
 
+# The rizin %module is the only SWIG module
 rizin = Module()
