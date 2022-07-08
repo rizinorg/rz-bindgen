@@ -1,0 +1,11 @@
+name: run-rz-bindgen
+on: push
+jobs:
+  run-bindgen:
+    name: Run bindgen
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout rz-bindgen
+      uses: actions/checkout@v3
+    - name: Run rz-bindgen
+      uses: pypa/cibuildwheel@v2.8.0

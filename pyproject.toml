@@ -1,0 +1,14 @@
+[build-system]
+requires = ["meson-python"]
+build-backend = "mesonpy"
+
+[tool.cibuildwheel]
+before-build = "bash {project}/cibw_before_build.sh"
+environment = "CC=clang-7"
+manylinux-x86_64-image = "manylinux_2_24"
+manylinux-i686-image = "manylinux_2_24"
+
+[project]
+name = "rz-bindings"
+version = "0.0.1"
+requires-python = ">=3.7"
