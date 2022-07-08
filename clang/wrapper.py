@@ -1,4 +1,4 @@
-from clang.cindex import CursorKind, TypeKind
+from clang.cindex import Cursor, CursorKind, TypeKind
 
 # To satisfy runtime imports
 # fmt: off
@@ -14,3 +14,4 @@ class StructUnionField: pass
 class Type: pass
 class Cursor: pass
 # fmt: on
+

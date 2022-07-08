@@ -47,10 +47,12 @@ class BinderGeneric:
     def merge(self, writer: DirectWriter) -> None:
         writer.line(f"%define %{self.name}(TYPE)")
         with writer.indent():
-            writer.line("%{")
-            writer.line(f"typedef {self.name} {self.name}_##TYPE;")
-            writer.line("%}")
-            writer.line(f"typedef struct {{}} {self.name}_##TYPE;")
+            writer.line(
+                "%{",
+                f"typedef {self.name} {self.name}_##TYPE;",
+                "%}",
+                f"typedef struct {{}} {self.name}_##TYPE;",
+            )
 
             writer.line(f"%extend {self.name}_##TYPE {{")
             with writer.indent():

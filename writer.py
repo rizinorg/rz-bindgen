@@ -18,8 +18,9 @@ class BufferedWriter:
         self._indent = 0
         self.lines = []
 
-    def line(self, text: str) -> None:
-        self.lines.append((self._indent, text))
+    def line(self, *texts: str) -> None:
+        for text in texts:
+            self.lines.append((self._indent, text))
 
     @contextmanager
     def indent(self) -> Iterator[None]:
@@ -40,10 +41,11 @@ class DirectWriter:
         self._indent = 0
         self.output = output
 
-    def line(self, text: str) -> None:
-        self.output.write("    " * self._indent)
-        self.output.write(text)
-        self.output.write("\n")
+    def line(self, *texts: str) -> None:
+        for text in texts:
+            self.output.write("    " * self._indent)
+            self.output.write(text)
+            self.output.write("\n")
 
     def merge(self, buffered_writer: BufferedWriter) -> None:
         for indent, text in buffered_writer.lines:

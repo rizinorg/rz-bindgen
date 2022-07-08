@@ -1917,6 +1917,19 @@ class Cursor(Structure):
         res._tu = args[0]._tu
         return res
 
+    @property
+    def attrs(self):
+        if hasattr(self, "_attrs"):
+            return self._attrs
+
+        attrs = set()
+        for child in self.get_children():
+            if child.kind != CursorKind.ANNOTATE_ATTR:
+                continue
+            attrs.add(child.spelling)
+        self._attrs = attrs
+        return attrs
+
 class StorageClass(object):
     """
     Describes the storage class of a declaration

@@ -74,10 +74,10 @@ rz_vector.add_method(vector_h, "rz_vector_head", rename="head", generic_ret=True
 rz_vector.add_method(vector_h, "rz_vector_tail", rename="tail", generic_ret=True)
 
 rz_pvector = BinderGeneric(vector_h, "RzPVector")
-rz_vector.add_method(vector_h, "rz_pvector_len", rename="len")
-rz_vector.add_method(vector_h, "rz_pvector_head", rename="head", generic_ret=True)
-rz_vector.add_method(vector_h, "rz_pvector_tail", rename="tail", generic_ret=True)
-rz_vector.add_method(vector_h, "rz_pvector_at", rename="at", generic_ret=True)
+rz_pvector.add_method(vector_h, "rz_pvector_len", rename="len")
+rz_pvector.add_method(vector_h, "rz_pvector_head", rename="head", generic_ret=True)
+rz_pvector.add_method(vector_h, "rz_pvector_tail", rename="tail", generic_ret=True)
+rz_pvector.add_method(vector_h, "rz_pvector_at", rename="at", generic_ret=True)
 
 ### rz_core_t ###
 core_h = Header("rz_core.h")

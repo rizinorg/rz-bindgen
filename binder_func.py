@@ -16,6 +16,7 @@ class FuncKind(Enum):
 
 class BinderFunc:
     writer: BufferedWriter
+    contract: BufferedWriter
 
     def __init__(
         self,
@@ -30,17 +31,16 @@ class BinderFunc:
         self.writer = writer
 
         ### Args ###
-        args_outer = []
-        args_inner = []
-
         # Ignore first argument for certain types
-        args = func.get_arguments()
+        args = list(func.get_arguments())
         if kind in [FuncKind.DESTRUCTOR, FuncKind.THIS]:
-            next(args)
+            args = args[1:]
 
         if generic_args is None:
             generic_args = []
 
+        args_outer = []
+        args_inner = []
         for arg in args:
             assert arg.kind == CursorKind.PARM_DECL
             args_inner.append(arg.spelling)
@@ -53,12 +53,9 @@ class BinderFunc:
         for generic_arg in generic_args:
             assert generic_arg in args_inner, "nonexistent generic argument specified"
 
-        ### Attrs ###
-        attrs = BinderFunc.get_function_attrs(func)
-
         if kind == FuncKind.CONSTRUCTOR:
-            args_inner_str = ", ".join(args_inner)
             args_outer_str = ", ".join(args_outer)
+            args_inner_str = ", ".join(args_inner)
             writer.line(f"{name}({args_outer_str}) {{")
         elif kind == FuncKind.DESTRUCTOR:
             args_outer_str = ", ".join(args_outer)
@@ -80,28 +77,41 @@ class BinderFunc:
             writer.line(f"static {decl}({args_outer_str}) {{")
 
         with writer.indent():
-            if "RZ_DEPRECATE" in attrs:
+            if "RZ_DEPRECATE" in func.attrs:
                 writer.line("if (rizin_warn_deprecate) {")
                 with writer.indent():
                     writer.line(
                         f"""puts("Warning: `{name}` calls deprecated function `{func.spelling}`");"""
                     )
+                    writer.line("if (rizin_warn_deprecate_instructions) {")
+                    with writer.indent():
+                        writer.line(
+                            f"""puts("To disable this warning, set rizin_warn_deprecate to false");""",
+                            f"""puts("The method depends on the language being used");""",
+                            f"""puts("For python ");""",
+                        )
+                    writer.line("}")
                 writer.line("}")
             writer.line(f"return {func.spelling}({args_inner_str});")
         writer.line("}")
 
-    @staticmethod
-    def get_function_attrs(func: Func) -> Set[str]:
-        if hasattr(func, "attrs"):
-            return func.attrs
+        ### Contracts ###
+        contract = BufferedWriter()
+        self.contract = contract
 
-        attrs = set()
-        for child in func.get_children():
-            if child.kind != CursorKind.ANNOTATE_ATTR:
-                continue
-            attrs.add(child.spelling)
-            func.attrs = attrs
-        return attrs
+        args_nonnull = []
+
+        for arg in args:
+            if "RZ_NONNULL" in arg.attrs:
+                args_nonnull.append(arg.spelling)
+
+        if args_nonnull:
+            contract.line(f"%contract {name}({args_outer_str}) {{", f"require:")
+            with contract.indent():
+                for arg in args_nonnull:
+                    contract.line(f"{arg} != NULL;")
+            contract.line("}")
 
     def merge(self, writer: DirectWriter) -> None:
+        writer.merge(self.contract)
         writer.merge(self.writer)

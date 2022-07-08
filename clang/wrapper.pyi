@@ -101,6 +101,8 @@ class CursorBase:
     spelling: str
     translation_unit: TranslationUnit
 
+    attrs: Set[str] # Addiitonal attr to store RZ_* annotations
+
 class RootCursor(CursorBase):
     kind: Literal[CursorKind.TRANSLATION_UNIT]
     def get_children(self) -> Iterator[Cursor]:
@@ -128,8 +130,6 @@ class Func(CursorBase):
     def get_children(self) -> Iterator[Cursor]:
         pass
     result_type: Type
-
-    attrs: Set[str] # Addiitonal attr to store RZ_* annotations
 
 class Struct(CursorBase):
     kind: Literal[CursorKind.STRUCT_DECL]

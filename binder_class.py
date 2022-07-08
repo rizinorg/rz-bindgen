@@ -50,10 +50,9 @@ class BinderClass:
         self.gen_struct(struct_cursor)
         if rename:
             self.struct_writer.line(
-                f"typedef struct {struct_cursor.spelling} {rename};"
+                f"typedef struct {struct_cursor.spelling} {rename};",
+                f"%rename {struct_cursor.spelling} {rename};",
             )
-
-            self.struct_writer.line(f"%rename {struct_cursor.spelling} {rename};")
 
     def add_constructor(self, header: Header, name: str) -> None:
         rizin.headers.add(header)
@@ -81,7 +80,7 @@ class BinderClass:
                 return False  # not used
             if not func.spelling.startswith(prefix):
                 return False  # correct prefix
-            if "RZ_API" not in BinderFunc.get_function_attrs(func):
+            if "RZ_API" not in func.attrs:
                 return False  # RZ_API
 
             args = list(func.get_arguments())
@@ -112,7 +111,7 @@ class BinderClass:
                 return False  # not used
             if not func.spelling.startswith(prefix):
                 return False  # correct prefix
-            if "RZ_API" not in BinderFunc.get_function_attrs(func):
+            if "RZ_API" not in func.attrs:
                 return False  # RZ_API
             return True
 

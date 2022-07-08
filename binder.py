@@ -151,15 +151,17 @@ class Module:
             generic.merge(writer)
 
         # Special case for char* -> String
-        writer.line("%{")
-        writer.line("typedef char* String;")
-        writer.line("%}")
+        writer.line("%{", "typedef char* String;", "%}")
 
         # Deprecation warning
-        writer.line("bool rizin_warn_deprecate; // enable deprecation warnings")
-        writer.line("%{")
-        writer.line("bool rizin_warn_deprecate = true;")
-        writer.line("%}")
+        writer.line(
+            "bool rizin_warn_deprecate; // enable deprecation warnings",
+            "bool rizin_warn_deprecate_instructions; // instructions to disable warnings",
+            "%{",
+            "bool rizin_warn_deprecate = true;",
+            "bool rizin_warn_deprecate_instructions;",
+            "%}",
+        )
 
         for generic_name, specialization in self.generic_specializations:
             if generic_name in self.generic_dependencies:
