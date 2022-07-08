@@ -1,14 +1,14 @@
-from typing import List, Dict, Set, Tuple, Optional, TextIO, TYPE_CHECKING
-
-if TYPE_CHECKING:
-    from binder_class import BinderClass
-    from binder_generic import BinderGeneric
+from typing import List, Dict, DefaultDict, Set, Tuple, Optional, TextIO, TYPE_CHECKING
 
 from clang.cindex import SourceRange
 from clang.wrapper import Cursor, CursorKind, Type, TypeKind
 
 from header import Header
 from writer import DirectWriter
+
+if TYPE_CHECKING:
+    from binder_class import BinderClass
+    from binder_generic import BinderGeneric
 
 
 class Module:
@@ -20,6 +20,8 @@ class Module:
     generic_names: Dict[str, str]
     # tracks specializations, eg. (RzList, char*)
     generic_specializations: Set[Tuple[str, str]]
+    # tracks dependencies, eg. RzList<T> needs RzListIter<T>
+    generic_dependencies: DefaultDict[str, List[str]]
 
     def __init__(self) -> None:
         self.headers = set()
@@ -28,17 +30,25 @@ class Module:
 
         self.generic_names = {}
         self.generic_specializations = set()
+        self.generic_dependencies = DefaultDict(list)
 
     def get_generic_name(self, type_: Type) -> Optional[str]:
         """
         Get generic name from cursor type (eg. rz_list_t -> RzList)
+
+        If void, return "void"
+        If not a generic, return None
         """
         while type_.kind == TypeKind.POINTER:
             type_ = type_.get_pointee()
 
+        if type_.kind == TypeKind.VOID:
+            return "void"
+
         name = type_.get_canonical().get_declaration().spelling
         if name in self.generic_names:
             return self.generic_names[name]
+
         return None
 
     def add_generic_specialization(self, cursor: Cursor, generic_name: str) -> str:
@@ -95,16 +105,20 @@ class Module:
 
         # Get generic typename if applicable
         generic_name = self.get_generic_name(type_)
-        if generic_name:  # Is generic type?
+        type_name = None
+        if generic_name == "void":
+            if generic:
+                type_name = "TYPE"
+        elif generic_name:  # Is generic type?
             if generic:
                 type_name = f"{generic_name}_##TYPE"
             else:
-                type_name = f"{generic_name}_{self.add_generic_specialization(cursor, generic_name)}"
-        else:
-            type_name = None
+                specialization = self.add_generic_specialization(cursor, generic_name)
+                type_name = f"{generic_name}_{specialization}"
 
         name = name or cursor.spelling
 
+        # Unravel pointers
         while type_.kind == TypeKind.POINTER:
             type_ = type_.get_pointee()
             name = "*" + name
@@ -136,7 +150,15 @@ class Module:
         for generic in self.generics:
             generic.merge(writer)
 
+        # Special case for char* -> String
+        writer.line("%{")
+        writer.line("typedef char* String;")
+        writer.line("%}")
+
         for generic_name, specialization in self.generic_specializations:
+            if generic_name in self.generic_dependencies:
+                for dependency_name in self.generic_dependencies[generic_name]:
+                    writer.line(f"%{dependency_name}({specialization})")
             writer.line(f"%{generic_name}({specialization})")
 
         for cls in self.classes:

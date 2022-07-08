@@ -1,4 +1,4 @@
-from typing import List, Set, Optional, TextIO
+from typing import List, Set, Optional
 
 from clang.wrapper import (
     CursorKind,
@@ -62,8 +62,12 @@ class BinderClass:
                 f"typedef struct {struct_cursor.spelling} {rename};"
             )
 
+            self.struct_writer.line(f"%rename {struct_cursor.spelling} {rename};")
+
     def add_constructor(self, header: Header, name: str) -> None:
         rizin.headers.add(header)
+        header.used.add(name)
+
         func = BinderFunc(
             header.funcs[name], FuncKind.CONSTRUCTOR, name=self.struct.spelling
         )
@@ -71,6 +75,8 @@ class BinderClass:
 
     def add_destructor(self, header: Header, name: str) -> None:
         rizin.headers.add(header)
+        header.used.add(name)
+
         func = BinderFunc(
             header.funcs[name], FuncKind.DESTRUCTOR, name=self.struct.spelling
         )
@@ -160,5 +166,5 @@ class BinderClass:
         writer.line(f"%extend {self.struct.spelling} {{")
         with writer.indent():
             for func in self.funcs:
-                func.write(writer)
+                func.merge(writer)
         writer.line("}")
