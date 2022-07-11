@@ -1,12 +1,20 @@
 [build-system]
-requires = ["meson-python"]
+requires = [
+  "meson==0.62.2",
+  "meson-python==0.6.0"
+]
 build-backend = "mesonpy"
 
 [tool.cibuildwheel]
-before-build = "bash {project}/cibw_before_build.sh"
-environment = "CC=clang-7"
+build-verbosity = 3
+before-all = "bash {project}/cibw_before_all.sh"
 manylinux-x86_64-image = "manylinux_2_24"
 manylinux-i686-image = "manylinux_2_24"
+skip = "pp*"
+
+[tool.cibuildwheel.windows]
+environment = { CMAKE_PREFIX_PATH="C:\\rizin" }
+archs = ["AMD64"]
 
 [project]
 name = "rz-bindings"

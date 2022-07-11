@@ -8,15 +8,33 @@ clang_args = get_option('clang_args')
 rizin_inc_path = get_option('rizin_inc_path')
 
 if clang_path == ''
-  clang_path = dependency('llvm', required: false).get_variable(configtool: 'libdir', default_value: 'none')
+  llvm = dependency('llvm', required: false)
+  if llvm.found()
+    clang_path = llvm.get_variable(configtool: 'libdir', default_value: 'none')
+  elif build_machine.system() == 'darwin'
+    clang_path = '/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/'
+  elif build_machine.system() == 'windows'
+    clang_path = import('fs').parent(find_program('clang.exe').full_path())
+  else
+    clang_path = '/usr/lib/'
+  endif
 endif
 
 if rizin_inc_path == ''
-  rizin_inc_path = dependency('rz_main').get_pkgconfig_variable('includedir') / 'librz'
+  rz_main = dependency('rz_main')
+  if rz_main.type_name() == 'pkgconfig'
+    rizin_inc_path = rz_main.get_variable(pkgconfig: 'includedir') / 'librz'
+  elif rz_main.type_name() == 'cmake'
+    rizin_inc_path = rz_main.get_variable(cmake: 'PACKAGE_INCLUDE_DIRS').split(';')[0]
+  endif
 endif
 
 if clang_args == ''
-  clang_args += ' -resource-dir=' + run_command(meson.get_compiler('c'), '-print-resource-dir').stdout().strip()
+  clang = find_program('clang', 'clang-7', required: false)
+  if clang.found()
+    clang_args += ' -resource-dir='
+    clang_args += run_command(clang, '-print-resource-dir').stdout().strip()
+  endif
 endif
 
 swig_sources = custom_target(
@@ -40,7 +58,9 @@ swig_output = custom_target(
     find_program('swig'),
     '-python',
     '-outdir', '@OUTDIR@', '@INPUT@'
-  ]
+  ],
+  install: true,
+  install_dir: [false, py.get_install_dir()]
 )
 swig_wrap = swig_output[0]
 swig_py = swig_output[1]
