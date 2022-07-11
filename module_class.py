@@ -37,6 +37,7 @@ class ModuleClass:
         typedef: Optional[str] = None,
         struct: Optional[str] = None,
         rename: Optional[str] = None,
+        ignore_fields: Optional[List[str]] = None,
     ):
         rizin.classes.append(self)
 
@@ -56,7 +57,7 @@ class ModuleClass:
         self.struct_writer = BufferedWriter()
         self.funcs = []
 
-        self.gen_struct(struct_cursor)
+        self.gen_struct(struct_cursor, ignore_fields=ignore_fields)
         if rename:
             self.struct_writer.line(
                 f"typedef struct {struct_cursor.spelling} {rename};",
@@ -78,6 +79,20 @@ class ModuleClass:
             header.funcs[name], FuncKind.DESTRUCTOR, name=self.struct.spelling
         )
         self.funcs.append(func)
+
+    def add_method(
+        self, header: Header, name: str, *, rename: Optional[str] = None
+    ) -> None:
+        header.used.add(name)
+        binderfunc = ModuleFunc(header.funcs[name], FuncKind.THIS, name=rename)
+        self.funcs.append(binderfunc)
+
+    def add_func(
+        self, header: Header, name: str, *, rename: Optional[str] = None
+    ) -> None:
+        header.used.add(name)
+        binderfunc = ModuleFunc(header.funcs[name], FuncKind.STATIC, name=rename)
+        self.funcs.append(binderfunc)
 
     def add_prefixed_methods(self, header: Header, prefix: str) -> None:
         """
@@ -134,15 +149,19 @@ class ModuleClass:
             )
             self.funcs.append(modulefunc)
 
-    def gen_struct(self, struct: Struct) -> None:
+    def gen_struct(
+        self, struct: Struct, *, ignore_fields: Optional[List[str]] = None
+    ) -> None:
         """
         Generates the struct portion of the class
         """
+        ignore_set = set(ignore_fields) if ignore_fields else set()
         writer = self.struct_writer
 
         def gen_field(field: StructField) -> None:
-            decl = rizin.stringify_decl(field, field.type)
-            writer.line(f"{decl};")
+            if field.spelling not in ignore_set:
+                decl = rizin.stringify_decl(field, field.type)
+                writer.line(f"{decl};")
 
         def gen_union(field: StructUnionField) -> None:
             writer.line("union {")

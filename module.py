@@ -82,6 +82,8 @@ class Module:
                 f"{generic_name} at {cursor.location} lacks /*<type>*/ annotation"
             )
         name = token[3:-3]
+        if name.startswith("const "):
+            name = name[len("const ") :]
 
         # Generics of type char* screw up tokenization
         if name == "char*":

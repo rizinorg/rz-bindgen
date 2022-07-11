@@ -109,6 +109,12 @@ rz_bin.add_prefixed_funcs(bin_h, "rz_bin_")
 rz_bin_options = ModuleClass(bin_h, typedef="RzBinOptions")
 rz_bin_info = ModuleClass(bin_h, typedef="RzBinInfo")
 
+### rz_analysis_t ###
+analysis_h = Header("rz_analysis.h")
+rz_analysis = ModuleClass(analysis_h, typedef="RzAnalysis", ignore_fields=["leaddrs"])
+rz_analysis.add_method(analysis_h, "rz_analysis_reflines_get", rename="get_reflines")
+rz_analysis.add_prefixed_methods(analysis_h, "rz_analysis_")
+rz_analysis.add_prefixed_funcs(analysis_h, "rz_analysis_")
 
 with open(cast(str, args.output), "w") as output:
     rizin.write(output)

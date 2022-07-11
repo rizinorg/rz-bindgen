@@ -36,6 +36,7 @@ class ModuleFunc:
         if kind in [FuncKind.DESTRUCTOR, FuncKind.THIS]:
             args = args[1:]
 
+        # Process generics
         if generic_args is None:
             generic_args = []
 
@@ -43,12 +44,24 @@ class ModuleFunc:
         args_inner = []
         for arg in args:
             assert arg.kind == CursorKind.PARM_DECL
-            args_inner.append(arg.spelling)
-            args_outer.append(
-                rizin.stringify_decl(
-                    arg, arg.type, generic=(arg.spelling in generic_args)
+            if arg.spelling == "self":
+                # Rename self to _self to avoid conflict with SWIG
+                args_inner.append("_self")
+                args_outer.append(
+                    rizin.stringify_decl(
+                        arg,
+                        arg.type,
+                        generic=(arg.spelling in generic_args),
+                        name="_self",
+                    )
                 )
-            )
+            else:
+                args_inner.append(arg.spelling)
+                args_outer.append(
+                    rizin.stringify_decl(
+                        arg, arg.type, generic=(arg.spelling in generic_args)
+                    )
+                )
 
         for generic_arg in generic_args:
             assert generic_arg in args_inner, "nonexistent generic argument specified"
