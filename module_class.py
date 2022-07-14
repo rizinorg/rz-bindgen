@@ -5,6 +5,7 @@ Specifies a SWIG class
 from typing import List, Dict, Optional
 
 from clang.wrapper import (
+    Cursor,
     CursorKind,
     Struct,
     StructField,
@@ -38,6 +39,7 @@ class ModuleClass:
         struct: Optional[str] = None,
         rename: Optional[str] = None,
         ignore_fields: Optional[List[str]] = None,
+        rename_fields: Optional[Dict[str, str]] = None,
     ):
         rizin.classes.append(self)
 
@@ -57,7 +59,9 @@ class ModuleClass:
         self.struct_writer = BufferedWriter()
         self.funcs = []
 
-        self.gen_struct(struct_cursor, ignore_fields=ignore_fields)
+        self.gen_struct(
+            struct_cursor, ignore_fields=ignore_fields, rename_fields=rename_fields
+        )
         if rename:
             self.struct_writer.line(
                 f"typedef struct {struct_cursor.spelling} {rename};",
@@ -164,20 +168,39 @@ class ModuleClass:
             self.funcs.append(modulefunc)
 
     def gen_struct(
-        self, struct: Struct, *, ignore_fields: Optional[List[str]] = None
+        self,
+        struct: Struct,
+        *,
+        ignore_fields: Optional[List[str]] = None,
+        rename_fields: Optional[Dict[str, str]] = None,
     ) -> None:
         """
         Generates the struct portion of the class
         """
+        fields = set()  # ensure all ignore/rename_fields are valid
         ignore_set = set(ignore_fields) if ignore_fields else set()
         writer = self.struct_writer
 
+        # %rename fields
+        rename_fields = rename_fields or {}
+        for old, new in rename_fields.items():
+            writer.line(f"%rename {struct.spelling}::{old} {new};")
+
         def gen_field(field: StructField) -> None:
-            if field.spelling not in ignore_set:
-                decl = rizin.stringify_decl(field, field.type)
-                writer.line(f"{decl};")
+            assert field.spelling not in fields
+            fields.add(field.spelling)
+
+            if field.spelling in ignore_set:
+                return
+            decl = rizin.stringify_decl(field, field.type)
+            writer.line(f"{decl};")
 
         def gen_union(field: StructUnionField) -> None:
+            assert field.spelling not in fields
+            fields.add(field.spelling)
+
+            if field.spelling in ignore_set:
+                return
             writer.line("union {")
             with writer.indent():
                 for union_field in field.get_children():
@@ -199,6 +222,16 @@ class ModuleClass:
                         f"Unexpected struct child of kind: {field.kind} at {field.location}"
                     )
         writer.line("};")
+
+        # sanity check
+        for ignored_field in ignore_set:
+            assert ignored_field in fields
+        for renamed_field in rename_fields.keys():
+            assert renamed_field in fields
+
+        # un %rename fields
+        for old in rename_fields.keys():
+            writer.line(f"""%rename {struct.spelling}::{old} "";""")
 
     def merge(self, writer: DirectWriter) -> None:
         writer.merge(self.struct_writer)

@@ -82,7 +82,12 @@ rz_pvector.add_method(vector_h, "rz_pvector_at", rename="at", generic_ret=True)
 ### rz_core_t ###
 core_h = Header("rz_core.h")
 rizin.headers.add(Header("rz_cmp.h"))  # RzCoreCmpWatcher
-rz_core = ModuleClass(core_h, struct="rz_core_t", rename="RzCore")
+rz_core = ModuleClass(
+    core_h,
+    struct="rz_core_t",
+    rename="RzCore",
+    rename_fields={"autocomplete": "_autocomplete", "visual": "_visual"},
+)
 rz_core.add_constructor(core_h, "rz_core_new")
 rz_core.add_destructor(core_h, "rz_core_free")
 
@@ -109,7 +114,9 @@ rz_core_file = ModuleClass(core_h, typedef="RzCoreFile")
 
 ### rz_bin ###
 bin_h = Header("rz_bin.h")
-rz_bin = ModuleClass(bin_h, typedef="RzBin")
+rz_bin = ModuleClass(
+    bin_h, typedef="RzBin", rename_fields={"cur": "_cur", "strpurge": "_strpurge"}
+)
 rz_bin.add_prefixed_methods(bin_h, "rz_bin_")
 rz_bin.add_prefixed_funcs(bin_h, "rz_bin_")
 rz_bin_options = ModuleClass(bin_h, typedef="RzBinOptions")
@@ -118,14 +125,33 @@ rz_bin_file = ModuleClass(bin_h, typedef="RzBinFile")
 
 ### rz_analysis ###
 analysis_h = Header("rz_analysis.h")
-rz_analysis = ModuleClass(analysis_h, typedef="RzAnalysis", ignore_fields=["leaddrs"])
+rz_analysis = ModuleClass(
+    analysis_h,
+    typedef="RzAnalysis",
+    ignore_fields=["leaddrs"],
+    rename_fields={"type_links": "_type_links"},
+)
 rz_analysis.add_method(analysis_h, "rz_analysis_reflines_get", rename="get_reflines")
 rz_analysis.add_prefixed_methods(analysis_h, "rz_analysis_")
 rz_analysis.add_prefixed_funcs(analysis_h, "rz_analysis_")
 
 ### rz_cons ###
 cons_h = Header("rz_cons.h")
-rz_cons = ModuleClass(cons_h, typedef="RzCons")
+rz_cons = ModuleClass(
+    cons_h,
+    typedef="RzCons",
+    rename_fields={
+        "flush": "_flush",
+        "lastline": "_lastline",
+        "echo": "_echo",
+        "highlight": "_highlight",
+        "newline": "_newline",
+        "filter": "_filter",
+        "flush": "_flush",
+        "input": "_input",
+        "enable_highlight": "_enable_highlight",
+    },
+)
 cons_h.ignore(
     "rz_cons_printf",
     "rz_cons_printf_list",
