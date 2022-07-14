@@ -69,12 +69,12 @@ rz_list.add_method(
 ### RzVector, RzPVector ###
 vector_h = Header("rz_vector.h")
 rz_vector = ModuleGeneric(vector_h, "RzVector")
-rz_vector.add_method(vector_h, "rz_vector_len", rename="len")
+rz_vector.add_method(vector_h, "rz_vector_len", rename="length")
 rz_vector.add_method(vector_h, "rz_vector_head", rename="head", generic_ret=True)
 rz_vector.add_method(vector_h, "rz_vector_tail", rename="tail", generic_ret=True)
 
 rz_pvector = ModuleGeneric(vector_h, "RzPVector")
-rz_pvector.add_method(vector_h, "rz_pvector_len", rename="len")
+rz_pvector.add_method(vector_h, "rz_pvector_len", rename="length")
 rz_pvector.add_method(vector_h, "rz_pvector_head", rename="head", generic_ret=True)
 rz_pvector.add_method(vector_h, "rz_pvector_tail", rename="tail", generic_ret=True)
 rz_pvector.add_method(vector_h, "rz_pvector_at", rename="at", generic_ret=True)
@@ -87,34 +87,52 @@ rz_core.add_constructor(core_h, "rz_core_new")
 rz_core.add_destructor(core_h, "rz_core_free")
 
 # Ignore format strings
-for func_name in [
+core_h.ignore(
     "rz_core_notify_begin",
     "rz_core_notify_done",
     "rz_core_notify_error",
     "rz_core_cmd_strf",
     "rz_core_cmdf",
     "rz_core_syscallf",
-]:
-    assert func_name in core_h.nodes
-    core_h.used.add(func_name)
+)
 
+rz_core.add_method(
+    core_h,
+    "rz_core_file_open_load",
+    rename="file_open_load",
+    default_args={"addr": "0", "perms": "0", "write_mode": "0"},
+)
 rz_core.add_prefixed_methods(core_h, "rz_core_")
 rz_core.add_prefixed_funcs(core_h, "rz_core_")
 
-### rz_bin_t ###
+rz_core_file = ModuleClass(core_h, typedef="RzCoreFile")
+
+### rz_bin ###
 bin_h = Header("rz_bin.h")
 rz_bin = ModuleClass(bin_h, typedef="RzBin")
 rz_bin.add_prefixed_methods(bin_h, "rz_bin_")
 rz_bin.add_prefixed_funcs(bin_h, "rz_bin_")
 rz_bin_options = ModuleClass(bin_h, typedef="RzBinOptions")
 rz_bin_info = ModuleClass(bin_h, typedef="RzBinInfo")
+rz_bin_file = ModuleClass(bin_h, typedef="RzBinFile")
 
-### rz_analysis_t ###
+### rz_analysis ###
 analysis_h = Header("rz_analysis.h")
 rz_analysis = ModuleClass(analysis_h, typedef="RzAnalysis", ignore_fields=["leaddrs"])
 rz_analysis.add_method(analysis_h, "rz_analysis_reflines_get", rename="get_reflines")
 rz_analysis.add_prefixed_methods(analysis_h, "rz_analysis_")
 rz_analysis.add_prefixed_funcs(analysis_h, "rz_analysis_")
+
+### rz_cons ###
+cons_h = Header("rz_cons.h")
+rz_cons = ModuleClass(cons_h, typedef="RzCons")
+cons_h.ignore(
+    "rz_cons_printf",
+    "rz_cons_printf_list",
+    "rz_cons_yesno",
+)
+rz_cons.add_prefixed_methods(cons_h, "rz_cons_")
+rz_cons.add_prefixed_funcs(cons_h, "rz_cons_")
 
 with open(cast(str, args.output), "w") as output:
     rizin.write(output)

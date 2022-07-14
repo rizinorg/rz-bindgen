@@ -114,3 +114,9 @@ class Header:
                 raise Exception(
                     f"Unexpected toplevel node of kind: {str(cursor.kind)} at {cursor.location}"
                 )
+
+    def ignore(self, *names: str) -> None:
+        for name in names:
+            assert name in self.nodes
+            assert name not in self.used
+            self.used.add(name)

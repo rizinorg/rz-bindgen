@@ -2,7 +2,7 @@
 Specifies a SWIG class
 """
 
-from typing import List, Optional
+from typing import List, Dict, Optional
 
 from clang.wrapper import (
     CursorKind,
@@ -81,17 +81,31 @@ class ModuleClass:
         self.funcs.append(func)
 
     def add_method(
-        self, header: Header, name: str, *, rename: Optional[str] = None
+        self,
+        header: Header,
+        name: str,
+        *,
+        rename: Optional[str] = None,
+        default_args: Optional[Dict[str, str]] = None,
     ) -> None:
         header.used.add(name)
-        binderfunc = ModuleFunc(header.funcs[name], FuncKind.THIS, name=rename)
+        binderfunc = ModuleFunc(
+            header.funcs[name], FuncKind.THIS, name=rename, default_args=default_args
+        )
         self.funcs.append(binderfunc)
 
     def add_func(
-        self, header: Header, name: str, *, rename: Optional[str] = None
+        self,
+        header: Header,
+        name: str,
+        *,
+        rename: Optional[str] = None,
+        default_args: Optional[Dict[str, str]] = None,
     ) -> None:
         header.used.add(name)
-        binderfunc = ModuleFunc(header.funcs[name], FuncKind.STATIC, name=rename)
+        binderfunc = ModuleFunc(
+            header.funcs[name], FuncKind.STATIC, name=rename, default_args=default_args
+        )
         self.funcs.append(binderfunc)
 
     def add_prefixed_methods(self, header: Header, prefix: str) -> None:

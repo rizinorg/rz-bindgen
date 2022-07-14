@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List, Dict, Optional
 from enum import Enum
 
 from clang.wrapper import CursorKind, Func
@@ -26,6 +26,7 @@ class ModuleFunc:
         name: Optional[str] = None,
         generic_ret: bool = False,
         generic_args: Optional[List[str]] = None,
+        default_args: Optional[Dict[str, str]] = None,
     ):
         writer = BufferedWriter()
         self.writer = writer
@@ -36,9 +37,11 @@ class ModuleFunc:
         if kind in [FuncKind.DESTRUCTOR, FuncKind.THIS]:
             args = args[1:]
 
-        # Process generics
+        # Process generics/defaults
         if generic_args is None:
             generic_args = []
+        if default_args is None:
+            default_args = {}
 
         args_outer = []
         args_inner = []
@@ -57,14 +60,18 @@ class ModuleFunc:
                 )
             else:
                 args_inner.append(arg.spelling)
-                args_outer.append(
-                    rizin.stringify_decl(
-                        arg, arg.type, generic=(arg.spelling in generic_args)
-                    )
+                arg_outer = rizin.stringify_decl(
+                    arg, arg.type, generic=(arg.spelling in generic_args)
                 )
+                if arg.spelling in default_args:
+                    arg_outer += f" = {default_args[arg.spelling]}"
+                args_outer.append(arg_outer)
 
+        # Sanity check
         for generic_arg in generic_args:
             assert generic_arg in args_inner, "nonexistent generic argument specified"
+        for default_arg in default_args.keys():
+            assert default_arg in args_inner, "nonexistent default argument specified"
 
         if kind == FuncKind.CONSTRUCTOR:
             args_outer_str = ", ".join(args_outer)
