@@ -39,7 +39,7 @@ endif
 
 swig_sources = custom_target(
   'swig_sources',
-  input: 'main.py',
+  input: 'src' / 'main.py',
   output: 'rizin.i',
   command: [
     py, '@INPUT@',
