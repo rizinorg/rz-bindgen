@@ -72,12 +72,18 @@ rz_vector = ModuleGeneric(vector_h, "RzVector")
 rz_vector.add_method(vector_h, "rz_vector_len", rename="length")
 rz_vector.add_method(vector_h, "rz_vector_head", rename="head", generic_ret=True)
 rz_vector.add_method(vector_h, "rz_vector_tail", rename="tail", generic_ret=True)
+rz_vector.add_method(
+    vector_h, "rz_vector_push", rename="push", generic_ret=True, generic_args=["x"]
+)
 
 rz_pvector = ModuleGeneric(vector_h, "RzPVector")
 rz_pvector.add_method(vector_h, "rz_pvector_len", rename="length")
 rz_pvector.add_method(vector_h, "rz_pvector_head", rename="head", generic_ret=True)
 rz_pvector.add_method(vector_h, "rz_pvector_tail", rename="tail", generic_ret=True)
 rz_pvector.add_method(vector_h, "rz_pvector_at", rename="at", generic_ret=True)
+rz_pvector.add_method(
+    vector_h, "rz_pvector_push", rename="push", generic_ret=True, generic_args=["x"]
+)
 
 ### rz_core_t ###
 core_h = Header("rz_core.h")
@@ -106,6 +112,12 @@ rz_core.add_method(
     "rz_core_file_open_load",
     rename="file_open_load",
     default_args={"addr": "0", "perms": "0", "write_mode": "0"},
+)
+rz_core.add_method(
+    core_h,
+    "rz_core_file_open",
+    rename="file_open",
+    default_args={"flags": "0", "loadaddr": "UT64_MAX"}
 )
 rz_core.add_prefixed_methods(core_h, "rz_core_")
 rz_core.add_prefixed_funcs(core_h, "rz_core_")
@@ -159,6 +171,14 @@ cons_h.ignore(
 )
 rz_cons.add_prefixed_methods(cons_h, "rz_cons_")
 rz_cons.add_prefixed_funcs(cons_h, "rz_cons_")
+
+### rz_main ###
+main_h = Header("rz_main.h")
+rz_main = ModuleClass(main_h, typedef="RzMain")
+rz_main.add_constructor(main_h, "rz_main_new")
+rz_main.add_destructor(main_h, "rz_main_free")
+rz_main.add_prefixed_methods(main_h, "rz_main_")
+rz_main.add_prefixed_funcs(main_h, "rz_main_")
 
 with open(cast(str, args.output), "w") as output:
     rizin.write(output)
