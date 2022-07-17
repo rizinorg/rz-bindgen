@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2022 wingdeans <wingdeans@protonmail.com>
+// SPDX-License-Identifier: LGPL-3.0-only
+
 #ifndef PYTHON_CONSOLE_H
 #define PYTHON_CONSOLE_H
 

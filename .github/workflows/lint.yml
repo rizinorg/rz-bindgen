@@ -1,0 +1,10 @@
+name: linting
+on: push
+jobs:
+  licenses:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout rz-bindgen
+      uses: actions/checkout@v3
+    - name: REUSE compliance check
+      uses: fsfe/reuse-action@v1

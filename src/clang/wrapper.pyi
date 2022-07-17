@@ -1,3 +1,8 @@
+"""
+SPDX-FileCopyrightText: 2022 wingdeans <wingdeans@protonmail.com>
+SPDX-License-Identifier: LGPL-3.0-only
+"""
+
 from enum import Enum as PyEnum
 import enum
 from typing import Set, Union, Literal, Iterator

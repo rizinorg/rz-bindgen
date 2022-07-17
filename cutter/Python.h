@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2022 wingdeans <wingdeans@protonmail.com>
+// SPDX-License-Identifier: LGPL-3.0-only
+
 #ifndef CUSTOM_PYTHON_H
 #define CUSTOM_PYTHON_H
 

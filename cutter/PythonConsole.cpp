@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2022 wingdeans <wingdeans@protonmail.com>
+// SPDX-License-Identifier: LGPL-3.0-only
+
 #define CUTTER_ENABLE_PYTHON
 #include <PythonManager.h>
 

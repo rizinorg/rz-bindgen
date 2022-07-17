@@ -1,0 +1,24 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: rz-bindgen
+Upstream-Contact: wingdeans <wingdeans@protonmail.com>
+Source: https://github.com/rizinorg/rz-bindgen/
+
+Files: src/clang/__init__.py src/clang/cindex.py src/clang/enumerations.py
+Copyright: 2022 The LLVM Project
+License: Apache-2.0 WITH LLVM-exception
+
+Files: .github/** .gitignore README.md
+Copyright: 2022 wingdeans <wingdeans@protonmail.com>
+License: LGPL-3.0-only
+
+Files: meson.build meson_options.txt
+Copyright: 2022 wingdeans <wingdeans@protonmail.com>
+License: LGPL-3.0-only
+
+Files: pyproject.toml mypy.ini
+Copyright: 2022 wingdeans <wingdeans@protonmail.com>
+License: LGPL-3.0-only
+
+Files: cutter/PythonConsole.ui cutter/CMakeLists.txt cutter/.clang-format
+Copyright: 2022 wingdeans <wingdeans@protonmail.com>
+License: LGPL-3.0-only
