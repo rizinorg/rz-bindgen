@@ -8,7 +8,6 @@ Specifies a SWIG class
 from typing import List, Dict, Optional
 
 from clang.wrapper import (
-    Cursor,
     CursorKind,
     Struct,
     StructField,

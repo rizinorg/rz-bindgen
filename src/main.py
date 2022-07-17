@@ -158,7 +158,6 @@ rz_cons = ModuleClass(
     cons_h,
     typedef="RzCons",
     rename_fields={
-        "flush": "_flush",
         "lastline": "_lastline",
         "echo": "_echo",
         "highlight": "_highlight",
