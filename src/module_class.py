@@ -214,8 +214,9 @@ class ModuleClass:
         with writer.indent():
             for field in struct.get_children():
                 if field.kind == CursorKind.STRUCT_DECL:
-                    self.gen_struct(field)
-                elif field.kind == CursorKind.FIELD_DECL:
+                    continue
+
+                if field.kind == CursorKind.FIELD_DECL:
                     gen_field(field)
                 elif field.kind == CursorKind.UNION_DECL:
                     gen_union(field)

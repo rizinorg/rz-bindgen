@@ -15,6 +15,7 @@ from header import Header
 from module import rizin
 from module_class import ModuleClass
 from module_generic import ModuleGeneric
+from module_director import ModuleDirector
 
 ### Parser ###
 parser = ArgumentParser()
@@ -22,6 +23,7 @@ parser.add_argument("--output", "-o", required=True)
 parser.add_argument("--clang-path", required=True)
 parser.add_argument("--clang-args", required=True)
 parser.add_argument("--rizin-inc-path", required=True)
+parser.add_argument("--enable-directors", action="store_true")
 args = parser.parse_args()
 
 Config.set_library_path(cast(str, args.clang_path))
@@ -44,6 +46,7 @@ for segments in [
 clang_args.append("-DRZ_BINDINGS")
 Header.clang_args = clang_args
 Header.rizin_inc_path = rizin_inc_path
+rizin.enable_directors = args.enable_directors
 
 ### RzList
 list_h = Header("rz_list.h")
@@ -139,6 +142,10 @@ rz_bin.add_prefixed_funcs(bin_h, "rz_bin_")
 rz_bin_options = ModuleClass(bin_h, typedef="RzBinOptions")
 rz_bin_info = ModuleClass(bin_h, typedef="RzBinInfo")
 rz_bin_file = ModuleClass(bin_h, typedef="RzBinFile")
+
+
+ModuleDirector(bin_h, "RzBinPlugin")
+ModuleClass(bin_h, typedef="RzBinPlugin")
 
 ### rz_analysis ###
 analysis_h = Header("rz_analysis.h")

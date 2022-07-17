@@ -15,6 +15,7 @@ from writer import DirectWriter
 if TYPE_CHECKING:
     from module_class import ModuleClass
     from module_generic import ModuleGeneric
+    from module_director import ModuleDirector
     from header import Header
 
 
@@ -27,6 +28,9 @@ class Module:
     classes: List["ModuleClass"]
     generics: List["ModuleGeneric"]
 
+    directors: List["ModuleDirector"]
+    enable_directors: bool
+
     # maps struct name -> generic name (eg. rz_list_t -> RzList)
     generic_names: Dict[str, str]
     # tracks specializations, eg. (RzList, char*)
@@ -38,6 +42,7 @@ class Module:
         self.headers = set()
         self.classes = []
         self.generics = []
+        self.directors = []
 
         self.generic_names = {}
         self.generic_specializations = set()
@@ -157,7 +162,11 @@ class Module:
         """
 
         writer = DirectWriter(output)
-        writer.line("%module rizin")
+        if self.enable_directors:
+            writer.line("%module(directors=1) rizin")
+        else:
+            writer.line("%module rizin")
+
         writer.line("%{")
         for header in self.headers:
             writer.line(f"#include <{header.name}>")
@@ -171,9 +180,7 @@ class Module:
 
         # Deprecation warning settings
         writer.line(
-            "bool rizin_warn_deprecate; // enable deprecation warnings",
-            "bool rizin_warn_deprecate_instructions; // instructions to disable warnings",
-            "%{",
+            "%inline %{",
             "bool rizin_warn_deprecate = true;",
             "bool rizin_warn_deprecate_instructions;",
             "%}",
@@ -187,6 +194,10 @@ class Module:
 
         for cls in self.classes:
             cls.merge(writer)
+
+        if self.enable_directors:
+            for director in self.directors:
+                director.merge(writer)
 
 
 # The rizin %module is the only SWIG module
