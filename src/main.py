@@ -122,7 +122,7 @@ rz_core.add_method(
     core_h,
     "rz_core_file_open",
     rename="file_open",
-    default_args={"flags": "0", "loadaddr": "UT64_MAX"}
+    default_args={"flags": "0", "loadaddr": "UT64_MAX"},
 )
 rz_core.add_prefixed_methods(core_h, "rz_core_")
 rz_core.add_prefixed_funcs(core_h, "rz_core_")
