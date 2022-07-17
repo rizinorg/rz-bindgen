@@ -61,14 +61,15 @@ class ModuleClass:
         self.struct_writer = BufferedWriter()
         self.funcs = []
 
-        self.gen_struct(
-            struct_cursor, ignore_fields=ignore_fields, rename_fields=rename_fields
-        )
         if rename:
             self.struct_writer.line(
                 f"typedef struct {struct_cursor.spelling} {rename};",
                 f"%rename {struct_cursor.spelling} {rename};",
             )
+
+        self.gen_struct(
+            struct_cursor, ignore_fields=ignore_fields, rename_fields=rename_fields
+        )
 
     def add_constructor(self, header: Header, name: str) -> None:
         header.used.add(name)
