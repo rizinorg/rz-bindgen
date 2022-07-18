@@ -103,20 +103,7 @@ class ModuleFunc:
 
         with writer.indent():
             if "RZ_DEPRECATE" in func.attrs:
-                writer.line("if (rizin_warn_deprecate) {")
-                with writer.indent():
-                    writer.line(
-                        f'puts("Warning: `{name}` calls deprecated function `{func.spelling}`");'
-                    )
-                    writer.line("if (rizin_warn_deprecate_instructions) {")
-                    with writer.indent():
-                        writer.line(
-                            'puts("To disable this warning, set rizin_warn_deprecate to false");',
-                            'puts("The method depends on the language being used");',
-                            'puts("For python ");',
-                        )
-                    writer.line("}")
-                writer.line("}")
+                writer.line(f'rizin_try_warn_deprecate("{name}", "{func.spelling}");')
             writer.line(f"return {func.spelling}({args_inner_str});")
         writer.line("}")
 
