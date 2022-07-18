@@ -153,7 +153,7 @@ analysis_h = Header("rz_analysis.h")
 rz_analysis = ModuleClass(
     analysis_h,
     typedef="RzAnalysis",
-    ignore_fields=["leaddrs"],
+    ignore_fields={"leaddrs"},
     rename_fields={"type_links": "_type_links"},
 )
 rz_analysis.add_method(analysis_h, "rz_analysis_reflines_get", rename="get_reflines")

@@ -5,7 +5,7 @@ SPDX-License-Identifier: LGPL-3.0-only
 Specifies a SWIG class
 """
 
-from typing import List, Dict, Optional
+from typing import List, Dict, Set, Optional
 
 from clang.wrapper import (
     CursorKind,
@@ -41,7 +41,7 @@ class ModuleClass:
         typedef: Optional[str] = None,
         struct: Optional[str] = None,
         rename: Optional[str] = None,
-        ignore_fields: Optional[List[str]] = None,
+        ignore_fields: Optional[Set[str]] = None,
         rename_fields: Optional[Dict[str, str]] = None,
     ):
         rizin.classes.append(self)
@@ -185,14 +185,14 @@ class ModuleClass:
         self,
         struct: Struct,
         *,
-        ignore_fields: Optional[List[str]] = None,
+        ignore_fields: Optional[Set[str]] = None,
         rename_fields: Optional[Dict[str, str]] = None,
     ) -> None:
         """
         Generates the struct portion of the class
         """
         fields = set()  # ensure all ignore/rename_fields are valid
-        ignore_set = set(ignore_fields) if ignore_fields else set()
+        ignore_set = ignore_fields or set()
         writer = self.struct_writer
 
         # %rename fields
