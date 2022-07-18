@@ -9,6 +9,7 @@ from enum import Enum
 from clang.wrapper import CursorKind, Func
 
 from module import rizin
+from module_typemap import ModuleTypemap
 from writer import BufferedWriter, DirectWriter
 
 
@@ -22,6 +23,7 @@ class FuncKind(Enum):
 class ModuleFunc:
     writer: BufferedWriter
     contract: BufferedWriter
+    typemaps: List[ModuleTypemap]
 
     def __init__(
         self,
@@ -32,9 +34,15 @@ class ModuleFunc:
         generic_ret: bool = False,
         generic_args: Optional[List[str]] = None,
         default_args: Optional[Dict[str, str]] = None,
+        typemaps: Optional[List[ModuleTypemap]] = None,
     ):
         writer = BufferedWriter()
         self.writer = writer
+
+        ### Typemaps ###
+        self.typemaps = typemaps or []
+        for typemap in self.typemaps:
+            typemap.check(func)
 
         ### Args ###
         # Ignore first argument for certain types
@@ -126,4 +134,11 @@ class ModuleFunc:
 
     def merge(self, writer: DirectWriter) -> None:
         writer.merge(self.contract)
+
+        for typemap in self.typemaps:
+            writer.line(typemap.activate)
+
         writer.merge(self.writer)
+
+        for typemap in self.typemaps:
+            writer.line(typemap.deactivate)

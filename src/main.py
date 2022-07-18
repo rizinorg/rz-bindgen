@@ -16,6 +16,7 @@ from module import rizin
 from module_class import ModuleClass
 from module_generic import ModuleGeneric
 from module_director import ModuleDirector
+from module_typemap import ModuleTypemap
 
 ### Parser ###
 parser = ArgumentParser()
@@ -182,6 +183,35 @@ cons_h.ignore(
 )
 rz_cons.add_prefixed_methods(cons_h, "rz_cons_")
 rz_cons.add_prefixed_funcs(cons_h, "rz_cons_")
+
+### rz_buf ###
+buf_h = Header("rz_util/rz_buf.h")
+rz_buf = ModuleClass(buf_h, typedef="RzBuffer")
+
+for name in [
+    "append_bytes",
+    "prepend_bytes",
+    "set_bytes",
+    "insert_bytes",
+    "write",
+    "write_at",
+    "read",
+    "read_at",
+]:
+    rz_buf.add_method(
+        buf_h,
+        f"rz_buf_{name}",
+        rename=name,
+        typemaps=[
+            ModuleTypemap(
+                "unsigned char * buf, unsigned long long len",
+                activate="%pybuffer_mutable_binary(unsigned char *buf, unsigned long long len);",
+                deactivate="%typemap(in) (unsigned char *buf, unsigned long long len);",
+            )
+        ],
+    )
+
+rz_buf.add_method(buf_h, "rz_buf_seek", rename="seek")
 
 ### rz_main ###
 main_h = Header("rz_main.h")

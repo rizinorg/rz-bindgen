@@ -167,10 +167,14 @@ class Module:
         else:
             writer.line("%module rizin")
 
+        # Headers
         writer.line("%{")
         for header in self.headers:
             writer.line(f"#include <{header.name}>")
         writer.line("%}")
+
+        # Typemaps
+        writer.line("%include <pybuffer.i>")
 
         for generic in self.generics:
             generic.merge(writer)

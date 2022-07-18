@@ -20,6 +20,7 @@ from header import Header
 from writer import BufferedWriter, DirectWriter
 from module import rizin
 from module_func import ModuleFunc, FuncKind
+from module_typemap import ModuleTypemap
 
 
 class ModuleClass:
@@ -94,10 +95,15 @@ class ModuleClass:
         *,
         rename: Optional[str] = None,
         default_args: Optional[Dict[str, str]] = None,
+        typemaps: Optional[List[ModuleTypemap]] = None,
     ) -> None:
         header.used.add(name)
         binderfunc = ModuleFunc(
-            header.funcs[name], FuncKind.THIS, name=rename, default_args=default_args
+            header.funcs[name],
+            FuncKind.THIS,
+            name=rename,
+            default_args=default_args,
+            typemaps=typemaps,
         )
         self.funcs.append(binderfunc)
 
@@ -108,10 +114,15 @@ class ModuleClass:
         *,
         rename: Optional[str] = None,
         default_args: Optional[Dict[str, str]] = None,
+        typemaps: Optional[List[ModuleTypemap]] = None,
     ) -> None:
         header.used.add(name)
         binderfunc = ModuleFunc(
-            header.funcs[name], FuncKind.STATIC, name=rename, default_args=default_args
+            header.funcs[name],
+            FuncKind.STATIC,
+            name=rename,
+            default_args=default_args,
+            typemaps=typemaps,
         )
         self.funcs.append(binderfunc)
 
