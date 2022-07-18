@@ -235,7 +235,7 @@ class ModuleClass:
 
         # un %rename fields
         for old in rename_fields.keys():
-            writer.line(f"""%rename {struct.spelling}::{old} "";""")
+            writer.line(f'%rename {struct.spelling}::{old} "";')
 
     def merge(self, writer: DirectWriter) -> None:
         writer.merge(self.struct_writer)

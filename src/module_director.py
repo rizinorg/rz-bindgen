@@ -65,12 +65,11 @@ class ModuleDirector:
                 decl = rizin.stringify_decl(field, pointee.get_result())
 
                 # Director virtual funcs
-                writer.line(f"virtual {decl}({args_outer_str}) {{")
-                with writer.indent():
-                    writer.line(
-                        f"""throw Swig::DirectorPureVirtualException("{field.spelling}");"""
-                    )
-                writer.line("}")
+                writer.line(
+                    f"virtual {decl}({args_outer_str}) {{",
+                    f'    throw Swig::DirectorPureVirtualException("{field.spelling}");',
+                    "}",
+                )
 
                 # Static func definition
                 # const_name =
@@ -79,24 +78,25 @@ class ModuleDirector:
                 static_decl = rizin.stringify_decl(
                     field, pointee.get_result(), name=static_name
                 )
-                self.funcs.line(f"static {static_decl}({args_outer_str}) {{")
-                with self.funcs.indent():
-                    self.funcs.line(
-                        f"return SWIG{name}Director->{field.spelling}({args_inner_str});"
-                    )
-                self.funcs.line("}")
+                self.funcs.line(
+                    f"static {static_decl}({args_outer_str}) {{",
+                    f"    return SWIG{name}Director->{field.spelling}({args_inner_str});",
+                    "}",
+                )
 
                 # %constant static func declaration
                 const_decl = rizin.stringify_decl(field, field.type, name=static_name)
                 self.consts.line(f"%constant {const_decl} = {static_name};")
 
-            writer.line(f"{name}Director() {{}}")  # Constructor
-            writer.line(f"virtual ~{name}Director() {{}}")
+            writer.line(
+                f"{name}Director() {{}}",  # Constructor
+                f"virtual ~{name}Director() {{}}",  # Destructor
+            )
 
         writer.line("};")
 
     def merge(self, writer: DirectWriter) -> None:
-        writer.line(f"""%feature("director") {self.name}Director;""")
+        writer.line(f'%feature("director") {self.name}Director;')
 
         writer.line("%inline %{")
         with writer.indent():
