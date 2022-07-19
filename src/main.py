@@ -59,10 +59,7 @@ rz_list_iter.add_method(
     list_h, "rz_list_iter_get_data", rename="data", generic_ret=True
 )
 
-rz_list = ModuleGeneric(list_h, "RzList")
-rizin.generic_dependencies["RzList"].append(
-    "RzListIter"
-)  # Produce an RzListIter<T> for every RzList<T>
+rz_list = ModuleGeneric(list_h, "RzList", dependencies=["RzListIter"], pointer=True)
 rz_list.add_method(list_h, "rz_list_length", rename="length")
 
 rz_list.add_method(list_h, "rz_list_first", rename="first", generic_ret=True)
@@ -85,7 +82,7 @@ rz_vector.add_method(
     vector_h, "rz_vector_push", rename="push", generic_ret=True, generic_args=["x"]
 )
 
-rz_pvector = ModuleGeneric(vector_h, "RzPVector")
+rz_pvector = ModuleGeneric(vector_h, "RzPVector", pointer=True)
 rz_pvector.add_method(vector_h, "rz_pvector_len", rename="length")
 rz_pvector.add_method(vector_h, "rz_pvector_head", rename="head", generic_ret=True)
 rz_pvector.add_method(vector_h, "rz_pvector_tail", rename="tail", generic_ret=True)

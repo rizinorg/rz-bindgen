@@ -39,6 +39,6 @@ class ModuleTypemap:
                 index = 0
 
         raise Exception(
-            f"Function {func.spelling} did not match typemap `{self.args}`",
-            f"Contents were: {spellings}",
+            f"Function {func.spelling} did not match typemap `{self.args}`. "
+            f"Contents were: {spellings}"
         )

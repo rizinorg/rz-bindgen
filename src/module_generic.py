@@ -5,7 +5,7 @@ SPDX-License-Identifier: LGPL-3.0-only
 Specifies a generic class
 """
 
-from typing import List, Optional
+from typing import List, Set, Optional
 
 from clang.wrapper import CursorKind
 
@@ -26,19 +26,33 @@ class ModuleGeneric:
     name: str
     funcs: List[ModuleFunc]
 
-    def __init__(self, header: Header, name: str):
+    pointer: bool
+    specializations: Set[str]
+    dependencies: List[str]
+
+    def __init__(
+        self,
+        header: Header,
+        name: str,
+        *,
+        pointer: bool = False,
+        dependencies: Optional[List[str]] = None,
+    ):
         """
         Construct a generic from a typedef
         """
-        rizin.generics.append(self)
+        rizin.generics[name] = self  # add to mappings
 
         # typedef -> struct
         struct = header.typedefs[name].underlying_typedef_type.get_declaration()
         assert struct.kind == CursorKind.STRUCT_DECL
-        rizin.generic_names[struct.spelling] = name  # add to mappings
+        rizin.generic_mappings[struct.spelling] = name  # add to mappings
 
         self.name = name
         self.funcs = []
+        self.pointer = pointer
+        self.specializations = set()
+        self.dependencies = dependencies or []
 
     def add_method(
         self,
@@ -76,3 +90,8 @@ class ModuleGeneric:
                     func.merge(writer)
             writer.line("}")
         writer.line("%enddef")
+
+        for specialization in self.specializations:
+            for dependency in self.dependencies:
+                writer.line(f"%{dependency}({specialization})")
+            writer.line(f"%{self.name}({specialization})")

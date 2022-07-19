@@ -5,7 +5,7 @@ SPDX-License-Identifier: LGPL-3.0-only
 Specifies the rizin SWIG %module
 """
 
-from typing import List, Dict, DefaultDict, Set, Tuple, Optional, TextIO, TYPE_CHECKING
+from typing import List, Dict, OrderedDict, Set, Tuple, Optional, TextIO, TYPE_CHECKING
 
 from clang.cindex import SourceRange
 from clang.wrapper import Cursor, CursorKind, Type, TypeKind
@@ -26,27 +26,20 @@ class Module:
 
     headers: Set["Header"]
     classes: List["ModuleClass"]
-    generics: List["ModuleGeneric"]
+
+    generics: OrderedDict[str, "ModuleGeneric"]
+    # maps struct name -> generic name (eg. rz_list_t -> RzList)
+    generic_mappings: Dict[str, str]
 
     directors: List["ModuleDirector"]
     enable_directors: bool
 
-    # maps struct name -> generic name (eg. rz_list_t -> RzList)
-    generic_names: Dict[str, str]
-    # tracks specializations, eg. (RzList, char*)
-    generic_specializations: Set[Tuple[str, str]]
-    # tracks dependencies, eg. RzList<T> needs RzListIter<T>
-    generic_dependencies: DefaultDict[str, List[str]]
-
     def __init__(self) -> None:
         self.headers = set()
         self.classes = []
-        self.generics = []
+        self.generics = OrderedDict()
+        self.generic_mappings = {}
         self.directors = []
-
-        self.generic_names = {}
-        self.generic_specializations = set()
-        self.generic_dependencies = DefaultDict(list)
 
     def get_generic_name(self, type_: Type) -> Optional[str]:
         """
@@ -61,9 +54,9 @@ class Module:
         if type_.kind == TypeKind.VOID:
             return "void"
 
-        name = type_.get_canonical().get_declaration().spelling
-        if name in self.generic_names:
-            return self.generic_names[name]
+        struct_name = type_.get_canonical().get_declaration().spelling
+        if struct_name in self.generic_mappings:
+            return self.generic_mappings[struct_name]
 
         return None
 
@@ -93,12 +86,25 @@ class Module:
         if name.startswith("const "):
             name = name[len("const ") :]
 
-        # Generics of type char* screw up tokenization
-        if name == "char*":
-            name = "String"
+        # Add specialization
+        generic = self.generics[generic_name]
 
-        # Add to specializations
-        self.generic_specializations.add((generic_name, name))
+        if generic.pointer:
+            if name[-1] != "*":
+                raise Exception(
+                    f"Specializations of generic {generic.name} should have a pointer, "
+                    f"but specialization at {cursor.location} does not"
+                )
+
+            if name[-2] != " ":
+                raise Exception(
+                    f"Specialization at {cursor.location}"
+                    "lacks space between type and pointer"
+                )
+            name = name[:-2]
+
+        generic.specializations.add(name)
+
         return name
 
     def stringify_decl(
@@ -176,11 +182,8 @@ class Module:
         # Typemaps
         writer.line("%include <pybuffer.i>")
 
-        for generic in self.generics:
+        for generic in self.generics.values():
             generic.merge(writer)
-
-        # Special case for char* -> String
-        writer.line("%{", "typedef char* String;", "%}")
 
         # Deprecation warning settings
         writer.line(
@@ -203,12 +206,6 @@ class Module:
             "}",
             "%}",
         )
-
-        for generic_name, specialization in self.generic_specializations:
-            if generic_name in self.generic_dependencies:
-                for dependency_name in self.generic_dependencies[generic_name]:
-                    writer.line(f"%{dependency_name}({specialization})")
-            writer.line(f"%{generic_name}({specialization})")
 
         for cls in self.classes:
             cls.merge(writer)
