@@ -42,6 +42,3 @@ class ModuleTypemap:
             f"Function {func.spelling} did not match typemap `{self.args}`",
             f"Contents were: {spellings}",
         )
-
-
-"unsigned char * buf, unsigned long long len"
