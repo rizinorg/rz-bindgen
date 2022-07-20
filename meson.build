@@ -83,3 +83,7 @@ py.extension_module(
   ),
   install: true
 )
+
+if get_option('rizin').enabled()
+  subdir('rizin')
+endif
