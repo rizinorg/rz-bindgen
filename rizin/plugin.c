@@ -5,7 +5,7 @@
 #include <rz_core.h>
 #include <swig_runtime.h>
 
-static PyObject *py_rz_core = NULL;
+static PyObject *rizin_module = NULL;
 
 #define ABORT_IF(cond, ...)                                                    \
         if (cond) {                                                            \
@@ -14,12 +14,22 @@ static PyObject *py_rz_core = NULL;
                 goto done;                                                     \
         }
 
+#define DEFER_SETUP                                                            \
+        bool result = true;                                                    \
+        int num_deferred = 0;                                                  \
+        PyObject *deferred_pyobjs[32] = {0};
+
 #define DEFER_DECREF(obj) deferred_pyobjs[num_deferred++] = obj
 
-static bool rz_bindings_init(RzCore *core) {
-        bool result = true;
-        int num_deferred = 0;
-        PyObject *deferred_pyobjs[32] = {0};
+#define DEFER_CLEANUP                                                          \
+        done:                                                                  \
+        for (int i = 0; i < num_deferred; ++i) {                               \
+                Py_XDECREF(deferred_pyobjs[i]);                                \
+        }                                                                      \
+        return result;
+
+static int rz_bindings_init(RzLang *lang) {
+        DEFER_SETUP;
 
         Py_Initialize();
 
@@ -42,44 +52,120 @@ static bool rz_bindings_init(RzCore *core) {
             PyObject_CallFunction(sys_path_append, "(s)", bindings_dir));
         ABORT_IF(!sys_path_append_res, "Could not append to sys.path\n");
 
-        // Add core to rizin module
-        PyObject *rizin_module = DEFER_DECREF(PyImport_ImportModule("rizin"));
+        // Create core and add to rizin module
+        rizin_module = DEFER_DECREF(PyImport_ImportModule("rizin"));
         ABORT_IF(!rizin_module, "Could not import rizin.py\n");
 
         swig_type_info *rz_core_type_info = SWIG_Python_TypeQuery("RzCore *");
         ABORT_IF(!rz_core_type_info, "Could not get RzCore* swig_type_info\n");
 
-        py_rz_core = DEFER_DECREF(
-            SWIG_NewPointerObj(core, rz_core_type_info, 0 /*own = 0*/));
+        PyObject *py_rz_core = DEFER_DECREF(
+            SWIG_NewPointerObj(lang->user, rz_core_type_info, 0 /*own = 0*/));
         ABORT_IF(!py_rz_core, "Could not create RzCore* object\n");
 
+        ABORT_IF(PyModule_AddObject(rizin_module, "core", py_rz_core) < 0,
+                 "Could not add core to rizin module\n");
+
         Py_INCREF(py_rz_core);
-done:
-        for (int i = 0; i < num_deferred; ++i) {
-                Py_XDECREF(deferred_pyobjs[i]);
-        }
-        return result;
+        Py_INCREF(rizin_module);
+
+        DEFER_CLEANUP;
 }
 
-static bool rz_bindings_fini(RzCore *core) {
-        Py_XDECREF(py_rz_core);
-
-        return true;
+static int rz_bindings_fini(RzLang *lang) {
+        Py_XDECREF(rizin_module);
+        return Py_FinalizeEx();
 }
 
-RzCorePlugin rz_core_plugin_bindings = {
-    .name = "bindings",
-    .desc = "Python bindings",
+static int rz_bindings_prompt(RzLang *lang) {
+        DEFER_SETUP;
+
+        // Create console
+        PyObject *code_module = DEFER_DECREF(PyImport_ImportModule("code"));
+        ABORT_IF(!code_module, "Could not import python code module\n");
+
+        PyObject *console_ctor = DEFER_DECREF(
+            PyObject_GetAttrString(code_module, "InteractiveConsole"));
+        ABORT_IF(!console_ctor, "Could not get InteractiveConsole object\n");
+
+        PyObject *console =
+            DEFER_DECREF(PyObject_CallObject(console_ctor, NULL));
+        ABORT_IF(!console, "Could not construct InteractiveConsole\n");
+
+        // Import rizin
+        PyObject *locals =
+            DEFER_DECREF(PyObject_GetAttrString(console, "locals"));
+        ABORT_IF(!locals, "Could not get console.locals dict\n");
+
+        ABORT_IF(PyDict_SetItemString(locals, "rizin", rizin_module) > 0,
+                 "Could not set console.locals\n");
+
+        // Set up completer
+        PyObject *readline_module =
+            DEFER_DECREF(PyImport_ImportModule("readline"));
+        ABORT_IF(!readline_module, "Could not import python readline module\n");
+
+        PyObject *rlcompleter_module =
+            DEFER_DECREF(PyImport_ImportModule("rlcompleter"));
+        ABORT_IF(!rlcompleter_module,
+                 "Could not import python rlcompleter module\n");
+
+        PyObject *completer_ctor = DEFER_DECREF(
+            PyObject_GetAttrString(rlcompleter_module, "Completer"));
+        ABORT_IF(!completer_ctor, "Could not get Completer object\n");
+
+        PyObject *completer = DEFER_DECREF(
+            PyObject_CallFunctionObjArgs(completer_ctor, locals, NULL));
+        ABORT_IF(!completer, "Could not construct Completer\n");
+
+        PyObject *completer_complete =
+            DEFER_DECREF(PyObject_GetAttrString(completer, "complete"));
+        ABORT_IF(!completer_complete,
+                 "Could not get completer.complete function\n");
+
+        PyObject *set_completer = DEFER_DECREF(
+            PyObject_GetAttrString(readline_module, "set_completer"));
+        ABORT_IF(!set_completer,
+                 "Could not get readline.set_completer function\n");
+
+        PyObject *set_completer_res = DEFER_DECREF(PyObject_CallFunctionObjArgs(
+            set_completer, completer_complete, NULL));
+        ABORT_IF(!set_completer_res, "Could not call readline.set_completer\n");
+
+        PyObject *parse_bind = DEFER_DECREF(
+            PyObject_GetAttrString(readline_module, "parse_and_bind"));
+        ABORT_IF(!parse_bind,
+                 "Could not get readline.parse_and_bind function\n");
+
+        PyObject *parse_bind_res = DEFER_DECREF(
+            PyObject_CallFunction(parse_bind, "(s)", "tab: complete"));
+        ABORT_IF(!parse_bind_res, "Could not call readline.parse_and_bind\n");
+
+        // Run interact
+        PyObject *interact =
+            DEFER_DECREF(PyObject_GetAttrString(console, "interact"));
+        ABORT_IF(!interact, "Could not get console.interact function\n");
+
+        PyObject *interact_res =
+            DEFER_DECREF(PyObject_CallObject(interact, NULL));
+        ABORT_IF(!interact_res, "Could not call console.interact\n");
+
+        DEFER_CLEANUP;
+}
+
+RzLangPlugin rz_lang_plugin_bindings = {
+    .name = "python",
+    .desc = "Python SWIG bindings",
     .license = "LGPL3",
-    .author = "wingdeans",
-    .version = NULL,
+    .ext = ".py",
     .init = rz_bindings_init,
+    .prompt = rz_bindings_prompt,
     .fini = rz_bindings_fini,
 };
 
 RzLibStruct rizin_plugin = {
-    .type = RZ_LIB_TYPE_CORE,
-    .data = &rz_core_plugin_bindings,
+    .type = RZ_LIB_TYPE_LANG,
+    .data = &rz_lang_plugin_bindings,
     .version = RZ_VERSION,
     .free = NULL,
     .pkgname = "rz-bindings",
