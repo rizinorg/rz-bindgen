@@ -72,6 +72,13 @@ rz_list.add_method(
     list_h, "rz_list_append", rename="append", generic_ret=True, generic_args=["data"]
 )
 
+rz_list.add_extension(
+    "RzBinSymbol",
+    "RzList_RzBinSymbol() {",
+    "    return rz_list_newf(rz_bin_symbol_free);",
+    "}",
+)
+
 ### RzVector, RzPVector ###
 vector_h = Header("rz_vector.h")
 rz_vector = ModuleGeneric(vector_h, "RzVector")

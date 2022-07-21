@@ -5,12 +5,12 @@ SPDX-License-Identifier: LGPL-3.0-only
 Specifies a generic class
 """
 
-from typing import List, Set, Optional
+from typing import List, Set, DefaultDict, Optional
 
 from clang.wrapper import CursorKind
 
 from header import Header
-from writer import DirectWriter
+from writer import DirectWriter, BufferedWriter
 from module import rizin
 from module_func import ModuleFunc, FuncKind
 
@@ -29,6 +29,7 @@ class ModuleGeneric:
     pointer: bool
     specializations: Set[str]
     dependencies: List[str]
+    specialization_extensions: DefaultDict[str, BufferedWriter]
 
     def __init__(
         self,
@@ -53,6 +54,7 @@ class ModuleGeneric:
         self.pointer = pointer
         self.specializations = set()
         self.dependencies = dependencies or []
+        self.specialization_extensions = DefaultDict(BufferedWriter)
 
     def add_method(
         self,
@@ -73,6 +75,10 @@ class ModuleGeneric:
             generic_args=generic_args,
         )
         self.funcs.append(func)
+
+    def add_extension(self, specialization: str, *lines: str) -> None:
+        for line in lines:
+            self.specialization_extensions[specialization].line(line)
 
     def merge(self, writer: DirectWriter) -> None:
         writer.line(f"%define %{self.name}(TYPE)")
@@ -97,3 +103,10 @@ class ModuleGeneric:
             for dependency in self.dependencies:
                 writer.line(f"%{dependency}({specialization})")
             writer.line(f"%{self.name}({specialization})")
+
+        for specialization, extension in self.specialization_extensions.items():
+            assert specialization in self.specializations
+            writer.line(f"%extend {self.name}_{specialization} {{")
+            with writer.indent():
+                writer.merge(extension)
+            writer.line("}")
