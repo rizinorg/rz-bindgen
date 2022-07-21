@@ -77,6 +77,8 @@ class ModuleGeneric:
     def merge(self, writer: DirectWriter) -> None:
         writer.line(f"%define %{self.name}(TYPE)")
         with writer.indent():
+            writer.line(f"%nodefaultctor {self.name}_##TYPE;")
+
             # The generic and its specializations are equal in C
             # eg. RzList_int == RzList
             writer.line("%{", f"typedef {self.name} {self.name}_##TYPE;", "%}")
