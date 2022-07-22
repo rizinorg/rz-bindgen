@@ -4,7 +4,7 @@ rz-bindgen parses Rizin header files using libclang to generate SWIG .i binding 
 
 ## Building python plugin
 Requirements:
-- rizin (currently needs the headers branch on `wingdeans/rizin`)
+- rizin > 0.4.0 (needs commit [6b7ea38](https://github.com/rizinorg/rizin/commit/6b7ea389698818beebaa55425b05d966cf3d7117))
 
 - meson
 - ninja
