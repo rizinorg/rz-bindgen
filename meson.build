@@ -86,6 +86,6 @@ py.extension_module(
   install: true
 )
 
-if get_option('rizin').enabled()
-  subdir('rizin')
+if get_option('plugin').enabled()
+  subdir('plugin')
 endif

@@ -4,4 +4,4 @@ option('rizin_inc_path', type: 'string', value: '')
 
 option('directors', type: 'feature', value: 'disabled')
 
-option('rizin', type: 'feature', value: 'disabled')
+option('plugin', type: 'feature', value: 'disabled')

@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2022 wingdeans <wingdeans@protonmail.com>
+// SPDX-License-Identifier: LGPL-3.0-only
+
 %include <pybuffer.i>
 
 %define %buffer_len_activate(TYPEMAP, SIZE)
