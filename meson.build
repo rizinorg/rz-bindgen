@@ -55,10 +55,12 @@ swig_sources = custom_target(
 swig_output = custom_target(
   'swig_output',
   input: swig_sources,
+  depend_files: 'src' / 'rizin_lib.i',
   output: ['rizin.py'] + (enable_directors ? ['rizin_wrap.cxx'] : ['rizin_wrap.c']),
   command: [
     find_program('swig'),
-    '-python'
+    '-python',
+    '-I' + meson.current_source_dir() / 'src'
   ] + (enable_directors ? ['-c++'] : []) + [
     '-outdir', '@OUTDIR@', '@INPUT@'
   ],

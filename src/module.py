@@ -5,7 +5,7 @@ SPDX-License-Identifier: LGPL-3.0-only
 Specifies the rizin SWIG %module
 """
 
-from typing import List, Dict, OrderedDict, Set, Tuple, Optional, TextIO, TYPE_CHECKING
+from typing import List, Dict, OrderedDict, Set, Optional, TextIO, TYPE_CHECKING
 
 from clang.cindex import SourceRange
 from clang.wrapper import Cursor, CursorKind, Type, TypeKind
@@ -180,7 +180,7 @@ class Module:
         writer.line("%}")
 
         # Typemaps
-        writer.line("%include <pybuffer.i>")
+        writer.line("%include <rizin_lib.i>")
 
         for generic in self.generics.values():
             generic.merge(writer)

@@ -6,18 +6,29 @@ SPDX-License-Identifier: LGPL-3.0-only
 from typing import List
 
 from clang.wrapper import CursorKind, Func
+from writer import DirectWriter
 
 
 class ModuleTypemap:
-    activate: str
-    deactivate: str
+    """
+    Represents a SWIG typemap
 
+    To activate the typemap, the macro %{typemap_name}_activate
+    is called with the provided typemap args
+
+    To deactivate the typemap, the macro %{typemap_name}_deactivate
+    is called with the provided typemap args
+
+    The macros should be defined in the rizin_lib.i file
+    """
+
+    name: str
+    contents: str
     args: List[str]
 
-    def __init__(self, contents: str, *, activate: str, deactivate: str):
-        self.activate = activate
-        self.deactivate = deactivate
-
+    def __init__(self, name: str, contents: str):
+        self.name = name
+        self.contents = contents
         self.args = contents.split(", ")
 
     def check(self, func: Func) -> None:
@@ -42,3 +53,9 @@ class ModuleTypemap:
             f"Function {func.spelling} did not match typemap `{self.args}`. "
             f"Contents were: {spellings}"
         )
+
+    def merge_activate(self, writer: DirectWriter) -> None:
+        writer.line(f"%{self.name}_activate({self.contents});")
+
+    def merge_deactivate(self, writer: DirectWriter) -> None:
+        writer.line(f"%{self.name}_deactivate({self.contents});")

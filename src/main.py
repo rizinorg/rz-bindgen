@@ -208,9 +208,8 @@ for name in [
         rename=name,
         typemaps=[
             ModuleTypemap(
+                "buffer_len",
                 "unsigned char * buf, unsigned long long len",
-                activate="%pybuffer_mutable_binary(unsigned char *buf, unsigned long long len);",
-                deactivate="%typemap(in) (unsigned char *buf, unsigned long long len);",
             )
         ],
     )

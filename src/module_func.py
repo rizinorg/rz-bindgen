@@ -136,9 +136,9 @@ class ModuleFunc:
         writer.merge(self.contract)
 
         for typemap in self.typemaps:
-            writer.line(typemap.activate)
+            typemap.merge_activate(writer)
 
         writer.merge(self.writer)
 
         for typemap in self.typemaps:
-            writer.line(typemap.deactivate)
+            typemap.merge_deactivate(writer)
