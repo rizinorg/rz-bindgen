@@ -18,6 +18,10 @@ class ModuleDirector:
     funcs: BufferedWriter
     consts: BufferedWriter
 
+    # Used to create Python helper functions
+    data_members: List[str]
+    func_members: List[str]
+
     def __init__(self, header: Header, name: str):
         rizin.directors.append(self)
         self.name = name
@@ -28,9 +32,11 @@ class ModuleDirector:
 
         writer = BufferedWriter()
         self.struct_writer = writer
-
         self.funcs = BufferedWriter()
         self.consts = BufferedWriter()
+
+        self.data_members = []
+        self.func_members = []
 
         writer.line(f"struct {name}Director {{")
 
@@ -39,12 +45,15 @@ class ModuleDirector:
                 assert field.kind == CursorKind.FIELD_DECL
 
                 if field.type.kind != TypeKind.POINTER:
+                    self.data_members.append(field.spelling)
                     continue
 
                 pointee = field.type.get_pointee()
                 if pointee.kind != TypeKind.FUNCTIONPROTO:
+                    self.data_members.append(field.spelling)
                     continue
 
+                self.func_members.append(field.spelling)
                 args_outer: List[str] = []
                 args_inner: List[str] = []
 
@@ -113,3 +122,37 @@ class ModuleDirector:
         writer.line("%}")
 
         writer.merge(self.consts)
+
+        # Python helper function
+        writer.line("%pythoncode %{")
+        writer.line(f"def register_{self.name}(plugin_class):")
+        with writer.indent():
+            writer.line("members = [")
+            for data in self.data_members:
+                with writer.indent():
+                    writer.line(f'"{data}",')
+            writer.line("]")
+
+            writer.line("funcs = [")
+            for func in self.func_members:
+                with writer.indent():
+                    writer.line(f'"{func}",')
+            writer.line("]")
+
+            writer.line(
+                "plugin = plugin_class()",
+                f"plugin_struct = {self.name}()",
+                "for member in members:",
+                "    if hasattr(plugin, member):",
+                "        attr = getattr(plugin, member)",
+                "        setattr(plugin_struct, member, attr)",
+                "plugin_funcs = vars(plugin_class).keys()",
+                "for func in funcs:",
+                "    if func in plugin_funcs:",
+                f"        name = f'SWIG_{self.name}_{{func}}'",
+                "        attr = getattr(_rizin, name)",
+                "        setattr(plugin_struct, func, attr)",
+                f"_rizin.cvar.SWIG{self.name}Director = plugin",
+                "return plugin, plugin_struct",
+            )
+        writer.line("%}")
