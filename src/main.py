@@ -72,13 +72,6 @@ rz_list.add_method(
     list_h, "rz_list_append", rename="append", generic_ret=True, generic_args=["data"]
 )
 
-rz_list.add_extension(
-    "RzBinSymbol",
-    "RzList_RzBinSymbol() {",
-    "    return rz_list_newf(rz_bin_symbol_free);",
-    "}",
-)
-
 ### RzVector, RzPVector ###
 vector_h = Header("rz_vector.h")
 rz_vector = ModuleGeneric(vector_h, "RzVector")
@@ -148,6 +141,21 @@ rz_bin_options = ModuleClass(bin_h, typedef="RzBinOptions")
 rz_bin_info = ModuleClass(bin_h, typedef="RzBinInfo")
 rz_bin_file = ModuleClass(bin_h, typedef="RzBinFile")
 
+rz_bin_sym = ModuleClass(bin_h, typedef="RzBinSymbol")
+rz_list.add_extension(
+    "RzBinSymbol",
+    "RzList_RzBinSymbol() {",
+    "    return rz_list_newf(rz_bin_symbol_free);",
+    "}",
+)
+
+rz_bin_section = ModuleClass(bin_h, typedef="RzBinSection")
+rz_list.add_extension(
+    "RzBinSection",
+    "RzList_RzBinSection() {",
+    "    return rz_list_newf(rz_bin_section_free);",
+    "}",
+)
 
 ModuleDirector(bin_h, "RzBinPlugin")
 ModuleClass(bin_h, typedef="RzBinPlugin")
