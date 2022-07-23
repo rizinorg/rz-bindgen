@@ -25,7 +25,7 @@ if rizin_inc_path == ''
   if rz_main.type_name() == 'pkgconfig'
     rizin_inc_path = rz_main.get_variable(pkgconfig: 'includedir') / 'librz'
   elif rz_main.type_name() == 'cmake'
-    rizin_inc_path = rz_main.get_variable(cmake: 'PACKAGE_INCLUDE_DIRS')[0]
+    rizin_inc_path = rz_main.get_variable(cmake: 'PACKAGE_INCLUDE_DIRS').split(';')[0]
   endif
 endif
 
