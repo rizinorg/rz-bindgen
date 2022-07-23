@@ -15,7 +15,7 @@ Files: meson.build plugin/meson.build meson_options.txt
 Copyright: 2022 wingdeans <wingdeans@protonmail.com>
 License: LGPL-3.0-only
 
-Files: pyproject.toml mypy.ini
+Files: pyproject.toml mypy.ini pylintrc
 Copyright: 2022 wingdeans <wingdeans@protonmail.com>
 License: LGPL-3.0-only
 
