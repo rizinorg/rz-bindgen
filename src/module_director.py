@@ -152,6 +152,7 @@ class ModuleDirector:
                 f"        name = f'SWIG_{self.name}_{{func}}'",
                 "        attr = getattr(_rizin, name)",
                 "        setattr(plugin_struct, func, attr)",
+                "plugin.__disown__()",
                 f"_rizin.cvar.SWIG{self.name}Director = plugin",
                 "return plugin, plugin_struct",
             )
