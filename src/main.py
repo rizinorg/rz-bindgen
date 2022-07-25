@@ -137,6 +137,8 @@ rz_core_file = ModuleClass(core_h, typedef="RzCoreFile")
 
 ### rz_bin ###
 bin_h = Header("rz_bin.h")
+rz_bin_file = ModuleClass(bin_h, typedef="RzBinFile")
+rz_bin_file.add_prefixed_methods(bin_h, "rz_bin_file_")
 rz_bin = ModuleClass(
     bin_h, typedef="RzBin", rename_fields={"cur": "_cur", "strpurge": "_strpurge"}
 )
@@ -144,7 +146,6 @@ rz_bin.add_prefixed_methods(bin_h, "rz_bin_")
 rz_bin.add_prefixed_funcs(bin_h, "rz_bin_")
 rz_bin_options = ModuleClass(bin_h, typedef="RzBinOptions")
 rz_bin_info = ModuleClass(bin_h, typedef="RzBinInfo")
-rz_bin_file = ModuleClass(bin_h, typedef="RzBinFile")
 
 rz_bin_sym = ModuleClass(bin_h, typedef="RzBinSymbol")
 rz_list.add_extension(
