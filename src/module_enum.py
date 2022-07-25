@@ -30,9 +30,9 @@ class ModuleEnum:
     def add_macro(self, header: Header, name: str) -> None:
         macro = header.macros[name]
         toks = [tok.spelling for tok in macro.get_tokens()]
-        assert len(toks) == 2 and toks[0] == name
-
-        self.buf.line(f"#define {toks[0]} {toks[1]}")
+        assert toks[0] == name
+        definition = " ".join(toks[1:])
+        self.buf.line(f"#define {name} {definition}")
 
     def merge(self, writer: DirectWriter) -> None:
         writer.merge(self.buf)

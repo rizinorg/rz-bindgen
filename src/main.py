@@ -92,6 +92,10 @@ rz_pvector.add_method(
     vector_h, "rz_pvector_push", rename="push", generic_ret=True, generic_args=["x"]
 )
 
+### rz_types ###
+types_h = Header("rz_types.h")
+ModuleEnum(types_h, prefix="RZ_PERM_")
+
 ### rz_core_t ###
 core_h = Header("rz_core.h")
 rizin.headers.add(Header("rz_cmp.h"))  # RzCoreCmpWatcher
