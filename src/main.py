@@ -169,6 +169,14 @@ ModuleClass(bin_h, typedef="RzBinPlugin")
 ModuleEnum(bin_h, prefix="RZ_BIN_TYPE_")
 ModuleEnum(bin_h, prefix="RZ_BIN_BIND_")
 
+ModuleClass(bin_h, typedef="RzBinMap")
+rz_list.add_extension(
+    "RzBinMap",
+    "RzList_RzBinMap() {",
+    "    return rz_list_newf(rz_bin_map_free);",
+    "}",
+)
+
 ### rz_analysis ###
 analysis_h = Header("rz_analysis.h")
 rz_analysis = ModuleClass(
