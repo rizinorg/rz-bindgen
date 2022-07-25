@@ -13,6 +13,7 @@ from clang.wrapper import Cursor, CursorKind, Type, TypeKind
 from writer import DirectWriter
 
 if TYPE_CHECKING:
+    from module_enum import ModuleEnum
     from module_class import ModuleClass
     from module_generic import ModuleGeneric
     from module_director import ModuleDirector
@@ -26,6 +27,7 @@ class Module:
 
     headers: Set["Header"]
     classes: List["ModuleClass"]
+    enums: List["ModuleEnum"]
 
     generics: OrderedDict[str, "ModuleGeneric"]
     # maps struct name -> generic name (eg. rz_list_t -> RzList)
@@ -37,6 +39,8 @@ class Module:
     def __init__(self) -> None:
         self.headers = set()
         self.classes = []
+        self.enums = []
+
         self.generics = OrderedDict()
         self.generic_mappings = {}
         self.directors = []
@@ -181,6 +185,9 @@ class Module:
 
         # Typemaps
         writer.line("%include <rizin_lib.i>")
+
+        for enum in self.enums:
+            enum.merge(writer)
 
         for generic in self.generics.values():
             generic.merge(writer)

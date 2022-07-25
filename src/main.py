@@ -17,6 +17,7 @@ from module_class import ModuleClass
 from module_generic import ModuleGeneric
 from module_director import ModuleDirector
 from module_typemap import ModuleTypemap
+from module_enum import ModuleEnum
 
 ### Parser ###
 parser = ArgumentParser()
@@ -160,6 +161,9 @@ rz_list.add_extension(
 ModuleDirector(bin_h, "RzBinPlugin")
 ModuleClass(bin_h, typedef="RzBinPlugin")
 
+ModuleEnum(bin_h, prefix="RZ_BIN_TYPE_")
+ModuleEnum(bin_h, prefix="RZ_BIN_BIND_")
+
 ### rz_analysis ###
 analysis_h = Header("rz_analysis.h")
 rz_analysis = ModuleClass(
@@ -198,6 +202,7 @@ rz_cons.add_prefixed_funcs(cons_h, "rz_cons_")
 
 ### rz_buf ###
 buf_h = Header("rz_util/rz_buf.h")
+ModuleEnum(buf_h, "RZ_BUF_SET", "RZ_BUF_CUR", "RZ_BUF_END")
 rz_buf = ModuleClass(buf_h, typedef="RzBuffer")
 
 for name in [

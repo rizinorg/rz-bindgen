@@ -119,8 +119,6 @@ Main cursors
 
 class Macro(CursorBase):
     kind: Literal[CursorKind.MACRO_DEFINITION]
-    def is_macro_functionlike(self) -> bool:
-        pass
     def get_tokens(self) -> Iterator[Token]:
         pass
 
