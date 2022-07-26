@@ -5,6 +5,8 @@ SPDX-License-Identifier: LGPL-3.0-only
 
 from typing import Optional
 
+from clang.wrapper import CursorKind
+
 from header import Header
 from module import rizin
 from writer import BufferedWriter, DirectWriter
@@ -13,7 +15,13 @@ from writer import BufferedWriter, DirectWriter
 class ModuleEnum:
     buf: BufferedWriter
 
-    def __init__(self, header: Header, *names: str, prefix: Optional[str] = None):
+    def __init__(
+        self,
+        header: Header,
+        *names: str,
+        prefix: Optional[str] = None,
+        typedef: Optional[str] = None,
+    ):
         rizin.enums.append(self)
 
         buf = BufferedWriter()
@@ -26,6 +34,18 @@ class ModuleEnum:
             for name in header.macros.keys():
                 if name.startswith(prefix):
                     self.add_macro(header, name)
+
+        if typedef:
+            typedef_cursor = header.typedefs[typedef]
+            enum_cursor = typedef_cursor.underlying_typedef_type.get_declaration()
+            assert enum_cursor.kind == CursorKind.ENUM_DECL
+
+            buf.line(f"enum {typedef_cursor.spelling} {{")
+            with buf.indent():
+                for field in enum_cursor.get_children():
+                    assert field.kind == CursorKind.ENUM_CONSTANT_DECL
+                    buf.line(f"{field.spelling} = {field.enum_value},")
+            buf.line("};")
 
     def add_macro(self, header: Header, name: str) -> None:
         macro = header.macros[name]

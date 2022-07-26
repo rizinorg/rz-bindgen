@@ -220,7 +220,7 @@ class ModuleClass:
                 for union_field in field.get_children():
                     assert union_field.kind == CursorKind.FIELD_DECL
                     gen_field(union_field)
-            writer.line("}")
+            writer.line("};")
 
         writer.line(f"struct {struct.spelling} {{")
         with writer.indent():

@@ -242,6 +242,13 @@ for name in [
 
 rz_buf.add_method(buf_h, "rz_buf_seek", rename="seek")
 
+### rz_cmd ###
+cmd_h = Header("rz_cmd.h")
+rz_cmd = ModuleClass(cmd_h, typedef="RzCmd")
+rz_cmd_desc_help = ModuleClass(cmd_h, typedef="RzCmdDescHelp")
+rz_cmd_desc_arg = ModuleClass(cmd_h, typedef="RzCmdDescArg")
+rz_cmd_arg_type = ModuleEnum(cmd_h, typedef="RzCmdArgType")
+
 ### rz_main ###
 main_h = Header("rz_main.h")
 rz_main = ModuleClass(main_h, typedef="RzMain")

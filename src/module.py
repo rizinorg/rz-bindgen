@@ -174,6 +174,7 @@ class Module:
         writer = DirectWriter(output)
         if self.enable_directors:
             writer.line("%module(directors=1) rizin")
+            writer.line("#define SWIG_DIRECTORS_ENABLED")
         else:
             writer.line("%module rizin")
 
@@ -184,7 +185,7 @@ class Module:
         writer.line("%}")
 
         # Typemaps
-        writer.line("%include <rizin_lib.i>")
+        writer.line("%include <rizin_pre.i>")
 
         for enum in self.enums:
             enum.merge(writer)
@@ -220,6 +221,8 @@ class Module:
         if self.enable_directors:
             for director in self.directors:
                 director.merge(writer)
+
+        writer.line("%include <rizin_post.i>")
 
 
 # The rizin %module is the only SWIG module
