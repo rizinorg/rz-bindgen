@@ -33,6 +33,23 @@ RzCmdStatus SWIG_Cmd_run(RzCore *core, int argc, const char **argv) {
     bool result = SWIGCmds.at(cmd).second->run(core, argc, argv);
     return result ? RZ_CMD_STATUS_OK : RZ_CMD_STATUS_ERROR;
 }
+
+void rz_swig_cmd_desc_help_free(RzCmdDescHelp *help) {
+    free(help->summary);
+    free(help->description);
+    free(help->args_str);
+    free(help->usage);
+    free(help->options);
+    if (help->details) {
+        rz_cmd_desc_details_free(help->details);
+    }
+
+    for (RzCmdDescArg *arg = help->args; arg && arg->name; ++arg) {
+        free(arg->name);
+        free(arg->default_value);
+        arg ++;
+    }
+}
 %}
 
 %include <carrays.i>

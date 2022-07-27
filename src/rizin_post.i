@@ -4,6 +4,7 @@
 #ifdef SWIG_DIRECTORS_ENABLED
 %extend rz_cmd_t {
     void register_swig_command(const char *str, CmdDirector *director, RzCmdDescHelp *help, RzCmdDescHelp *group_help = NULL) {
+        // Get parent RzCmdDesc
         int len = strlen(str);
         if (len == 0) {
             throw std::runtime_error("Command cannot be empty");
@@ -23,10 +24,9 @@
             throw std::runtime_error("Could not get parent RzCmdDesc");
         }
 
-        // Remove previous command
         RzCmdDesc *prev = ht_pp_find($self->ht_cmds, str, NULL);
         std::string cmd(str);
-        if (prev) {
+        if (prev) { // Update existing RzCmdDesc
             auto it = SWIGCmds.find(cmd);
             if (it == SWIGCmds.end()) {
                 throw std::runtime_error("Builtin command already bound");
@@ -36,30 +36,45 @@
                 throw std::runtime_error("SWIG RzCmdDesc does not match the currently bound one");
             }
 
-	    SWIGCmds.erase(cmd);
-            rz_cmd_desc_remove($self, prev);
-        }
+            if (group_help) {
+                if (prev->type != RZ_CMD_DESC_TYPE_GROUP) {
+                    throw std::runtime_error("Cannot set group_help of a type argv command");
+                }
+                rz_swig_cmd_desc_help_free(prev->help);
+                prev->help = group_help;
+            } else {
+                if (prev->type == RZ_CMD_DESC_TYPE_GROUP) {
+                    throw std::runtime_error("Type group command needs group_help");
+                }
+                rz_swig_cmd_desc_help_free(prev->help);
+                prev->help = help;
+            }
+            
+            delete it->second.second;
+            it->second.second = director;
+        } else { // Create new RzCmdDesc
+            RzCmdDesc *result;
+            if (group_help) {
+                result = rz_cmd_desc_group_new($self, parent, str, &SWIG_Cmd_run, help, group_help);
+            } else {
+                result = rz_cmd_desc_argv_new($self, parent, str, &SWIG_Cmd_run, help);
+            }
 
-        RzCmdDesc *result;
-        if (group_help) {
-            result = rz_cmd_desc_group_new($self, parent, str, &SWIG_Cmd_run, help, group_help);
-        } else {
-            result = rz_cmd_desc_argv_new($self, parent, str, &SWIG_Cmd_run, help);
-        }
+            if (!result) {
+                throw std::runtime_error("Could not create binding");
+            }
 
-        if (!result) {
-            throw std::runtime_error("Could not create binding");
+            SWIGCmds[cmd] = std::make_pair(result, director);
         }
-
-        SWIGCmds[cmd] = std::make_pair(result, director);
     }
 }
 
 %extend rz_core_t {
     %pythoncode %{
-    def register_group(self, cmd):
+    def register_group(self, cmd, summary):
         help_desc = RzCmdDescHelp()
         help_desc.thisown = False
+        help_desc.summary = summary
         self.rcmd.register_swig_command(cmd, None, None, help_desc)
 
     def register_command(self, cmd, fn):
