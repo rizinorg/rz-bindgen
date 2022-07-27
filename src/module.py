@@ -143,12 +143,16 @@ class Module:
                 specialization = self.add_generic_specialization(cursor, generic_name)
                 type_name = f"{generic_name}_{specialization}"
 
-        name = name or cursor.spelling
+        name = name if name is not None else cursor.spelling
+        pointers = "const " if type_name and type_.is_const_qualified() else ""
 
         # Unravel pointers
         while type_.kind == TypeKind.POINTER:
             type_ = type_.get_pointee()
-            name = "*" + name
+            pointers = "*" + pointers
+            if type_name and type_.is_const_qualified():
+                pointers = "const " + pointers
+        name = pointers + name
 
         # Reorder array and function pointer declarations
         if type_.kind == TypeKind.CONSTANTARRAY:

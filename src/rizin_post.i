@@ -16,7 +16,7 @@
         } else {
             char *dup = strdup(str);
             dup[len - 1] = '\0';
-            parent = ht_pp_find($self->ht_cmds, dup, NULL);
+            parent = (RzCmdDesc*) ht_pp_find($self->ht_cmds, dup, NULL);
             free(dup);
         }
 
@@ -24,7 +24,7 @@
             throw std::runtime_error("Could not get parent RzCmdDesc");
         }
 
-        RzCmdDesc *prev = ht_pp_find($self->ht_cmds, str, NULL);
+        RzCmdDesc *prev = (RzCmdDesc*) ht_pp_find($self->ht_cmds, str, NULL);
         std::string cmd(str);
         if (prev) { // Update existing RzCmdDesc
             auto it = SWIGCmds.find(cmd);

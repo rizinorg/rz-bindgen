@@ -62,23 +62,22 @@ class ModuleFunc:
             assert arg.kind == CursorKind.PARM_DECL
             if arg.spelling == "self":
                 # Rename self to _self to avoid conflict with SWIG
-                args_inner.append("_self")
-                args_outer.append(
-                    rizin.stringify_decl(
-                        arg,
-                        arg.type,
-                        generic=(arg.spelling in generic_args),
-                        name="_self",
-                    )
+                arg_inner = "_self"
+                arg_outer = rizin.stringify_decl(
+                    arg,
+                    arg.type,
+                    generic=(arg.spelling in generic_args),
+                    name="_self",
                 )
             else:
-                args_inner.append(arg.spelling)
+                arg_inner = arg.spelling
                 arg_outer = rizin.stringify_decl(
                     arg, arg.type, generic=(arg.spelling in generic_args)
                 )
                 if arg.spelling in default_args:
                     arg_outer += f" = {default_args[arg.spelling]}"
-                args_outer.append(arg_outer)
+            args_inner.append(arg_inner)
+            args_outer.append(arg_outer)
 
         # Sanity check
         for generic_arg in generic_args:
@@ -112,7 +111,14 @@ class ModuleFunc:
         with writer.indent():
             if "RZ_DEPRECATE" in func.attrs:
                 writer.line(f'rizin_try_warn_deprecate("{name}", "{func.spelling}");')
-            writer.line(f"return {func.spelling}({args_inner_str});")
+
+            if generic_ret:
+                cast = rizin.stringify_decl(
+                    func, func.result_type, name="", generic=generic_ret
+                )
+                writer.line(f"return ({cast}){func.spelling}({args_inner_str});")
+            else:
+                writer.line(f"return {func.spelling}({args_inner_str});")
         writer.line("}")
 
         ### Contracts ###

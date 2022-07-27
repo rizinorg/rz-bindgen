@@ -70,7 +70,6 @@ swig_output = custom_target(
 swig_py = swig_output[0]
 swig_wrap = swig_output[1]
 
-add_global_arguments('-fpermissive', language : 'cpp')
 py.extension_module(
   '_rizin',
   swig_wrap,

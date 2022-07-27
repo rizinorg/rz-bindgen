@@ -151,7 +151,7 @@ rz_bin_sym = ModuleClass(bin_h, typedef="RzBinSymbol")
 rz_list.add_extension(
     "RzBinSymbol",
     "RzList_RzBinSymbol() {",
-    "    return rz_list_newf(rz_bin_symbol_free);",
+    "    return rz_list_newf((RzListFree)rz_bin_symbol_free);",
     "}",
 )
 
@@ -159,7 +159,7 @@ rz_bin_section = ModuleClass(bin_h, typedef="RzBinSection")
 rz_list.add_extension(
     "RzBinSection",
     "RzList_RzBinSection() {",
-    "    return rz_list_newf(rz_bin_section_free);",
+    "    return rz_list_newf((RzListFree)rz_bin_section_free);",
     "}",
 )
 
@@ -173,7 +173,7 @@ ModuleClass(bin_h, typedef="RzBinMap")
 rz_list.add_extension(
     "RzBinMap",
     "RzList_RzBinMap() {",
-    "    return rz_list_newf(rz_bin_map_free);",
+    "    return rz_list_newf((RzListFree)rz_bin_map_free);",
     "}",
 )
 

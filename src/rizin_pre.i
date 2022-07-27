@@ -34,19 +34,19 @@ RzCmdStatus SWIG_Cmd_run(RzCore *core, int argc, const char **argv) {
     return result ? RZ_CMD_STATUS_OK : RZ_CMD_STATUS_ERROR;
 }
 
-void rz_swig_cmd_desc_help_free(RzCmdDescHelp *help) {
-    free(help->summary);
-    free(help->description);
-    free(help->args_str);
-    free(help->usage);
-    free(help->options);
+void rz_swig_cmd_desc_help_free(const RzCmdDescHelp *help) {
+    free((char*) help->summary);
+    free((char*) help->description);
+    free((char*) help->args_str);
+    free((char*) help->usage);
+    free((char*) help->options);
     if (help->details) {
-        rz_cmd_desc_details_free(help->details);
+        rz_cmd_desc_details_free((RzCmdDescDetail*) help->details);
     }
 
-    for (RzCmdDescArg *arg = help->args; arg && arg->name; ++arg) {
-        free(arg->name);
-        free(arg->default_value);
+    for (const RzCmdDescArg *arg = help->args; arg && arg->name; ++arg) {
+        free((char*) arg->name);
+        free((char*) arg->default_value);
         arg ++;
     }
 }
@@ -55,3 +55,5 @@ void rz_swig_cmd_desc_help_free(RzCmdDescHelp *help) {
 %include <carrays.i>
 %array_class(RzCmdDescArg, Array_RzCmdDescArg);
 #endif // SWIG_DIRECTORS_ENABLED
+
+#pragma SWIG nowarn=451,473
