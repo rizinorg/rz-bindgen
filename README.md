@@ -2,6 +2,8 @@
 
 rz-bindgen parses Rizin header files using libclang to generate SWIG .i binding files
 
+For usage information, see [the documentation](doc/README.md).
+
 ## Building python plugin
 Requirements:
 - rizin > 0.4.0 (needs commit [6b7ea38](https://github.com/rizinorg/rizin/commit/6b7ea389698818beebaa55425b05d966cf3d7117))
@@ -28,11 +30,11 @@ Meson options:
   - To customize pkg-config search, set `PKG_CONFIG_PATH`
   - To customize CMake search, set `CMAKE_PREFIX_PATH`
 
-## Building Cutter
+## Building the Cutter plugin
 Additional Requirements:
 - cmake
 - cutter
 - qt
 
 Install the cutter plugin to `<CUTTER_PLUGIN_DIR>/native/`
-Install the python plugin (rizin.py, _rizin) to `<CUTTER_PLUGIN_DIR>/native/bindings/`
+Install the python plugin (`rizin.py`, `_rizin`) to `<CUTTER_PLUGIN_DIR>/native/bindings/`
