@@ -153,6 +153,11 @@ static int rz_bindings_prompt(RzLang *lang) {
         DEFER_CLEANUP;
 }
 
+static int rz_bindings_run_file(RzLang *lang, const char *filename) {
+        FILE *file = fopen(filename, "rb");
+        return PyRun_SimpleFile(file, filename) == 0;
+}
+
 RzLangPlugin rz_lang_plugin_bindings = {
     .name = "python",
     .desc = "Python SWIG bindings",
@@ -160,6 +165,7 @@ RzLangPlugin rz_lang_plugin_bindings = {
     .ext = ".py",
     .init = rz_bindings_init,
     .prompt = rz_bindings_prompt,
+    .run_file = rz_bindings_run_file,
     .fini = rz_bindings_fini,
 };
 
