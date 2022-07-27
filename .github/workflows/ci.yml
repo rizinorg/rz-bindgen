@@ -1,5 +1,8 @@
 name: run-rz-bindgen
-on: push
+on:
+  push:
+    paths: [src]
+
 jobs:
   run-bindgen:
     name: Run bindgen
