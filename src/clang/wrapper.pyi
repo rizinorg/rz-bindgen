@@ -29,6 +29,8 @@ class TypeBase:
         pass
     def get_declaration(self) -> Cursor:
         pass
+    def is_const_qualified(self) -> bool:
+        pass
 
 """
 Types
