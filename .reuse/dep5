@@ -22,3 +22,7 @@ License: LGPL-3.0-only
 Files: cutter/PythonConsole.ui cutter/CMakeLists.txt .clang-format
 Copyright: 2022 wingdeans <wingdeans@protonmail.com>
 License: LGPL-3.0-only
+
+Files: doc/*.md
+Copyright: 2022 wingdeans <wingdeans@protonmail.com>
+License: LGPL-3.0-only
