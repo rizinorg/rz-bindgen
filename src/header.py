@@ -91,6 +91,10 @@ class Header:
                     prev = self.nodes[cursor.spelling]
                     assert prev.kind == CursorKind.STRUCT_DECL
                     assert not any(prev.get_children())  # Should be forward declaration
+                elif cursor.kind == CursorKind.MACRO_DEFINITION:
+                    prev = self.nodes[cursor.spelling]
+                    assert prev.kind == CursorKind.MACRO_DECL
+                    assert cursor.spelling.startswith("__")
                 else:
                     raise Exception(
                         f"Unexpected redefinition of symbol: {cursor.spelling}, "
