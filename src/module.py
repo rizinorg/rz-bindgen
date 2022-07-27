@@ -162,10 +162,14 @@ class Module:
             name = f"{name}[]"
             type_ = type_.element_type
         elif type_.kind == TypeKind.FUNCTIONPROTO:
-            args = ", ".join(arg.spelling for arg in type_.argument_types())
+            args = ", ".join(
+                "bool" if arg.kind == TypeKind.BOOL else arg.spelling
+                for arg in type_.argument_types()
+            )
             name = f"({name})({args})"
             type_ = type_.get_result()
-        elif type_.kind == TypeKind.BOOL:
+
+        if type_.kind == TypeKind.BOOL:
             type_name = "bool"  # _Bool -> bool
 
         return f"{type_name or type_.spelling} {name}"

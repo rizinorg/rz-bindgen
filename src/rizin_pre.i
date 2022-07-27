@@ -26,7 +26,7 @@ struct CmdDirector {
 %{
 #include <unordered_map>
 
-static auto SWIGCmds = std::unordered_map<std::string, std::pair<RzCmdDesc*, CmdDirector*>>();
+static auto SWIGCmds = std::unordered_map<std::string, std::pair<RzCmdDesc*, CmdDirector*> >();
 
 RzCmdStatus SWIG_Cmd_run(RzCore *core, int argc, const char **argv) {
     std::string cmd(argv[0]);
