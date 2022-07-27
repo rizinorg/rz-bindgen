@@ -93,7 +93,7 @@ class Header:
                     assert not any(prev.get_children())  # Should be forward declaration
                 elif cursor.kind == CursorKind.MACRO_DEFINITION:
                     prev = self.nodes[cursor.spelling]
-                    assert prev.kind == CursorKind.MACRO_DECL
+                    assert prev.kind == CursorKind.MACRO_DEFINITION
                     assert cursor.spelling.startswith("__")
                 else:
                     raise Exception(
