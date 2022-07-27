@@ -2,12 +2,13 @@
 // SPDX-License-Identifier: LGPL-3.0-only
 
 #ifdef SWIG_DIRECTORS_ENABLED
+%catches(const char*) rz_cmd_t::register_swig_command;
 %extend rz_cmd_t {
     void register_swig_command(const char *str, CmdDirector *director, RzCmdDescHelp *help, RzCmdDescHelp *group_help = NULL) {
         // Get parent RzCmdDesc
         int len = strlen(str);
         if (len == 0) {
-            throw std::runtime_error("Command cannot be empty");
+            throw "Command cannot be empty";
         }
 
         RzCmdDesc *parent;
@@ -21,7 +22,7 @@
         }
 
         if (!parent) {
-            throw std::runtime_error("Could not get parent RzCmdDesc");
+            throw "Could not get parent RzCmdDesc";
         }
 
         RzCmdDesc *prev = (RzCmdDesc*) ht_pp_find($self->ht_cmds, str, NULL);
@@ -29,22 +30,22 @@
         if (prev) { // Update existing RzCmdDesc
             auto it = SWIGCmds.find(cmd);
             if (it == SWIGCmds.end()) {
-                throw std::runtime_error("Builtin command already bound");
+                throw "Builtin command already bound";
             }
 
             if (it->second.first != prev) {
-                throw std::runtime_error("SWIG RzCmdDesc does not match the currently bound one");
+                throw "SWIG RzCmdDesc does not match the currently bound one";
             }
 
             if (group_help) {
                 if (prev->type != RZ_CMD_DESC_TYPE_GROUP) {
-                    throw std::runtime_error("Cannot set group_help of a type argv command");
+                    throw "Cannot set group_help of a type argv command";
                 }
                 rz_swig_cmd_desc_help_free(prev->help);
                 prev->help = group_help;
             } else {
                 if (prev->type == RZ_CMD_DESC_TYPE_GROUP) {
-                    throw std::runtime_error("Type group command needs group_help");
+                    throw "Type group command needs group_help";
                 }
                 rz_swig_cmd_desc_help_free(prev->help);
                 prev->help = help;
@@ -61,7 +62,7 @@
             }
 
             if (!result) {
-                throw std::runtime_error("Could not create binding");
+                throw "Could not create binding";
             }
 
             SWIGCmds[cmd] = std::make_pair(result, director);
