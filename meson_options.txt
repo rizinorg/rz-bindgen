@@ -2,6 +2,6 @@ option('clang_path', type: 'string', value: '')
 option('clang_args', type: 'string', value: '')
 option('rizin_inc_path', type: 'string', value: '')
 
-option('directors', type: 'feature', value: 'disabled')
+option('directors', type: 'feature', value: 'enabled')
 
 option('plugin', type: 'feature', value: 'disabled')
