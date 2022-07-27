@@ -175,6 +175,10 @@ class Typeref(CursorBase):
 
 class AnnotateAttr(CursorBase):
     kind: Literal[CursorKind.ANNOTATE_ATTR]
+
+class EnumField(CursorBase):
+    kind: Literal[CursorKind.ENUM_CONSTANT_DECL]
+    enum_value: int
     
 Cursor = Union[
     Macro,
@@ -187,5 +191,6 @@ Cursor = Union[
     StructField,
     StructUnionField,
     Typeref,
-    AnnotateAttr
+    AnnotateAttr,
+    EnumField
 ]
