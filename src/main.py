@@ -185,6 +185,12 @@ rz_analysis = ModuleClass(
     ignore_fields={"leaddrs"},
     rename_fields={"type_links": "_type_links"},
 )
+rz_analysis_function = ModuleClass(analysis_h, typedef="RzAnalysisFunction")
+rz_analysis_function.add_method(
+    analysis_h, "rz_analysis_function_delete", rename="delete_self"
+)
+rz_analysis_function.add_prefixed_methods(analysis_h, "rz_analysis_function_")
+
 rz_analysis.add_method(analysis_h, "rz_analysis_reflines_get", rename="get_reflines")
 rz_analysis.add_prefixed_methods(analysis_h, "rz_analysis_")
 rz_analysis.add_prefixed_funcs(analysis_h, "rz_analysis_")
@@ -248,6 +254,12 @@ rz_cmd = ModuleClass(cmd_h, typedef="RzCmd")
 rz_cmd_desc_help = ModuleClass(cmd_h, typedef="RzCmdDescHelp")
 rz_cmd_desc_arg = ModuleClass(cmd_h, typedef="RzCmdDescArg")
 rz_cmd_arg_type = ModuleEnum(cmd_h, typedef="RzCmdArgType")
+
+### rz_num ###
+num_h = Header("rz_util/rz_num.h")
+rz_num = ModuleClass(num_h, typedef="RzNum")
+rz_num.add_prefixed_methods(num_h, "rz_num_")
+rz_num.add_prefixed_funcs(num_h, "rz_num_")
 
 ### rz_main ###
 main_h = Header("rz_main.h")

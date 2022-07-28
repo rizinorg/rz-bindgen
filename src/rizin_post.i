@@ -70,6 +70,10 @@
     }
 }
 
+%pythonbegin %{
+import inspect
+%}
+
 %extend rz_core_t {
     %pythoncode %{
     def register_group(self, cmd, summary):
@@ -79,19 +83,47 @@
         self.rcmd.register_swig_command(cmd, None, None, help_desc)
 
     def register_command(self, cmd, fn):
-        args = Array_RzCmdDescArg(1)
-        args.thisown = False
-        arg = RzCmdDescArg()
-        arg.thisown = False
-        args[0] = arg
+        params = list(inspect.signature(fn).parameters.values())
+
+        core_arg = None
+        if len(params) > 0 and params[0].annotation == RzCore:
+            core_arg = params[0].name
+            params = params[1:]
+
+        desc_args = Array_RzCmdDescArg(len(params) + 1)
+        desc_args.thisown = False
+        for i, param in enumerate(params):
+            if not param.annotation:
+                raise Exception(f"Parameter {param.name} has no annotation")
+            elif param.annotation == RzAnalysisFunction:
+                arg = RzCmdDescArg()
+                arg.thisown = False
+                arg.name = param.name
+                arg.type = RZ_CMD_ARG_TYPE_FCN
+                desc_args[i] = arg
+            else:
+                raise Exception(f"Parameter {param.name} has unknown type {param.annotation}")
+
+        null_arg = RzCmdDescArg()
+        null_arg.thisown = False
+        desc_args[len(params)] = null_arg
 
         help_desc = RzCmdDescHelp()
         help_desc.thisown = False
-        help_desc.args = args.cast()
+        help_desc.args = desc_args.cast()
 
         class wrapper(CmdDirector):
             def run(self, core, argc, argv):
-                return fn(core, argc, argv)
+                try:
+                    args = {}
+                    args_array = Array_String.frompointer(argv)
+                    if core_arg:
+                        args[core_arg] = arg
+                    for i, param in enumerate(params):
+                        args[param.name] = args_array[i]
+                    return fn(**args)
+                except Exception as e:
+                    print(e)
 
         director = wrapper()
         director.__disown__()

@@ -54,6 +54,11 @@ void rz_swig_cmd_desc_help_free(const RzCmdDescHelp *help) {
 
 %include <carrays.i>
 %array_class(RzCmdDescArg, Array_RzCmdDescArg);
+
+%inline %{
+    typedef char* String;
+%}
+%array_class(String, Array_String);
 #endif // SWIG_DIRECTORS_ENABLED
 
 #pragma SWIG nowarn=451,473
