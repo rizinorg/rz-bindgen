@@ -35,6 +35,9 @@ if clang_args == ''
     clang_args += ' -resource-dir='
     clang_args += run_command(clang, '-print-resource-dir').stdout().strip()
   endif
+  if build_machine.system() == 'darwin'
+    clang_args += ' -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk'
+  endif
 endif
 
 enable_directors = get_option('directors').enabled()
