@@ -47,8 +47,8 @@ void rz_swig_cmd_desc_help_free(const RzCmdDescHelp *help) {
     for (const RzCmdDescArg *arg = help->args; arg && arg->name; ++arg) {
         free((char*) arg->name);
         free((char*) arg->default_value);
-        arg ++;
     }
+    free(help->args);
 }
 %}
 
