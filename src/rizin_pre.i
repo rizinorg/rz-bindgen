@@ -11,6 +11,13 @@
 %typemap(in) (unsigned char *buf, unsigned long long len);
 %enddef
 
+// CArrays
+%include <carrays.i>
+%inline %{
+    typedef char* String;
+%}
+%array_class(String, Array_String);
+
 // Python
 %pythoncode %{
     core = None
@@ -57,13 +64,7 @@ void rz_swig_cmd_desc_help_free(const RzCmdDescHelp *help) {
 }
 %}
 
-%include <carrays.i>
 %array_class(RzCmdDescArg, Array_RzCmdDescArg);
-
-%inline %{
-    typedef char* String;
-%}
-%array_class(String, Array_String);
 
 // Python arg annotations
 %pythoncode %{
