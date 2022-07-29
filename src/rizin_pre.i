@@ -11,6 +11,11 @@
 %typemap(in) (unsigned char *buf, unsigned long long len);
 %enddef
 
+// Python
+%pythoncode %{
+    core = None
+%}
+
 #ifdef SWIG_DIRECTORS_ENABLED
 %feature("director") CmdDirector;
 %inline %{

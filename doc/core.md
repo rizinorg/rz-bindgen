@@ -91,3 +91,4 @@ First file has 1 binfile(s) named testbins/dotnet20.exe
 
 ### Plugins
 When using the Rizin or Cutter Python plugins in the rz-bindgen repo, the `core` object on the `rizin` module is set to the existing `RzCore` instance, created by the system.
+Otherwise, it is set to `None`.
