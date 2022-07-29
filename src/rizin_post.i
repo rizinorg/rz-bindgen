@@ -95,14 +95,27 @@ import inspect
         for i, param in enumerate(params):
             if not param.annotation:
                 raise Exception(f"Parameter {param.name} has no annotation")
+
+            desc_arg = RzCmdDescArg()
+            desc_arg.name = param.name
+
+            if param.annotation == str:
+                desc_arg.type = RZ_CMD_ARG_TYPE_STRING
+            elif param.annotation == RzNumArg:
+                desc_arg.type = RZ_CMD_ARG_TYPE_RZNUM
+            elif param.annotation == int:
+                desc_arg.type = RZ_CMD_ARG_TYPE_NUM
+            elif param.annotation == RzFilenameArg:
+                desc_arg.type = RZ_CMD_ARG_TYPE_FILE
+            elif param.annotation == RzFlagItem:
+                desc_arg.type = RZ_CMD_ARG_TYPE_FLAG
             elif param.annotation == RzAnalysisFunction:
-                arg = RzCmdDescArg()
-                arg.thisown = False
-                arg.name = param.name
-                arg.type = RZ_CMD_ARG_TYPE_FCN
-                desc_args[i] = arg
+                desc_arg.type = RZ_CMD_ARG_TYPE_FCN
             else:
                 raise Exception(f"Parameter {param.name} has unknown type {param.annotation}")
+
+            desc_arg.thisown = False
+            desc_args[i] = desc_arg
 
         null_arg = RzCmdDescArg()
         null_arg.thisown = False
@@ -118,9 +131,18 @@ import inspect
                     args = {}
                     args_array = Array_String.frompointer(argv)
                     if core_arg:
-                        args[core_arg] = arg
+                        args[core_arg] = core
                     for i, param in enumerate(params):
-                        args[param.name] = args_array[i]
+                        arg = args_array[i + 1]
+                        if param.annotation == RzNumArg:
+                            arg = core.num.math(arg)
+                        elif param.annotation == int:
+                            arg = int(arg)
+                        elif param.annotation == RzFlagItem:
+                            arg = core.flags.get(arg)
+                        elif param.annotation == RzAnalysisFunction:
+                            arg = core.analysis.get_function_byname(arg)
+                        args[param.name] = arg
                     return fn(**args)
                 except Exception as e:
                     print(e)

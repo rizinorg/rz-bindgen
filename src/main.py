@@ -261,6 +261,15 @@ rz_num = ModuleClass(num_h, typedef="RzNum")
 rz_num.add_prefixed_methods(num_h, "rz_num_")
 rz_num.add_prefixed_funcs(num_h, "rz_num_")
 
+### rz_flag ###
+flag_h = Header("rz_flag.h")
+rz_flag_item = ModuleClass(flag_h, typedef="RzFlagItem")
+rz_flag_item.add_prefixed_methods(flag_h, "rz_flag_item_")
+
+rz_flag = ModuleClass(flag_h, typedef="RzFlag", ignore_fields={"tags"})
+rz_flag.add_prefixed_methods(flag_h, "rz_flag_")
+rz_flag.add_prefixed_funcs(flag_h, "rz_flag_")
+
 ### rz_main ###
 main_h = Header("rz_main.h")
 rz_main = ModuleClass(main_h, typedef="RzMain")

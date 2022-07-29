@@ -48,7 +48,7 @@ void rz_swig_cmd_desc_help_free(const RzCmdDescHelp *help) {
         free((char*) arg->name);
         free((char*) arg->default_value);
     }
-    free(help->args);
+    free((RzCmdDesc*) help->args);
 }
 %}
 
@@ -59,6 +59,12 @@ void rz_swig_cmd_desc_help_free(const RzCmdDescHelp *help) {
     typedef char* String;
 %}
 %array_class(String, Array_String);
+
+// Python arg annotations
+%pythoncode %{
+    class RzNumArg: pass
+    class RzFilenameArg: pass
+%}
 #endif // SWIG_DIRECTORS_ENABLED
 
 #pragma SWIG nowarn=451,473
