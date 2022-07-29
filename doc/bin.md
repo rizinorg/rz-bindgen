@@ -3,6 +3,7 @@
 ## The RzBin struct
 An `RzBin` struct contains information about the binaries in a Rizin program.
 Most importantly, it contains `binfiles` - an `RzList` containing `RzBinFile`.
+The main instance is accessible in the `bin` field of an `RzCore` struct.
 
 ## The RzBinFile struct
 An `RzBinFile` struct does not contain much itself except for the `RzBuffer` corresponding to that file. Most of the important information is in the `o` field, which points to an `RzBinObject` struct.

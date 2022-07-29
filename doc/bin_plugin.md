@@ -29,9 +29,9 @@ rizin.cvar.SWIGRzBinPluginDirector = CustomBinPlugin()
 Then, to construct the actual `RzBinPlugin` which utilizes the director functions, the bindings define function pointer constants which call the virtual methods on `SWIGRzBinPluginDirector`. These are simply the name of the virtual method to be called, prefixed with `SWIG_RzBinPlugin_`. For example, to construct an `RzBinPlugin` which uses the previously defined `CustomBinPlugin::load_buffer`:
 
 ```py
-plugin = RzBinPlugin()
+plugin = rizin.RzBinPlugin()
 plugin.name = "SWIGCustom"
-plugin.load_buffer = SWIG_RzBinPlugin_load_buffer
+plugin.load_buffer = rizin.SWIG_RzBinPlugin_load_buffer
 ```
 
 Finally, to use the plugin, append the plugin to `core.bin.plugins` (disowning so it does not get freed by the bindings, only by C):
