@@ -14,9 +14,11 @@ core.file_open_load(filename)
 # for `rz_core_file_open_load` specifically
 
 # Info logging
-print(f"Loaded {core.files.length()} file(s)")
-binfiles = core.files.first().binfiles  # or: core.file_cur().binfiles
-print(f"First file has {binfiles.length()} binfile(s) named {binfiles.head().file}")
+print(f"Loaded {len(core.files)} file(s)")
+for i, corefile in enumerate(core.files):
+    print(f"Corefile #{i + 1} has {len(corefile.binfiles)} binfile(s)")
+    for binfile in corefile.binfiles:
+        print(f" * {binfile.file}")
 
 while True:
-    core.flush(input("> "))
+    core.flush(input("rizin> "))

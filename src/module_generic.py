@@ -25,6 +25,7 @@ class ModuleGeneric:
 
     name: str
     funcs: List[ModuleFunc]
+    extensions: BufferedWriter
 
     pointer: bool
     specializations: Set[str]
@@ -51,6 +52,7 @@ class ModuleGeneric:
 
         self.name = name
         self.funcs = []
+        self.extensions = BufferedWriter()
         self.pointer = pointer
         self.specializations = set()
         self.dependencies = dependencies or []
@@ -76,7 +78,11 @@ class ModuleGeneric:
         )
         self.funcs.append(func)
 
-    def add_extension(self, specialization: str, *lines: str) -> None:
+    def add_extension(self, *lines: str) -> None:
+        for line in lines:
+            self.extensions.line(line)
+
+    def add_specialization_extension(self, specialization: str, *lines: str) -> None:
         for line in lines:
             self.specialization_extensions[specialization].line(line)
 
@@ -96,6 +102,7 @@ class ModuleGeneric:
             with writer.indent():
                 for func in self.funcs:
                     func.merge(writer)
+                writer.merge(self.extensions)
             writer.line("}")
         writer.line("%enddef")
 

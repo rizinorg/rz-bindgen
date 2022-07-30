@@ -121,8 +121,8 @@ Here's an example for printing basic information about a function:
 ```py
 def print_function_info(fn: rizin.RzAnalysisFunction):
     print("name:", fn.name)
-    print("number of xrefs from:", fn.get_xrefs_from().length())
-    print("number of xrefs to:", fn.get_xrefs_to().length())
+    print("number of xrefs from:", len(fn.get_xrefs_from()))
+    print("number of xrefs to:", len(fn.get_xrefs_to()))
     return True
 core.register_command("uf", print_function_info)
 ```

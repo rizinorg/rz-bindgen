@@ -60,6 +60,7 @@ rz_list_iter.add_method(
 
 rz_list = ModuleGeneric(list_h, "RzList", dependencies=["RzListIter"], pointer=True)
 rz_list.add_method(list_h, "rz_list_length", rename="length")
+rz_list.add_method(list_h, "rz_list_length", rename="__len__")
 
 rz_list.add_method(list_h, "rz_list_first", rename="first", generic_ret=True)
 rz_list.add_method(list_h, "rz_list_last", rename="last", generic_ret=True)
@@ -70,24 +71,49 @@ rz_list.add_method(
 rz_list.add_method(
     list_h, "rz_list_append", rename="append", generic_ret=True, generic_args=["data"]
 )
+rz_list.add_method(list_h, "rz_list_iterator", rename="iterator", generic_ret=True)
+
+rz_list.add_extension(
+    "%pythoncode %{",
+    "    def __iter__(self):",
+    "        return RzListIterator(self)",
+    "%}",
+)
 
 ### RzVector, RzPVector ###
 vector_h = Header("rz_vector.h")
 rz_vector = ModuleGeneric(vector_h, "RzVector")
 rz_vector.add_method(vector_h, "rz_vector_len", rename="length")
+rz_vector.add_method(vector_h, "rz_vector_len", rename="__len__")
 rz_vector.add_method(vector_h, "rz_vector_head", rename="head", generic_ret=True)
 rz_vector.add_method(vector_h, "rz_vector_tail", rename="tail", generic_ret=True)
+rz_vector.add_method(vector_h, "rz_vector_index_ptr", rename="at", generic_ret=True)
 rz_vector.add_method(
     vector_h, "rz_vector_push", rename="push", generic_ret=True, generic_args=["x"]
 )
 
+rz_vector.add_extension(
+    "%pythoncode %{",
+    "    def __iter__(self):",
+    "        return RzVectorIterator(self)",
+    "%}",
+)
+
 rz_pvector = ModuleGeneric(vector_h, "RzPVector", pointer=True)
 rz_pvector.add_method(vector_h, "rz_pvector_len", rename="length")
+rz_pvector.add_method(vector_h, "rz_pvector_len", rename="__len__")
 rz_pvector.add_method(vector_h, "rz_pvector_head", rename="head", generic_ret=True)
 rz_pvector.add_method(vector_h, "rz_pvector_tail", rename="tail", generic_ret=True)
 rz_pvector.add_method(vector_h, "rz_pvector_at", rename="at", generic_ret=True)
 rz_pvector.add_method(
     vector_h, "rz_pvector_push", rename="push", generic_ret=True, generic_args=["x"]
+)
+
+rz_pvector.add_extension(
+    "%pythoncode %{",
+    "    def __iter__(self):",
+    "        return RzPVectorIterator(self)",
+    "%}",
 )
 
 ### rz_types ###
@@ -146,7 +172,7 @@ rz_bin_options = ModuleClass(bin_h, typedef="RzBinOptions")
 rz_bin_info = ModuleClass(bin_h, typedef="RzBinInfo")
 
 rz_bin_sym = ModuleClass(bin_h, typedef="RzBinSymbol")
-rz_list.add_extension(
+rz_list.add_specialization_extension(
     "RzBinSymbol",
     "RzList_RzBinSymbol() {",
     "    return rz_list_newf((RzListFree)rz_bin_symbol_free);",
@@ -154,7 +180,7 @@ rz_list.add_extension(
 )
 
 rz_bin_section = ModuleClass(bin_h, typedef="RzBinSection")
-rz_list.add_extension(
+rz_list.add_specialization_extension(
     "RzBinSection",
     "RzList_RzBinSection() {",
     "    return rz_list_newf((RzListFree)rz_bin_section_free);",
@@ -168,7 +194,7 @@ ModuleEnum(bin_h, prefix="RZ_BIN_TYPE_")
 ModuleEnum(bin_h, prefix="RZ_BIN_BIND_")
 
 ModuleClass(bin_h, typedef="RzBinMap")
-rz_list.add_extension(
+rz_list.add_specialization_extension(
     "RzBinMap",
     "RzList_RzBinMap() {",
     "    return rz_list_newf((RzListFree)rz_bin_map_free);",
