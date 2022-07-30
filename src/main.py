@@ -25,7 +25,6 @@ parser.add_argument("--output", "-o", required=True)
 parser.add_argument("--clang-path", required=True)
 parser.add_argument("--clang-args", required=True)
 parser.add_argument("--rizin-inc-path", required=True)
-parser.add_argument("--enable-directors", action="store_true")
 args = parser.parse_args()
 
 Config.set_library_path(cast(str, args.clang_path))
@@ -48,7 +47,6 @@ for segments in [
 clang_args.append("-DRZ_BINDINGS")
 Header.clang_args = clang_args
 Header.rizin_inc_path = rizin_inc_path
-rizin.enable_directors = args.enable_directors
 
 ### RzList
 list_h = Header("rz_list.h")

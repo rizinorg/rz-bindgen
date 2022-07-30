@@ -40,8 +40,6 @@ if clang_args == ''
   endif
 endif
 
-enable_directors = get_option('directors').enabled()
-
 swig_sources = custom_target(
   'swig_sources',
   input: 'src' / 'main.py',
@@ -52,19 +50,19 @@ swig_sources = custom_target(
     '--clang-path', clang_path,
     '--clang-args', clang_args,
     '--rizin-inc-path', rizin_inc_path
-  ] + (enable_directors ? ['--enable-directors'] : [])
+  ]
 )
 
 swig_output = custom_target(
   'swig_output',
   input: swig_sources,
   depend_files: ['src' / 'rizin_pre.i', 'src' / 'rizin_post.i'],
-  output: ['rizin.py'] + (enable_directors ? ['rizin_wrap.cxx'] : ['rizin_wrap.c']),
+  output: ['rizin.py', 'rizin_wrap.cxx'],
   command: [
     find_program('swig'),
     '-python',
-    '-I' + meson.current_source_dir() / 'src'
-  ] + (enable_directors ? ['-c++'] : []) + [
+    '-I' + meson.current_source_dir() / 'src',
+    '-c++',
     '-outdir', '@OUTDIR@', '@INPUT@'
   ],
   install: true,

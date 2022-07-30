@@ -34,7 +34,6 @@ class Module:
     generic_mappings: Dict[str, str]
 
     directors: List["ModuleDirector"]
-    enable_directors: bool
 
     def __init__(self) -> None:
         self.headers = set()
@@ -180,11 +179,7 @@ class Module:
         """
 
         writer = DirectWriter(output)
-        if self.enable_directors:
-            writer.line("%module(directors=1) rizin")
-            writer.line("#define SWIG_DIRECTORS_ENABLED")
-        else:
-            writer.line("%module rizin")
+        writer.line("%module(directors=1) rizin")
 
         # Headers
         writer.line("%{")
@@ -226,9 +221,8 @@ class Module:
         for cls in self.classes:
             cls.merge(writer)
 
-        if self.enable_directors:
-            for director in self.directors:
-                director.merge(writer)
+        for director in self.directors:
+            director.merge(writer)
 
         writer.line("%include <rizin_post.i>")
 

@@ -1,6 +1,9 @@
 // SPDX-FileCopyrightText: 2022 wingdeans <wingdeans@protonmail.com>
 // SPDX-License-Identifier: LGPL-3.0-only
 
+#pragma SWIG nowarn=451,473
+
+// Buffers
 %include <pybuffer.i>
 
 %define %buffer_len_activate(TYPEMAP, SIZE)
@@ -18,12 +21,12 @@
 %}
 %array_class(String, Array_String);
 
-// Python
+// Python plugin
 %pythoncode %{
     core = None
 %}
 
-#ifdef SWIG_DIRECTORS_ENABLED
+// Directors
 %feature("director") CmdDirector;
 %inline %{
 struct CmdDirector {
@@ -71,6 +74,4 @@ void rz_swig_cmd_desc_help_free(const RzCmdDescHelp *help) {
     class RzNumArg: pass
     class RzFilenameArg: pass
 %}
-#endif // SWIG_DIRECTORS_ENABLED
 
-#pragma SWIG nowarn=451,473

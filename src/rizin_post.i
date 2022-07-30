@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2022 wingdeans <wingdeans@protonmail.com>
 // SPDX-License-Identifier: LGPL-3.0-only
 
-#ifdef SWIG_DIRECTORS_ENABLED
+// Directors
 %catches(const char*) rz_cmd_t::register_swig_command;
 %extend rz_cmd_t {
     void register_swig_command(const char *str, CmdDirector *director, RzCmdDescHelp *help, RzCmdDescHelp *group_help = NULL) {
@@ -152,4 +152,3 @@ import inspect
         self.rcmd.register_swig_command(cmd, director, help_desc)
     %}
 }
-#endif // SWIG_DIRECTORS_ENABLED
