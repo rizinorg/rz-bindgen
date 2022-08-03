@@ -32,6 +32,9 @@ class ModuleTypemap:
         self.args = contents.split(", ")
 
     def check(self, func: Func) -> None:
+        """
+        Checks function arguments to ensure typemap takes effect
+        """
         index = 0
         spellings = []
         for arg in func.get_arguments():

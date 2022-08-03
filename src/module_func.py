@@ -14,6 +14,10 @@ from writer import BufferedWriter, DirectWriter
 
 
 class FuncKind(Enum):
+    """
+    Enum for ModuleFunc kind
+    """
+
     CONSTRUCTOR = 0
     DESTRUCTOR = 1
     THIS = 2
@@ -21,6 +25,10 @@ class FuncKind(Enum):
 
 
 class ModuleFunc:
+    """
+    Represents a SWIG function
+    """
+
     writer: BufferedWriter
     contract: BufferedWriter
     typemaps: List[ModuleTypemap]

@@ -22,6 +22,10 @@ class DirectWriter:
         self.output = output
 
     def line(self, *lines: str, extra_indents: int = 0) -> None:
+        """
+        Write lines to DirectWriter output with the current indentation level,
+        plus extra indentation if specified
+        """
         for line in lines:
             self.output.write("    " * (self._indent + extra_indents))
             self.output.write(line)
@@ -51,7 +55,7 @@ class BufferedWriter:
 
     def line(self, *lines: str) -> None:
         """
-        Stores specified lines at the current indentation level
+        Stores specified lines along with the current indentation level
         """
         for line in lines:
             self.lines.append((self._indent, line))

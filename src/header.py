@@ -123,6 +123,11 @@ class Header:
                 )
 
     def ignore(self, *names: str) -> None:
+        """
+        Marks the cursors corresponding to the specified names as used,
+        preventing them from being picked up by ModuleClass.add_prefix_*
+        and the like
+        """
         for name in names:
             assert name in self.nodes
             assert name not in self.used

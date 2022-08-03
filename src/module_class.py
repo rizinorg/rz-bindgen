@@ -71,6 +71,9 @@ class ModuleClass:
         )
 
     def add_constructor(self, header: Header, name: str) -> None:
+        """
+        Add function in header with specified name as class constructor
+        """
         header.used.add(name)
 
         func = ModuleFunc(
@@ -79,6 +82,9 @@ class ModuleClass:
         self.funcs.append(func)
 
     def add_destructor(self, header: Header, name: str) -> None:
+        """
+        Add function in header with specified name as class destructor
+        """
         header.used.add(name)
 
         func = ModuleFunc(
@@ -95,6 +101,11 @@ class ModuleClass:
         default_args: Optional[Dict[str, str]] = None,
         typemaps: Optional[List[ModuleTypemap]] = None,
     ) -> None:
+        """
+        Add function in header with specified name as method of class
+
+        The first argument of the specified C function will be the class struct
+        """
         header.used.add(name)
         binderfunc = ModuleFunc(
             header.funcs[name],
@@ -114,6 +125,9 @@ class ModuleClass:
         default_args: Optional[Dict[str, str]] = None,
         typemaps: Optional[List[ModuleTypemap]] = None,
     ) -> None:
+        """
+        Add function in header with specified name as static function of class
+        """
         header.used.add(name)
         binderfunc = ModuleFunc(
             header.funcs[name],
@@ -187,7 +201,8 @@ class ModuleClass:
         rename_fields: Optional[Dict[str, str]] = None,
     ) -> None:
         """
-        Generates the struct portion of the class
+        Generates the struct portion of the class, writing into the struct_writer
+        BufferedWriter. This is done early so that generic fields can be specialized.
         """
         fields = set()  # ensure all ignore/rename_fields are valid
         ignore_set = ignore_fields or set()

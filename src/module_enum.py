@@ -13,6 +13,12 @@ from writer import BufferedWriter, DirectWriter
 
 
 class ModuleEnum:
+    """
+    Represents a SWIG enum
+
+    Can be constructed from macro definitions or a C enum
+    """
+
     buf: BufferedWriter
 
     def __init__(
@@ -48,6 +54,9 @@ class ModuleEnum:
             buf.line("};")
 
     def add_macro(self, header: Header, name: str) -> None:
+        """
+        Adds a C macro with the specified name to self.buf
+        """
         macro = header.macros[name]
         toks = [tok.spelling for tok in macro.get_tokens()]
         assert toks[0] == name

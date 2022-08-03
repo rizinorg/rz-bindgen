@@ -13,6 +13,10 @@ from writer import BufferedWriter, DirectWriter
 
 
 class ModuleDirector:
+    """
+    Represents a SWIG director for a plugin struct (eg. RzBinPlugin)
+    """
+
     struct_writer: BufferedWriter
     name: str
     funcs: BufferedWriter

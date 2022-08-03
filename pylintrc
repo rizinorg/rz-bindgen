@@ -1,8 +1,6 @@
 [MESSAGES CONTROL]
 
-disable=missing-class-docstring,
-        missing-function-docstring,
-	consider-using-in,
+disable=consider-using-in,
 	too-many-locals,
 	too-many-branches,
 	too-many-statements,

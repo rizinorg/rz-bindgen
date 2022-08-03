@@ -67,6 +67,13 @@ class ModuleGeneric:
         generic_ret: bool = False,
         generic_args: Optional[Set[str]] = None,
     ) -> None:
+        """
+        Add function in header with specified name as method of generic
+
+        The first argument of the specified C function will be the generic struct
+        generic_ret indicates whether or not the return type of the function is generic
+        generic_args indicates which arguments of the function are generic
+        """
         header.used.add(name)
 
         func = ModuleFunc(
@@ -79,10 +86,16 @@ class ModuleGeneric:
         self.funcs.append(func)
 
     def add_extension(self, *lines: str) -> None:
+        """
+        Adds lines to the %extend within the generic
+        """
         for line in lines:
             self.extensions.line(line)
 
     def add_specialization_extension(self, specialization: str, *lines: str) -> None:
+        """
+        Adds lines to the %extend of the specific generic specialization
+        """
         for line in lines:
             self.specialization_extensions[specialization].line(line)
 

@@ -174,10 +174,16 @@ class Module:
         return f"{type_name or type_.spelling} {name}"
 
     def write_io(self, output: TextIO) -> None:
+        """
+        Writes self to opened file or stdout
+        """
         writer = DirectWriter(output)
         self.write(writer)
 
     def write(self, writer: DirectWriter) -> None:
+        """
+        Writes self to DirectWriter
+        """
         writer.line("%module(directors=1) rizin")
 
         # Headers
