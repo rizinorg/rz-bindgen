@@ -10,8 +10,6 @@ from typing import List, Dict, Set, Optional
 from clang.wrapper import (
     CursorKind,
     Struct,
-    StructField,
-    StructUnionField,
     Func,
     TypeKind,
 )
@@ -200,39 +198,18 @@ class ModuleClass:
         for old, new in rename_fields.items():
             writer.line(f"%rename {struct.spelling}::{old} {new};")
 
-        def gen_field(field: StructField) -> None:
-            assert field.spelling not in fields
-            fields.add(field.spelling)
-
-            if field.spelling in ignore_set:
-                return
-            decl = rizin.stringify_decl(field, field.type)
-            writer.line(f"{decl};")
-
-        def gen_union(field: StructUnionField) -> None:
-            assert field.spelling not in fields
-            fields.add(field.spelling)
-
-            if field.spelling in ignore_set:
-                return
-            writer.line("union {")
-            with writer.indent():
-                for union_field in field.get_children():
-                    assert union_field.kind == CursorKind.FIELD_DECL
-                    gen_field(union_field)
-            writer.line("};")
-
         writer.line(f"struct {struct.spelling} {{")
         with writer.indent():
             for field in struct.get_children():
-                if field.kind == CursorKind.STRUCT_DECL:
-                    continue
-
                 if field.kind == CursorKind.FIELD_DECL:
-                    gen_field(field)
-                elif field.kind == CursorKind.UNION_DECL:
-                    gen_union(field)
-                else:
+                    assert field.spelling not in fields
+                    fields.add(field.spelling)
+
+                    if field.spelling in ignore_set:
+                        continue
+                    decl = rizin.stringify_decl(field, field.type)
+                    writer.line(f"{decl};")
+                elif field.kind not in [CursorKind.STRUCT_DECL, CursorKind.UNION_DECL]:
                     raise Exception(
                         f"Unexpected struct child of kind: {field.kind} at {field.location}"
                     )
