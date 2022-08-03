@@ -3,7 +3,7 @@ SPDX-FileCopyrightText: 2022 wingdeans <wingdeans@protonmail.com>
 SPDX-License-Identifier: LGPL-3.0-only
 """
 
-from typing import List, Dict, Optional
+from typing import List, Dict, Set, Optional
 from enum import Enum
 
 from clang.wrapper import CursorKind, Func
@@ -32,7 +32,7 @@ class ModuleFunc:
         *,
         name: Optional[str] = None,
         generic_ret: bool = False,
-        generic_args: Optional[List[str]] = None,
+        generic_args: Optional[Set[str]] = None,
         default_args: Optional[Dict[str, str]] = None,
         typemaps: Optional[List[ModuleTypemap]] = None,
     ):
@@ -52,7 +52,7 @@ class ModuleFunc:
 
         # Process generics/defaults
         if generic_args is None:
-            generic_args = []
+            generic_args = set()
         if default_args is None:
             default_args = {}
 

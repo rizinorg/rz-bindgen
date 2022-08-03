@@ -66,10 +66,10 @@ rz_list.add_method(list_h, "rz_list_first", rename="first", generic_ret=True)
 rz_list.add_method(list_h, "rz_list_last", rename="last", generic_ret=True)
 
 rz_list.add_method(
-    list_h, "rz_list_prepend", rename="prepend", generic_ret=True, generic_args=["data"]
+    list_h, "rz_list_prepend", rename="prepend", generic_ret=True, generic_args={"data"}
 )
 rz_list.add_method(
-    list_h, "rz_list_append", rename="append", generic_ret=True, generic_args=["data"]
+    list_h, "rz_list_append", rename="append", generic_ret=True, generic_args={"data"}
 )
 rz_list.add_method(list_h, "rz_list_iterator", rename="iterator", generic_ret=True)
 
@@ -89,7 +89,7 @@ rz_vector.add_method(vector_h, "rz_vector_head", rename="head", generic_ret=True
 rz_vector.add_method(vector_h, "rz_vector_tail", rename="tail", generic_ret=True)
 rz_vector.add_method(vector_h, "rz_vector_index_ptr", rename="at", generic_ret=True)
 rz_vector.add_method(
-    vector_h, "rz_vector_push", rename="push", generic_ret=True, generic_args=["x"]
+    vector_h, "rz_vector_push", rename="push", generic_ret=True, generic_args={"x"}
 )
 
 rz_vector.add_extension(
@@ -106,7 +106,7 @@ rz_pvector.add_method(vector_h, "rz_pvector_head", rename="head", generic_ret=Tr
 rz_pvector.add_method(vector_h, "rz_pvector_tail", rename="tail", generic_ret=True)
 rz_pvector.add_method(vector_h, "rz_pvector_at", rename="at", generic_ret=True)
 rz_pvector.add_method(
-    vector_h, "rz_pvector_push", rename="push", generic_ret=True, generic_args=["x"]
+    vector_h, "rz_pvector_push", rename="push", generic_ret=True, generic_args={"x"}
 )
 
 rz_pvector.add_extension(

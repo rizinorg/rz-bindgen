@@ -65,7 +65,7 @@ class ModuleGeneric:
         *,
         rename: Optional[str] = None,
         generic_ret: bool = False,
-        generic_args: Optional[List[str]] = None,
+        generic_args: Optional[Set[str]] = None,
     ) -> None:
         header.used.add(name)
 
