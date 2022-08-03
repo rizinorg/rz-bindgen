@@ -303,4 +303,4 @@ rz_main.add_prefixed_methods(main_h, "rz_main_")
 rz_main.add_prefixed_funcs(main_h, "rz_main_")
 
 with open(cast(str, args.output), "w", encoding="utf-8") as output:
-    rizin.write(output)
+    rizin.write_io(output)

@@ -138,13 +138,16 @@ class ModuleFunc:
                     contract.line(f"{contract_arg} != NULL;")
             contract.line("}")
 
-    def merge(self, writer: DirectWriter) -> None:
-        writer.merge(self.contract)
+    def write(self, writer: DirectWriter) -> None:
+        """
+        Writes self to DirectWriter
+        """
+        self.contract.write(writer)
 
         for typemap in self.typemaps:
-            typemap.merge_activate(writer)
+            typemap.write_activate(writer)
 
-        writer.merge(self.writer)
+        self.writer.write(writer)
 
         for typemap in self.typemaps:
-            typemap.merge_deactivate(writer)
+            typemap.write_deactivate(writer)

@@ -54,5 +54,8 @@ class ModuleEnum:
         definition = " ".join(toks[1:])
         self.buf.line(f"#define {name} {definition}")
 
-    def merge(self, writer: DirectWriter) -> None:
-        writer.merge(self.buf)
+    def write(self, writer: DirectWriter) -> None:
+        """
+        Writes self to DirectWriter
+        """
+        self.buf.write(writer)

@@ -54,8 +54,14 @@ class ModuleTypemap:
             f"Contents were: {spellings}"
         )
 
-    def merge_activate(self, writer: DirectWriter) -> None:
+    def write_activate(self, writer: DirectWriter) -> None:
+        """
+        Write activation sequence to DirectWriter
+        """
         writer.line(f"%{self.name}_activate({self.contents});")
 
-    def merge_deactivate(self, writer: DirectWriter) -> None:
+    def write_deactivate(self, writer: DirectWriter) -> None:
+        """
+        Write deactivation sequence to DirectWriter
+        """
         writer.line(f"%{self.name}_deactivate({self.contents});")

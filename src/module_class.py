@@ -225,11 +225,14 @@ class ModuleClass:
         for old in rename_fields.keys():
             writer.line(f'%rename {struct.spelling}::{old} "";')
 
-    def merge(self, writer: DirectWriter) -> None:
-        writer.merge(self.struct_writer)
+    def write(self, writer: DirectWriter) -> None:
+        """
+        Writes self to DirectWriter
+        """
+        self.struct_writer.write(writer)
 
         writer.line(f"%extend {self.struct.spelling} {{")
         with writer.indent():
             for func in self.funcs:
-                func.merge(writer)
+                func.write(writer)
         writer.line("}")

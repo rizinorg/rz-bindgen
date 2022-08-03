@@ -86,7 +86,10 @@ class ModuleGeneric:
         for line in lines:
             self.specialization_extensions[specialization].line(line)
 
-    def merge(self, writer: DirectWriter) -> None:
+    def write(self, writer: DirectWriter) -> None:
+        """
+        Writes self to DirectWriter
+        """
         writer.line(f"%define %{self.name}(TYPE)")
         with writer.indent():
             writer.line(f"%nodefaultctor {self.name}_##TYPE;")
@@ -101,8 +104,8 @@ class ModuleGeneric:
             writer.line(f"%extend {self.name}_##TYPE {{")
             with writer.indent():
                 for func in self.funcs:
-                    func.merge(writer)
-                writer.merge(self.extensions)
+                    func.write(writer)
+                self.extensions.write(writer)
             writer.line("}")
         writer.line("%enddef")
 
@@ -115,5 +118,5 @@ class ModuleGeneric:
             assert specialization in self.specializations
             writer.line(f"%extend {self.name}_{specialization} {{")
             with writer.indent():
-                writer.merge(extension)
+                extension.write(writer)
             writer.line("}")

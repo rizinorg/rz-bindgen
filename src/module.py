@@ -173,12 +173,11 @@ class Module:
 
         return f"{type_name or type_.spelling} {name}"
 
-    def write(self, output: TextIO) -> None:
-        """
-        Write self to an opened file or stdout
-        """
-
+    def write_io(self, output: TextIO) -> None:
         writer = DirectWriter(output)
+        self.write(writer)
+
+    def write(self, writer: DirectWriter) -> None:
         writer.line("%module(directors=1) rizin")
 
         # Headers
@@ -191,10 +190,10 @@ class Module:
         writer.line("%include <rizin_pre.i>")
 
         for enum in self.enums:
-            enum.merge(writer)
+            enum.write(writer)
 
         for generic in self.generics.values():
-            generic.merge(writer)
+            generic.write(writer)
 
         # Deprecation warning settings
         writer.line(
@@ -219,10 +218,10 @@ class Module:
         )
 
         for cls in self.classes:
-            cls.merge(writer)
+            cls.write(writer)
 
         for director in self.directors:
-            director.merge(writer)
+            director.write(writer)
 
         writer.line("%include <rizin_post.i>")
 

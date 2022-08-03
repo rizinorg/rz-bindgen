@@ -104,12 +104,15 @@ class ModuleDirector:
 
         writer.line("};")
 
-    def merge(self, writer: DirectWriter) -> None:
+    def write(self, writer: DirectWriter) -> None:
+        """
+        Writes self to DirectWriter
+        """
         writer.line(f'%feature("director") {self.name}Director;')
 
         writer.line("%inline %{")
         with writer.indent():
-            writer.merge(self.struct_writer)
+            self.struct_writer.write(writer)
 
             writer.line(
                 f"static {self.name}Director *SWIG{self.name}Director = NULL;",
@@ -118,10 +121,10 @@ class ModuleDirector:
 
         writer.line("%{")
         with writer.indent():
-            writer.merge(self.funcs)
+            self.funcs.write(writer)
         writer.line("%}")
 
-        writer.merge(self.consts)
+        self.consts.write(writer)
 
         # Python helper function
         writer.line("%pythoncode %{")
