@@ -24,7 +24,7 @@ Also see `snippets_swig`, which holds longer snippets of code to be used in this
 Helper class for writing lines and snippets to a file with indentation.
 
 ## Binding
-###`binding_class.py`
+### `binding_class.py`
 Helpers to specify a class with fields, methods, and static functions.
 
 ### `binding_director.py`
