@@ -5,7 +5,7 @@ SPDX-License-Identifier: LGPL-3.0-only
 
 # This is an example designed to show the internal steps taken
 # by the helper functions. To see the recommended way of doing
-# things, see `4b-rz_cmd.py`
+# things, see `2b-rz_bin_plugin.py`
 
 import rizin
 import sys
@@ -24,14 +24,12 @@ class CustomBinPlugin(rizin.RzBinPluginDirector):
         return True
 
 # Construct the director
-rizin.cvar.SWIGRzBinPluginDirector = CustomBinPlugin()
-
-plugin = rizin.RzBinPlugin()
-plugin.name = "SWIGCustom"
-plugin.load_buffer = rizin.SWIG_RzBinPlugin_load_buffer
+builder = rizin.RzBinPluginBuilder()
+builder.name = "SWIGCustom"
+builder.enable_load_buffer = True
+plugin = builder.build(CustomBinPlugin())
 
 core = rizin.RzCore()
-plugin.thisown = False
 core.bin.plugins.append(plugin)
 
 # Run rizin and load binary

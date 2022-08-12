@@ -2,6 +2,8 @@
 
 rz-bindgen parses Rizin header files using libclang to generate SWIG .i binding files
 
+For information on code structure, see [src/README.md](src/README.md).
+
 For usage information, see [the documentation](doc/README.md).
 
 ## Building python plugin
@@ -25,7 +27,7 @@ Meson options:
 - `clang_args`: Extra arguments to pass to libclang
   - Defaults to setting resource-dir to result of `clang -print-resource-dir`
 
-- `rizin_inc_path`: Directory containing rizin header files
+- `rizin_include_path`: Directory containing rizin header files
   - Defaults to using rizin found in pkg-config and CMake
   - To customize pkg-config search, set `PKG_CONFIG_PATH`
   - To customize CMake search, set `CMAKE_PREFIX_PATH`

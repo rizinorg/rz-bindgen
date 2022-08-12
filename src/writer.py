@@ -1,77 +1,54 @@
 """
 SPDX-FileCopyrightText: 2022 wingdeans <wingdeans@protonmail.com>
 SPDX-License-Identifier: LGPL-3.0-only
-
-Helpers for indentation
 """
-from typing import List, Tuple, Iterator, TextIO
 
+from typing import Iterator, TextIO
+
+import os
 from contextlib import contextmanager
 
 
-class DirectWriter:
+class Writer:
     """
-    Directly outputs to TextIO
+    Helper class for writing indented lines to an output
     """
 
-    _indent: int
     output: TextIO
+    indent_level: int
+    indent_amount: int
 
-    def __init__(self, output: TextIO):
-        self._indent = 0
+    def __init__(self, output: TextIO, indent_amount: int = 4):
         self.output = output
+        self.indent_level = 0
+        self.indent_amount = indent_amount
 
-    def line(self, *lines: str, extra_indents: int = 0) -> None:
+    def line(self, *lines: str) -> None:
         """
-        Write lines to DirectWriter output with the current indentation level,
-        plus extra indentation if specified
+        Write lines at current indentation
         """
         for line in lines:
-            self.output.write("    " * (self._indent + extra_indents))
+            indent = self.indent_amount * self.indent_level
+            self.output.write(" " * indent)
             self.output.write(line)
             self.output.write("\n")
 
     @contextmanager
     def indent(self) -> Iterator[None]:
         """
-        Increases indentation level for duration of the context
+        Increase indentation level for duration of context
         """
-        self._indent += 1
+        self.indent_level += 1
         yield
-        self._indent -= 1
+        self.indent_level -= 1
 
-
-class BufferedWriter:
-    """
-    Stores text in list of lines
-    """
-
-    _indent: int
-    lines: List[Tuple[int, str]]
-
-    def __init__(self) -> None:
-        self._indent = 0
-        self.lines = []
-
-    def line(self, *lines: str) -> None:
+    def snippet(self, path: str) -> None:
         """
-        Stores specified lines along with the current indentation level
-        """
-        for line in lines:
-            self.lines.append((self._indent, line))
+        Write a snippet file at current indentation
 
-    @contextmanager
-    def indent(self) -> Iterator[None]:
+        File searched from this file's directory
         """
-        Increases indentation level for duration of the context
-        """
-        self._indent += 1
-        yield
-        self._indent -= 1
-
-    def write(self, writer: DirectWriter) -> None:
-        """
-        Writes self to DirectWriter
-        """
-        for indent, line in self.lines:
-            writer.line(line, extra_indents=indent)
+        path_segments = path.split("/")
+        filename = os.path.join(os.path.dirname(__file__), *path_segments)
+        with open(filename, encoding="utf-8") as snippet:
+            self.line(*snippet.read().splitlines())

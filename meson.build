@@ -5,7 +5,7 @@ py = pymod.find_installation('python')
 
 clang_path = get_option('clang_path')
 clang_args = get_option('clang_args')
-rizin_inc_path = get_option('rizin_inc_path')
+rizin_include_path = get_option('rizin_include_path')
 
 if clang_path == ''
   llvm = dependency('llvm', required: false)
@@ -20,12 +20,12 @@ if clang_path == ''
   endif
 endif
 
-if rizin_inc_path == ''
+if rizin_include_path == ''
   rz_main = dependency('rz_main')
   if rz_main.type_name() == 'pkgconfig'
-    rizin_inc_path = rz_main.get_variable(pkgconfig: 'includedir') / 'librz'
+    rizin_include_path = rz_main.get_variable(pkgconfig: 'includedir') / 'librz'
   elif rz_main.type_name() == 'cmake'
-    rizin_inc_path = rz_main.get_variable(cmake: 'PACKAGE_INCLUDE_DIRS').split(';')[0]
+    rizin_include_path = rz_main.get_variable(cmake: 'PACKAGE_INCLUDE_DIRS').split(';')[0]
   endif
 endif
 
@@ -46,23 +46,20 @@ swig_sources = custom_target(
   output: 'rizin.i',
   command: [
     py, '@INPUT@',
-    '-o', '@OUTPUT@',
+    '-o', '@OUTDIR@',
     '--clang-path', clang_path,
     '--clang-args', clang_args,
-    '--rizin-inc-path', rizin_inc_path
+    '--rizin-include-path', rizin_include_path
   ]
 )
 
 swig_output = custom_target(
   'swig_output',
   input: swig_sources,
-  depend_files: ['src' / 'rizin_pre.i', 'src' / 'rizin_post.i'],
   output: ['rizin.py', 'rizin_wrap.cxx'],
   command: [
     find_program('swig'),
-    '-python',
-    '-I' + meson.current_source_dir() / 'src',
-    '-c++',
+    '-python', '-c++',
     '-outdir', '@OUTDIR@', '@INPUT@'
   ],
   install: true,
@@ -80,8 +77,8 @@ py.extension_module(
     dependency('rz_main')
   ],
   include_directories: include_directories(
-    rizin_inc_path,
-    rizin_inc_path / 'sdb'
+    rizin_include_path,
+    rizin_include_path / 'sdb'
   ),
   install: true
 )
