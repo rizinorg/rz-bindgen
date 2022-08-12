@@ -1152,7 +1152,7 @@ CursorKind.OBJC_AT_THROW_STMT = CursorKind(219)
 # Objective-C's @synchronized statement.
 CursorKind.OBJC_AT_SYNCHRONIZED_STMT = CursorKind(220)
 
-# Objective-C's autorealease pool statement.
+# Objective-C's autorelease pool statement.
 CursorKind.OBJC_AUTORELEASE_POOL_STMT = CursorKind(221)
 
 # Objective-C's for collection statement.
@@ -1916,19 +1916,6 @@ class Cursor(Structure):
 
         res._tu = args[0]._tu
         return res
-
-    @property
-    def attrs(self):
-        if hasattr(self, "_attrs"):
-            return self._attrs
-
-        attrs = set()
-        for child in self.get_children():
-            if child.kind != CursorKind.ANNOTATE_ATTR:
-                continue
-            attrs.add(child.spelling)
-        self._attrs = attrs
-        return attrs
 
 class StorageClass(object):
     """

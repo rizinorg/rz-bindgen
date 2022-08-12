@@ -3,44 +3,148 @@ SPDX-FileCopyrightText: 2022 wingdeans <wingdeans@protonmail.com>
 SPDX-License-Identifier: LGPL-3.0-only
 """
 
-from clang.wrapper import RootCursor, Token, SourceLocation
+from typing import List, Tuple, Iterator
 
-from typing import List, Tuple, Iterator, Optional
-
-class Diagnostic:
-    spelling: str
-
-class Index:
-    pass
-
-class SourceRange:
-    @staticmethod
-    def from_locations(start: SourceLocation, end: SourceLocation) -> SourceRange:
-        pass
-    start: SourceLocation
-    end: SourceLocation
-
-class TranslationUnit:
-    @classmethod
-    def from_source(
-        cls,
-        filename: str,
-        args: Optional[List[str]] = None,
-        unsaved_files: Optional[List[Tuple[str, str]]] = None,
-        options: Optional[int] = None,
-        index: Optional[Index] = None,
-    ) -> TranslationUnit:
-        pass
-    def get_tokens(self, *, extent: SourceRange) -> Iterator[Token]:
-        pass
-    # Options
-    PARSE_DETAILED_PROCESSING_RECORD: int
-
-    # Properties
-    diagnostics: List[Diagnostic]
-    cursor: RootCursor
+from enum import Enum
 
 class Config:
     @staticmethod
     def set_library_path(path: str) -> None:
-        pass
+        ...
+
+class TranslationUnit:
+    PARSE_DETAILED_PROCESSING_RECORD: int
+
+    @staticmethod
+    def from_source(filename: str, args: List[str], options: int) -> TranslationUnit:
+        ...
+
+    cursor: Cursor
+
+    def get_tokens(self, *, extent: SourceRange) -> Iterator[Token]:
+        ...
+    
+### Type ###
+class TypeKind(Enum):
+    TYPEDEF: TypeKind
+    ELABORATED: TypeKind
+    
+    POINTER: TypeKind
+    CONSTANTARRAY: TypeKind
+    FUNCTIONPROTO: TypeKind
+    INCOMPLETEARRAY: TypeKind
+    
+    RECORD: TypeKind
+    ENUM: TypeKind
+    
+    VOID: TypeKind
+    BOOL: TypeKind
+    FLOAT: TypeKind
+    DOUBLE: TypeKind
+    LONGDOUBLE: TypeKind
+    
+    # Unsigned
+    CHAR_U: TypeKind
+    UCHAR: TypeKind
+    CHAR16: TypeKind
+    CHAR32: TypeKind
+    USHORT: TypeKind
+    UINT: TypeKind
+    ULONG: TypeKind
+    ULONGLONG: TypeKind
+    # Signed
+    CHAR_S: TypeKind
+    SCHAR: TypeKind
+    WCHAR: TypeKind
+    SHORT: TypeKind
+    INT: TypeKind
+    LONG: TypeKind
+    LONGLONG: TypeKind
+    
+class Type:
+    kind: TypeKind
+    spelling: str
+
+    def get_declaration(self) -> Cursor:
+        ...
+
+    def get_pointee(self) -> Type:
+        ...
+
+    def get_canonical(self) -> Type:
+        ...
+
+    def get_named_type(self) -> Type:
+        ...
+
+    def get_array_element_type(self) -> Type:
+        ...
+
+    def get_result(self) -> Type:
+        ...
+
+    def argument_types(self) -> Iterator[Type]:
+        ...
+
+    def is_const_qualified(self) -> bool:
+        ...
+        
+    element_count: int
+        
+### Cursor ###
+class SourceLocation:
+    class File:
+        name: str
+
+    file: File
+
+class SourceRange:
+    start: SourceLocation
+    end: SourceLocation
+
+    @staticmethod
+    def from_locations(start: SourceLocation, end: SourceLocation) -> SourceRange:
+        ...
+    
+class Token:
+    spelling: str
+        
+class CursorKind(Enum):
+    INCLUSION_DIRECTIVE: TypeKind
+    MACRO_INSTANTIATION: TypeKind
+    
+    ENUM_DECL: TypeKind
+    MACRO_DEFINITION: TypeKind
+    STRUCT_DECL: TypeKind
+    TYPEDEF_DECL: TypeKind
+    FUNCTION_DECL: TypeKind
+
+    FIELD_DECL: TypeKind
+    UNION_DECL: TypeKind
+    PARM_DECL: TypeKind
+    ENUM_CONSTANT_DECL: TypeKind
+    
+    ANNOTATE_ATTR: TypeKind
+    TYPE_REF: TypeKind
+
+class Cursor:
+    kind: CursorKind
+    spelling: str
+    type: Type
+
+    location: SourceLocation
+    extent: SourceRange
+    translation_unit: TranslationUnit
+    
+    def get_children(self) -> Iterator[Cursor]:
+        ...
+
+    def get_arguments(self) -> Iterator[Cursor]:
+        ...
+
+    def get_tokens(self) -> Iterator[Token]:
+        ...
+        
+    underlying_typedef_type: Type
+    result_type: Type
+    enum_value: int

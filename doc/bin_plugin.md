@@ -19,22 +19,17 @@ class CustomBinPlugin(rizin.RzBinPluginDirector):
         return True
 ```
 
-Since Rizin plugins use C function pointers which do not carry state in a consistent manner, ***it is currently only possible to have one director at a time per plugin type*** (eg. `RzBinPlugin`). The current SWIG `RzBinPlugin` director is held in the `SWIGRzBinPluginDirector` global variable. For example, to set this in Python:
+Since Rizin plugins use C function pointers which do not carry state in a consistent manner, ***it is currently only possible to have one director at a time per plugin type*** (eg. `RzBinPlugin`). Setting the current SWIG `RzBinPlugin` director is done using the `RzBinPluginBuilder` class and its `build` method:
 
 ```py
 # Construct the director
-rizin.cvar.SWIGRzBinPluginDirector = CustomBinPlugin()
+builder = rizin.RzBinPluginBuilder()
+builder.name = "SWIGCustom"
+builder.enable_load_buffer = True
+plugin = builder.build(CustomBinPlugin())
 ```
 
-Then, to construct the actual `RzBinPlugin` which utilizes the director functions, the bindings define function pointer constants which call the virtual methods on `SWIGRzBinPluginDirector`. These are simply the name of the virtual method to be called, prefixed with `SWIG_RzBinPlugin_`. For example, to construct an `RzBinPlugin` which uses the previously defined `CustomBinPlugin::load_buffer`:
-
-```py
-plugin = rizin.RzBinPlugin()
-plugin.name = "SWIGCustom"
-plugin.load_buffer = rizin.SWIG_RzBinPlugin_load_buffer
-```
-
-Finally, to use the plugin, append the plugin to `core.bin.plugins` (disowning so it does not get freed by the bindings, only by C):
+`RzBinPluginBuilder::build` returns an `RzBinPlugin` struct which has the enabled function pointers set to custom C functions which call into the currently active director. Enabling functions is done using variables on the builder which are named the same as their corresponding struct function pointer prefixed with `enable_`. To use the plugin, simply append the struct to `core.bin.plugins`.
 
 ```py
 core = rizin.RzCore()

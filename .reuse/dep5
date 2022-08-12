@@ -7,7 +7,11 @@ Files: src/clang/__init__.py src/clang/cindex.py src/clang/enumerations.py
 Copyright: 2022 The LLVM Project
 License: Apache-2.0 WITH LLVM-exception
 
-Files: .github/workflows/* .gitignore README.md
+Files: src/snippets_swig/*
+Copyright: 2022 wingdeans <wingdeans@protonmail.com>
+License: LGPL-3.0-only
+
+Files: .github/workflows/* .gitignore README.md src/README.md
 Copyright: 2022 wingdeans <wingdeans@protonmail.com>
 License: LGPL-3.0-only
 
