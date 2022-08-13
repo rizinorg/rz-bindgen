@@ -7,7 +7,7 @@ from typing import OrderedDict, Callable
 
 import concurrent.futures
 
-from cparser_header import Header
+from cparser_header import HeaderBuilder, Header
 from binding_class import Class
 from binding_director import Director
 from binding_enum import Enum, MacroEnum
@@ -450,11 +450,10 @@ def run() -> None:
     Parse headers in parallel, then run functions sequentially
     """
 
-    def runner(name: str) -> Header:
-        return Header(name)
-
     with concurrent.futures.ThreadPoolExecutor() as executor:
-        for header, func in zip(
-            executor.map(runner, threaded_headers.keys()), threaded_headers.values()
+        builders = [HeaderBuilder(name) for name in threaded_headers]
+        translation_units = executor.map(HeaderBuilder.translation_unit, builders)
+        for translation_unit, builder, func in zip(
+            translation_units, builders, threaded_headers.values()
         ):
-            func(header.process())
+            func(Header(translation_unit, builder))

@@ -82,62 +82,89 @@ clang_args: List[str] = []
 headers: List["Header"] = []
 
 
-class Header:
+class HeaderBuilder:
     """
-    A parsed C header file
+    Builder class for Header, enabling parallel calls to libclang
     """
 
     name: str
-    files: Set[str]
-    translation_unit: TranslationUnit
-
-    cursors: DefaultDict[CursorKind, OrderedDict[str, Cursor]]
-    cursor_kinds: OrderedDict[str, CursorKind]
-    cfuncs: OrderedDict[str, CFunc]  # Store __attributes__
+    filename: str
+    extra_filename: Optional[str]
 
     def __init__(self, name: str):
-        headers.append(self)
-
         self.name = name
         name_segments = name.split("/")
 
         assert rizin_include_path
         filename = os.path.abspath(os.path.join(rizin_include_path, *name_segments))
 
-        # Fix sdb path
+        # Fix sdb path if using source librz/include
         if name_segments[0] == "sdb" and not os.path.exists(filename):
             name_segments = ["..", "util", "sdb", "src"] + name_segments[1:]
             filename = os.path.abspath(os.path.join(rizin_include_path, *name_segments))
-        assert os.path.exists(filename)
 
-        # Support ht_inc.h
-        self.files = set([filename])
+        assert os.path.exists(filename)
+        self.filename = filename
+
+        # Parse ht_inc.h if importing SDB hashtable header
+        self.extra_filename = None
         if name_segments[-1] in ["ht_pp.h", "ht_pu.h", "ht_up.h", "ht_uu.h"]:
-            name_segments[-1] = "ht_inc.h"
-            self.files.add(
-                os.path.abspath(os.path.join(rizin_include_path, *name_segments))
+            self.extra_filename = os.path.abspath(
+                os.path.join(rizin_include_path, *name_segments[:-1] + ["ht_inc.h"])
             )
 
-        self.translation_unit = TranslationUnit.from_source(
-            filename=filename,
+    def translation_unit(self) -> TranslationUnit:
+        """
+        Creates TranslationUnit (for use in the build method)
+
+        TranslationUnit.from_source is parallelizable since ctypes
+        releases the GIL, so we leave it to the caller to call this
+        method in parallel and later call build sequentially.
+        """
+        return TranslationUnit.from_source(
+            filename=self.filename,
             args=clang_args,
             options=TranslationUnit.PARSE_DETAILED_PROCESSING_RECORD,
         )
 
-    def process(self) -> "Header":
+    def build(self, translation_unit: TranslationUnit) -> "Header":
         """
-        Process header cursors
+        Build the Header instance
+        """
+        return Header(translation_unit, self)
 
-        TranslationUnit.from_source can be parallelized, but cursor.get_children
-        cannot, so we split them
-        """
+
+class Header:
+    """
+    A parsed C header file
+    """
+
+    name: str
+
+    cursors: DefaultDict[CursorKind, OrderedDict[str, Cursor]]
+    cursor_kinds: OrderedDict[str, CursorKind]
+    cfuncs: OrderedDict[str, CFunc]  # Store __attributes__
+
+    def __init__(self, translation_unit: TranslationUnit, builder: HeaderBuilder):
+        headers.append(self)
+
+        self.name = builder.name
+
         self.cursors = DefaultDict(OrderedDict)
         self.cursor_kinds = OrderedDict()
         self.cfuncs = OrderedDict()
 
-        for cursor in self.translation_unit.cursor.get_children():
+        for cursor in translation_unit.cursor.get_children():
+            cursor_file = cursor.location.file
+            if not cursor_file:
+                continue
+
             # Skip nodes from other headers
-            if not cursor.location.file or cursor.location.file.name not in self.files:
+            cursor_file_name = cursor_file.name
+            if cursor_file_name != builder.filename and (
+                not builder.extra_filename
+                or cursor_file_name != builder.extra_filename
+            ):
                 continue
 
             # Skip `#include` and macro expansion
@@ -147,16 +174,13 @@ class Header:
             ]:
                 continue
 
-            # Rename anonymous declarations and check for redefinitions
+            # Ignore anonymous declarations
             name = cursor.spelling
             if not name:
-                assert cursor.kind in [
-                    CursorKind.STRUCT_DECL,
-                    CursorKind.ENUM_DECL,
-                    CursorKind.UNION_DECL,
-                ], f"Unexpected anonymous symbol of kind: {cursor.kind} at {cursor.location}"
-                name = f"anonymous_node_{len(self.cursors)}"
-            elif name in self.cursor_kinds:  # Redefinition
+                continue
+
+            # Check for redefinitions
+            if name in self.cursor_kinds:  # Redefinition
                 prev = self.cursors[cursor.kind][name]
                 if cursor.kind == CursorKind.STRUCT_DECL:
                     assert prev.kind == CursorKind.STRUCT_DECL
@@ -177,8 +201,6 @@ class Header:
                 self.cfuncs[name] = CFunc(cursor)
             else:
                 self.cursors[cursor.kind][name] = cursor
-
-        return self
 
     def pop(self, kind: CursorKind, name: str) -> Cursor:
         """
