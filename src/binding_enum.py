@@ -25,7 +25,6 @@ class Enum:
         enums.append(self)
 
         typedef_cursor = header.pop(CursorKind.TYPEDEF_DECL, typedef)
-        self.fields = OrderedDict()
         self.typedef_name = typedef_cursor.spelling
 
         enum = typedef_cursor.underlying_typedef_type.get_declaration()
@@ -33,6 +32,7 @@ class Enum:
             enum.kind == CursorKind.ENUM_DECL
         ), "Typedef underlying declaration was {struct_cursor.kind}, not ENUM_DECL"
 
+        self.fields = OrderedDict()
         for field in enum.get_children():
             assert field.kind == CursorKind.ENUM_CONSTANT_DECL
             self.fields[field.spelling] = str(field.enum_value)
@@ -40,7 +40,7 @@ class Enum:
 
 class MacroEnum:
     """
-    A C enum
+    A C enum consisting of #define's
     """
 
     defines: OrderedDict[str, str]

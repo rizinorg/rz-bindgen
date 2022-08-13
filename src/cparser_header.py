@@ -28,11 +28,11 @@ class AttrCursor:
         """
         Get annotation __attribute__'s on cursor
         """
-        attrs = set()
-        for child in self.cursor.get_children():
-            if child.kind == CursorKind.ANNOTATE_ATTR:
-                attrs.add(child.spelling)
-        return attrs
+        return {
+            child.spelling
+            for child in self.cursor.get_children()
+            if child.kind == CursorKind.ANNOTATE_ATTR
+        }
 
 
 class CFuncArg(AttrCursor):
@@ -162,8 +162,7 @@ class Header:
             # Skip nodes from other headers
             cursor_file_name = cursor_file.name
             if cursor_file_name != builder.filename and (
-                not builder.extra_filename
-                or cursor_file_name != builder.extra_filename
+                not builder.extra_filename or cursor_file_name != builder.extra_filename
             ):
                 continue
 

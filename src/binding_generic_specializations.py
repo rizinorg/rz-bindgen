@@ -11,8 +11,7 @@ from cparser_types import (
     CPointerType,
     CRecordType,
     CFunctionType,
-    CIncompleteArrayType,
-    CFixedArrayType,
+    CArrayType,
     CTypedefType,
     CPrimitiveType,
     assert_never,
@@ -34,10 +33,13 @@ def gen_ctype_specializations(cursors: List[Cursor], ctype: CType) -> None:
     if isinstance(ctype, CPointerType):
         gen_ctype_specializations(cursors, ctype.pointee)
     elif isinstance(ctype, CTypedefType):
-        if not isinstance(ctype.canonical, CRecordType):
-            gen_ctype_specializations(cursors + [ctype.cursor], ctype.canonical)
-        else:
+        if isinstance(ctype.canonical, CRecordType):
             gen_ctype_specializations(cursors, ctype.canonical)
+        else:
+            # Add typedef cursor for non-struct typedefs
+            # so type comments can be processed
+            # eg. typedef RzVector /*<ut64>*/ (*func)(void)
+            gen_ctype_specializations(cursors + [ctype.cursor], ctype.canonical)
     elif isinstance(ctype, CFunctionType):
         gen_ctype_specializations(cursors, ctype.result)
         cursor_args = [
@@ -57,19 +59,17 @@ def gen_ctype_specializations(cursors: List[Cursor], ctype: CType) -> None:
         if decl_spelling in generic_structs:
             ctype.generic = generic_structs[decl_spelling]
 
+            # Search for comment in all active cursors
             for cursor in cursors:
-                specialization = ctype.generic.add_specialization(cursor)
-                if specialization:
-                    ctype.specialization = specialization
+                ctype.specialization = ctype.generic.add_specialization(cursor)
+                if ctype.specialization:
                     break
             else:
                 raise Exception(
                     "No /*<type>*/ comment found in cursors at "
                     + ", ".join(str(cursor.location) for cursor in cursors)
                 )
-    elif isinstance(ctype, CFixedArrayType):
-        pass
-    elif isinstance(ctype, CIncompleteArrayType):
+    elif isinstance(ctype, CArrayType):
         pass
     elif isinstance(ctype, CPrimitiveType):
         pass

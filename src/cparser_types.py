@@ -5,12 +5,15 @@ SPDX-License-Identifier: LGPL-3.0-only
 
 from typing import List, Optional, Union, NoReturn, TYPE_CHECKING
 
+from dataclasses import dataclass
+
 from clang.cindex import Cursor, Type, TypeKind
 
 if TYPE_CHECKING:
     from binding_generic import Generic
 
 
+@dataclass
 class CBaseType:
     """
     Base class for type wrapper
@@ -18,16 +21,15 @@ class CBaseType:
 
     type_: Type
 
-    def __init__(self, type_: Type):
-        self.type_ = type_
 
-
+@dataclass
 class CPrimitiveType(CBaseType):
     """
     Primitive type wrapper
     """
 
 
+@dataclass
 class CPointerType(CBaseType):
     """
     Pointer type wrapper
@@ -35,35 +37,21 @@ class CPointerType(CBaseType):
 
     pointee: "CType"
 
-    def __init__(self, type_: Type):
-        super().__init__(type_)
-        self.pointee = wrap_type(type_.get_pointee())
 
-
-class CIncompleteArrayType(CBaseType):
+@dataclass
+class CArrayType(CBaseType):
     """
-    Array type wrapper without size (eg. int[])
+    Array type wrapper
+
+    If fixed size (eg. char[80]), element_count is an int.
+    If variable size (eg. char[]), element_count is None.
     """
 
     element: "CType"
-
-    def __init__(self, type_: Type):
-        super().__init__(type_)
-        self.element = wrap_type(type_.get_array_element_type())
+    element_count: Optional[int] = None
 
 
-class CFixedArrayType(CIncompleteArrayType):
-    """
-    Array type wrapper with fixed size (eg. int[10])
-    """
-
-    element_count: int
-
-    def __init__(self, type_: Type):
-        super().__init__(type_)
-        self.element_count = type_.element_count
-
-
+@dataclass
 class CTypedefType(CBaseType):
     """
     Typedef type wrapper
@@ -72,12 +60,8 @@ class CTypedefType(CBaseType):
     canonical: "CType"
     cursor: Cursor
 
-    def __init__(self, type_: Type):
-        super().__init__(type_)
-        self.canonical = wrap_type(type_.get_canonical())
-        self.cursor = type_.get_declaration()
 
-
+@dataclass
 class CRecordType(CBaseType):
     """
     Struct type wrapper
@@ -87,18 +71,11 @@ class CRecordType(CBaseType):
     """
 
     decl_spelling: str
-    generic: Optional["Generic"]
-    specialization: Optional[str]
-
-    def __init__(self, type_: Type):
-        super().__init__(type_)
-        self.decl_spelling = type_.get_declaration().spelling or type_.spelling
-        if self.decl_spelling.startswith("const "):
-            self.decl_spelling = self.decl_spelling[len("const ") :]
-        self.generic = None
-        self.specialization = None
+    generic: Optional["Generic"] = None
+    specialization: Optional[str] = None
 
 
+@dataclass
 class CFunctionType(CBaseType):
     """
     Function type wrapper
@@ -106,13 +83,7 @@ class CFunctionType(CBaseType):
 
     result: "CType"
     args: List["CType"]
-    arg_names: Optional[List[str]]
-
-    def __init__(self, type_: Type):
-        super().__init__(type_)
-        self.result = wrap_type(type_.get_result())
-        self.args = [wrap_type(arg) for arg in type_.argument_types()]
-        self.arg_names = None
+    arg_names: Optional[List[str]] = None
 
 
 CType = Union[
@@ -120,8 +91,7 @@ CType = Union[
     CRecordType,
     CPointerType,
     CFunctionType,
-    CIncompleteArrayType,
-    CFixedArrayType,
+    CArrayType,
     CTypedefType,
 ]
 
@@ -135,17 +105,34 @@ def wrap_type(type_: Type) -> CType:
 
     # Complex types
     if type_.kind == TypeKind.POINTER:
-        return CPointerType(type_)
-    if type_.kind == TypeKind.CONSTANTARRAY:
-        return CFixedArrayType(type_)
-    if type_.kind == TypeKind.INCOMPLETEARRAY:
-        return CIncompleteArrayType(type_)
+        return CPointerType(type_, pointee=wrap_type(type_.get_pointee()))
+
+    if type_.kind in [TypeKind.CONSTANTARRAY, TypeKind.INCOMPLETEARRAY]:
+        array_t = CArrayType(type_, element=wrap_type(type_.get_array_element_type()))
+        if type_.kind == TypeKind.CONSTANTARRAY:
+            array_t.element_count = type_.element_count
+        return array_t
+
     if type_.kind == TypeKind.TYPEDEF:
-        return CTypedefType(type_)
+        return CTypedefType(
+            type_,
+            canonical=wrap_type(type_.get_canonical()),
+            cursor=type_.get_declaration(),
+        )
+
     if type_.kind == TypeKind.FUNCTIONPROTO:
-        return CFunctionType(type_)
+        return CFunctionType(
+            type_,
+            result=wrap_type(type_.get_result()),
+            args=[wrap_type(arg) for arg in type_.argument_types()],
+        )
+
     if type_.kind == TypeKind.RECORD:
-        return CRecordType(type_)
+        decl_spelling = type_.get_declaration().spelling or type_.spelling
+        if decl_spelling.startswith("const "):
+            decl_spelling = decl_spelling[len("const ") :]
+
+        return CRecordType(type_, decl_spelling=decl_spelling)
 
     # Primitive types
     if type_.kind in [

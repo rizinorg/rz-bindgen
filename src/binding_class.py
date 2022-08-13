@@ -7,7 +7,7 @@ from typing import List, Dict, OrderedDict, Set, Optional, overload
 
 from dataclasses import dataclass
 
-from clang.cindex import Cursor, CursorKind
+from clang.cindex import CursorKind
 
 from cparser_header import Header
 from cparser_types import CType, CPointerType, CTypedefType, CRecordType, wrap_type
@@ -22,10 +22,10 @@ class_structs: Dict[str, "Class"] = {}
 @dataclass
 class Field:
     """
-    Groups a field cursor and its type
+    Groups a field name and type
     """
 
-    cursor: Cursor
+    name: str
     rename: Optional[str]
     ctype: CType
 
@@ -87,6 +87,7 @@ class Class:
         self.constructor = None
         self.destructor = None
 
+        # Get struct cursor from header
         if not struct:
             typedef_cursor = header.pop(CursorKind.TYPEDEF_DECL, typedef)
             struct_cursor = typedef_cursor.underlying_typedef_type.get_declaration()
@@ -110,15 +111,15 @@ class Class:
                     ignore_fields.remove(name)
                     continue
 
-                if rename_fields and name in rename_fields:
-                    rename = rename_fields.pop(name)
+                if rename_fields:
+                    rename = rename_fields.pop(name, None)
                 else:
                     rename = None
 
                 assert name not in self.fields
                 ctype = wrap_type(field.type)
                 gen_ctype_specializations([field], ctype)
-                self.fields[name] = Field(field, rename, ctype)
+                self.fields[name] = Field(name, rename, ctype)
 
             elif field.kind not in [CursorKind.STRUCT_DECL, CursorKind.UNION_DECL]:
                 raise Exception(
@@ -195,7 +196,8 @@ class Class:
 
     def add_prefixed_methods(self, prefix: str) -> None:
         """
-        Add C functions with a given prefix as static functions
+        Add C functions with a given prefix, and that take a
+        pointer to this class as the first argument, as methods
 
         New names will be the function names with the prefix removed
 
@@ -211,6 +213,7 @@ class Class:
             if len(cfunc.args) == 0:
                 continue
 
+            # Select functions with class struct as first argument
             ctype = cfunc.args[0].ctype
             if not isinstance(ctype, CPointerType):
                 continue
@@ -239,7 +242,7 @@ class Class:
 
     def add_prefixed_funcs(self, prefix: str) -> None:
         """
-        Add C functions with a given prefix as methods
+        Add C functions with a given prefix as static functions
         """
         func_names = set()
         for name, cfunc in self.header.cfuncs.items():

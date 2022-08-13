@@ -21,6 +21,11 @@ threaded_headers: OrderedDict[str, HeaderFunc] = OrderedDict()
 def threaded_header(name: str) -> Callable[[HeaderFunc], None]:
     """
     Registers a header to be parsed by clang in parallel
+
+    Decorates a function which takes a Header as an argument.
+
+    Only the header parsing is done in parallel; the wrapped
+    functions are called in the order they were registered
     """
 
     def decorator(func: HeaderFunc) -> None:
@@ -28,6 +33,20 @@ def threaded_header(name: str) -> Callable[[HeaderFunc], None]:
         threaded_headers[name] = func
 
     return decorator
+
+
+def run() -> None:
+    """
+    Parse headers in parallel, then run registered functions sequentially
+    """
+
+    with concurrent.futures.ThreadPoolExecutor() as executor:
+        builders = [HeaderBuilder(name) for name in threaded_headers]
+        translation_units = executor.map(HeaderBuilder.translation_unit, builders)
+        for translation_unit, builder, func in zip(
+            translation_units, builders, threaded_headers.values()
+        ):
+            func(Header(translation_unit, builder))
 
 
 ############
@@ -38,17 +57,20 @@ def threaded_header(name: str) -> Callable[[HeaderFunc], None]:
 @threaded_header("rz_list.h")
 def bind_list(list_h: Header) -> None:
     """
-    RzList
+    RzListIter, RzList
     """
+    ### RzListIter ###
     rz_list_iter = Generic(list_h, "RzListIter", pointer=True)
     rz_list_iter.add_method("rz_list_iter_get_next", rename="next", generic_ret=True)
     rz_list_iter.add_method("rz_list_iter_get_data", rename="data", generic_ret=True)
 
+    ### RzList ###
     rz_list = Generic(list_h, "RzList", dependencies=[rz_list_iter], pointer=True)
     rz_list.add_method("rz_list_length", rename="length")
 
     rz_list.add_method("rz_list_first", rename="first", generic_ret=True)
     rz_list.add_method("rz_list_last", rename="last", generic_ret=True)
+    rz_list.add_method("rz_list_iterator", rename="iterator", generic_ret=True)
 
     rz_list.add_method(
         "rz_list_prepend", rename="prepend", generic_ret=True, generic_args={"data"}
@@ -56,11 +78,11 @@ def bind_list(list_h: Header) -> None:
     rz_list.add_method(
         "rz_list_append", rename="append", generic_ret=True, generic_args={"data"}
     )
-    rz_list.add_method("rz_list_iterator", rename="iterator", generic_ret=True)
 
     rz_list.add_python_method("__len__(self)", "return self.length()")
     rz_list.add_python_method("__iter__(self)", "return RzListIterator(self)")
 
+    # Specialized constructors
     rz_list.add_specialization_extension(
         "RzBinSymbol",
         "RzList_RzBinSymbol() {",
@@ -86,6 +108,7 @@ def bind_vector(vector_h: Header) -> None:
     """
     RzVector, RzPVector
     """
+    ### RzVector ###
     rz_vector = Generic(vector_h, "RzVector")
     rz_vector.add_method("rz_vector_len", rename="length")
     rz_vector.add_method("rz_vector_head", rename="head", generic_ret=True)
@@ -98,6 +121,7 @@ def bind_vector(vector_h: Header) -> None:
     rz_vector.add_python_method("__len__(self)", "return self.length()")
     rz_vector.add_python_method("__iter__(self)", "return RzVectorIterator(self)")
 
+    ### RzPVector ###
     rz_pvector = Generic(vector_h, "RzPVector", pointer=True)
     rz_pvector.add_method("rz_pvector_len", rename="length")
     rz_pvector.add_method("rz_pvector_head", rename="head", generic_ret=True)
@@ -119,12 +143,8 @@ def bind_vector(vector_h: Header) -> None:
 @threaded_header("rz_analysis.h")
 def bind_analysis(analysis_h: Header) -> None:
     """
-    rz_analysis.h
+    RzAnalysis
     """
-    Class(analysis_h, typedef="RzAnalysisBlock")
-    Class(analysis_h, typedef="RzAnalysisEsil")
-    Class(analysis_h, typedef="RzAnalysisPlugin")
-
     rz_analysis = Class(
         analysis_h,
         typedef="RzAnalysis",
@@ -140,22 +160,25 @@ def bind_analysis(analysis_h: Header) -> None:
     rz_analysis.add_prefixed_methods("rz_analysis_")
     rz_analysis.add_prefixed_funcs("rz_analysis_")
 
+    Class(analysis_h, typedef="RzAnalysisBlock")
+    Class(analysis_h, typedef="RzAnalysisEsil")
+    Class(analysis_h, typedef="RzAnalysisPlugin")
+
 
 @threaded_header("rz_asm.h")
 def bind_asm(asm_h: Header) -> None:
     """
-    rz_asm.h
+    RzAsm
     """
-    Class(asm_h, typedef="RzAsm")
+    Class(asm_h, typedef="RzAsm")  # TODO: Add functions
     Class(asm_h, typedef="RzAsmPlugin")
 
 
 @threaded_header("rz_bin.h")
 def bind_bin(bin_h: Header) -> None:
     """
-    rz_bin.h
+    RzBin
     """
-    Class(bin_h, typedef="RzBinXtrPlugin")
 
     rz_bin_file = Class(bin_h, typedef="RzBinFile")
     rz_bin_file.add_prefixed_methods("rz_bin_file_")
@@ -166,28 +189,27 @@ def bind_bin(bin_h: Header) -> None:
     rz_bin.add_prefixed_methods("rz_bin_")
     rz_bin.add_prefixed_funcs("rz_bin_")
 
+    Class(bin_h, typedef="RzBinXtrPlugin")
     Class(bin_h, typedef="RzBinOptions")
     Class(bin_h, typedef="RzBinInfo")
-
     Class(bin_h, typedef="RzBinSymbol")
     Class(bin_h, typedef="RzBinSection")
+    Class(bin_h, typedef="RzBinMap")
 
     Director(bin_h, "RzBinPlugin")
 
     MacroEnum(bin_h, prefix="RZ_BIN_TYPE_")
     MacroEnum(bin_h, prefix="RZ_BIN_BIND_")
 
-    Class(bin_h, typedef="RzBinMap")
-
 
 @threaded_header("rz_util/rz_buf.h")
 def bind_buf(buf_h: Header) -> None:
     """
-    rz_buf.h
+    RzBuf
     """
-    MacroEnum(buf_h, "RZ_BUF_SET", "RZ_BUF_CUR", "RZ_BUF_END")
     rz_buf = Class(buf_h, typedef="RzBuffer")
 
+    # const ut8 *buffer, ut64 len
     for name in [
         "append_bytes",
         "prepend_bytes",
@@ -202,16 +224,19 @@ def bind_buf(buf_h: Header) -> None:
             typemaps=[const_buffer_len_typemap],
         )
 
+    # ut8 *buffer, ut64 len
     rz_buf.add_method("rz_buf_read", rename="read", typemaps=[buffer_len_typemap])
     rz_buf.add_method("rz_buf_read_at", rename="read_at", typemaps=[buffer_len_typemap])
 
     rz_buf.add_method("rz_buf_seek", rename="seek")
 
+    MacroEnum(buf_h, "RZ_BUF_SET", "RZ_BUF_CUR", "RZ_BUF_END")
+
 
 @threaded_header("rz_cmd.h")
 def bind_cmd(cmd_h: Header) -> None:
     """
-    rz_cmd.h
+    RzCmd
     """
     Class(cmd_h, typedef="RzCmd")
     Class(cmd_h, typedef="RzCmdDescHelp")
@@ -222,7 +247,7 @@ def bind_cmd(cmd_h: Header) -> None:
 @threaded_header("rz_config.h")
 def bind_config(config_h: Header) -> None:
     """
-    rz_config.h
+    RzConfig
     """
     config_h.ignore("rz_config_version")  # TODO: Fix in rizin
     rz_config = Class(config_h, typedef="RzConfig", rename_fields={"lock": "_lock"})
@@ -233,20 +258,12 @@ def bind_config(config_h: Header) -> None:
 @threaded_header("rz_cons.h")
 def bind_cons(cons_h: Header) -> None:
     """
-    rz_cons.h
+    RzCons
     """
-    cons_h.ignore(
-        "rz_cons_printf",
-        "rz_cons_printf_list",
-        "rz_cons_yesno",
-    )
-
-    Class(cons_h, typedef="RzLine")
-
     rz_cons = Class(
         cons_h,
         typedef="RzCons",
-        ignore_fields={"term_raw", "term_buf"},
+        ignore_fields={"term_raw", "term_buf"},  # struct termios
         rename_fields={
             "lastline": "_lastline",
             "echo": "_echo",
@@ -258,14 +275,22 @@ def bind_cons(cons_h: Header) -> None:
             "enable_highlight": "_enable_highlight",
         },
     )
+
+    cons_h.ignore(
+        "rz_cons_printf",
+        "rz_cons_printf_list",
+        "rz_cons_yesno",
+    )
     rz_cons.add_prefixed_methods("rz_cons_")
     rz_cons.add_prefixed_funcs("rz_cons_")
+
+    Class(cons_h, typedef="RzLine")
 
 
 @threaded_header("rz_cmp.h")
 def bind_cmp(_: Header) -> None:
     """
-    Needed for RzCoreCmpWatcher
+    Needed for RzList_RzCoreCmpWatcher
     """
 
 
@@ -283,7 +308,7 @@ def bind_core(core_h: Header) -> None:
     rz_core.add_constructor("rz_core_new")
     rz_core.add_destructor("rz_core_free")
 
-    # Ignore format strings
+    # Ignore format string functions
     core_h.ignore(
         "rz_core_notify_begin",
         "rz_core_notify_done",
@@ -328,7 +353,7 @@ def bind_hash(hash_h: Header) -> None:
     """
     RzHash
     """
-    Class(hash_h, typedef="RzHash")
+    Class(hash_h, typedef="RzHash")  # TODO: Add functions
 
 
 @threaded_header("rz_io.h")
@@ -443,17 +468,3 @@ def bind_ht_uu(ht_uu_h: Header) -> None:
     ht_uu
     """
     Class(ht_uu_h, typedef="HtUU")
-
-
-def run() -> None:
-    """
-    Parse headers in parallel, then run functions sequentially
-    """
-
-    with concurrent.futures.ThreadPoolExecutor() as executor:
-        builders = [HeaderBuilder(name) for name in threaded_headers]
-        translation_units = executor.map(HeaderBuilder.translation_unit, builders)
-        for translation_unit, builder, func in zip(
-            translation_units, builders, threaded_headers.values()
-        ):
-            func(Header(translation_unit, builder))
