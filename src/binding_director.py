@@ -59,6 +59,9 @@ class Director:
                 field.ctype.pointee, CFunctionType
             ):
                 ctype = field.ctype.pointee
+
+                # arg_names should be generated in Class construction
+                # when calling gen_ctype_specializations on field
                 assert ctype.arg_names and len(ctype.arg_names) == len(ctype.args)
 
                 self.funcs[name] = DirectorFunc(

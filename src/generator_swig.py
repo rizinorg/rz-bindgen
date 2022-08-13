@@ -14,8 +14,7 @@ from cparser_types import (
     CPointerType,
     CRecordType,
     CFunctionType,
-    CIncompleteArrayType,
-    CFixedArrayType,
+    CArrayType,
     CTypedefType,
     CPrimitiveType,
     assert_never,
@@ -183,11 +182,9 @@ def stringify_decl(expr: str, ctype: CType, generic: bool = False) -> str:
             args = ", ".join([stringify_decl("", arg) for arg in ctype.args])
             expr = f"{expr}({args})"
             ctype = ctype.result
-        elif isinstance(ctype, CFixedArrayType):
-            expr = f"{expr}[{ctype.element_count}]"
-            ctype = ctype.element
-        elif isinstance(ctype, CIncompleteArrayType):
-            expr = f"{expr}[]"
+        elif isinstance(ctype, CArrayType):
+            element_count = ctype.element_count or ""
+            expr = f"{expr}[{element_count}]"
             ctype = ctype.element
         else:
             assert_never(ctype)
@@ -205,22 +202,20 @@ def write_class(writer: Writer, cls: Class) -> None:
     # %rename fields
     for field in cls.fields.values():
         if field.rename:
-            writer.line(
-                f"%rename {cls.struct_name}::{field.cursor.spelling} {field.rename};"
-            )
+            writer.line(f"%rename {cls.struct_name}::{field.name} {field.rename};")
 
     # Main struct
     writer.line(f"struct {cls.struct_name} {{")
     with writer.indent():
         for field in cls.fields.values():
-            decl = stringify_decl(field.cursor.spelling, field.ctype)
+            decl = stringify_decl(field.name, field.ctype)
             writer.line(f"{decl};")
     writer.line("};")
 
     # un %rename fields
     for field in cls.fields.values():
         if field.rename:
-            writer.line(f'%rename {cls.struct_name}::{field.cursor.spelling} "";')
+            writer.line(f'%rename {cls.struct_name}::{field.name} "";')
 
     # Extension
     if len(cls.funcs) != 0 or len(cls.methods) != 0:

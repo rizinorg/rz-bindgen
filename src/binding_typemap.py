@@ -38,26 +38,22 @@ class Typemap:
         """
         Check if a typemap applies to a function
         """
-        index = 0
-        spellings = []
+        args = [
+            TypemapArg(arg.ctype.type_.spelling, arg.cursor.spelling)
+            for arg in func.cfunc.args
+        ]
 
-        for arg in func.cfunc.args:
-            spelling = arg.ctype.type_.spelling
-            spellings.append(spelling)
-
-            if (
-                spelling == self.args[index].type_
-                and arg.cursor.spelling == self.args[index].name
-            ):
-                index += 1
-                if index == len(self.args):
-                    return
+        num_args = len(self.args)
+        for start in range(len(args) - num_args + 1):
+            for typemap_arg, arg in zip(self.args, args[start : start + num_args]):
+                if typemap_arg != arg:
+                    break
             else:
-                index = 0
+                return
 
         raise Exception(
             f"Function {func.cfunc.cursor.spelling} did not match typemap `{self.args}`. "
-            f"Contents were: {spellings}"
+            f"Contents were: {args}"
         )
 
 

@@ -45,6 +45,7 @@ for segments in [
 # Enable certain annotation definitions in rz_types.h
 clang_args.append("-DRZ_BINDINGS")
 
+# Run binding specifications
 bindings.run()
 
 # Generator(s)
