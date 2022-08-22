@@ -109,9 +109,7 @@ class HeaderBuilder:
         # Parse ht_inc.h if importing SDB hashtable header
         self.extra_filename = None
         if name_segments[-1] in ["ht_pp.h", "ht_pu.h", "ht_up.h", "ht_uu.h"]:
-            self.extra_filename = os.path.abspath(
-                os.path.join(rizin_include_path, *name_segments[:-1] + ["ht_inc.h"])
-            )
+            self.extra_filename = "ht_inc.h"
 
     def translation_unit(self) -> TranslationUnit:
         """
@@ -161,8 +159,9 @@ class Header:
 
             # Skip nodes from other headers
             cursor_file_name = cursor_file.name
-            if cursor_file_name != builder.filename and (
-                not builder.extra_filename or cursor_file_name != builder.extra_filename
+            if cursor_file_name != builder.filename and not (
+                builder.extra_filename
+                and cursor_file_name.endswith(builder.extra_filename)
             ):
                 continue
 
@@ -186,9 +185,10 @@ class Header:
                     assert not any(prev.get_children())  # Should be forward declaration
                 elif cursor.kind == CursorKind.MACRO_DEFINITION:
                     assert prev.kind == CursorKind.MACRO_DEFINITION
-                    assert name.startswith(
-                        "__"
-                    )  # TODO: better detection of redefined macros
+                    basename = os.path.basename(cursor_file_name)
+                    assert (basename, name) in [
+                        ("rz_types.h", "__WINDOWS__")
+                    ], f"Unexpected redefinition of macro {name} in file {basename}"
                 else:
                     raise Exception(
                         f"Unexpected redefinition of symbol: {name}, "
