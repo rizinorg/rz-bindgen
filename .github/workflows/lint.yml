@@ -31,7 +31,8 @@ jobs:
       if: ${{ always() }}
     - name: Run black
       run: |
-        black --check --diff src/*.py
+        black --check --diff src/*.py src/clang/cindex.pyi
+      if: ${{ always() }}
 
   codeql:
     runs-on: ubuntu-latest

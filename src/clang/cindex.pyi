@@ -9,40 +9,39 @@ from enum import Enum
 
 class Config:
     @staticmethod
-    def set_library_path(path: str) -> None:
-        ...
+    def set_library_path(path: str) -> None: ...
 
 class TranslationUnit:
     PARSE_DETAILED_PROCESSING_RECORD: int
 
     @staticmethod
-    def from_source(filename: str, args: List[str], options: int) -> TranslationUnit:
-        ...
+    def from_source(
+        filename: str, args: List[str], options: int
+    ) -> TranslationUnit: ...
 
     cursor: Cursor
 
-    def get_tokens(self, *, extent: SourceRange) -> Iterator[Token]:
-        ...
-    
+    def get_tokens(self, *, extent: SourceRange) -> Iterator[Token]: ...
+
 ### Type ###
 class TypeKind(Enum):
     TYPEDEF: TypeKind
     ELABORATED: TypeKind
-    
+
     POINTER: TypeKind
     CONSTANTARRAY: TypeKind
     FUNCTIONPROTO: TypeKind
     INCOMPLETEARRAY: TypeKind
-    
+
     RECORD: TypeKind
     ENUM: TypeKind
-    
+
     VOID: TypeKind
     BOOL: TypeKind
     FLOAT: TypeKind
     DOUBLE: TypeKind
     LONGDOUBLE: TypeKind
-    
+
     # Unsigned
     CHAR_U: TypeKind
     UCHAR: TypeKind
@@ -60,42 +59,26 @@ class TypeKind(Enum):
     INT: TypeKind
     LONG: TypeKind
     LONGLONG: TypeKind
-    
+
 class Type:
     kind: TypeKind
     spelling: str
 
-    def get_declaration(self) -> Cursor:
-        ...
+    def get_declaration(self) -> Cursor: ...
+    def get_pointee(self) -> Type: ...
+    def get_canonical(self) -> Type: ...
+    def get_named_type(self) -> Type: ...
+    def get_array_element_type(self) -> Type: ...
+    def get_result(self) -> Type: ...
+    def argument_types(self) -> Iterator[Type]: ...
+    def is_const_qualified(self) -> bool: ...
 
-    def get_pointee(self) -> Type:
-        ...
-
-    def get_canonical(self) -> Type:
-        ...
-
-    def get_named_type(self) -> Type:
-        ...
-
-    def get_array_element_type(self) -> Type:
-        ...
-
-    def get_result(self) -> Type:
-        ...
-
-    def argument_types(self) -> Iterator[Type]:
-        ...
-
-    def is_const_qualified(self) -> bool:
-        ...
-        
     element_count: int
-        
+
 ### Cursor ###
 class SourceLocation:
     class File:
         name: str
-
     file: File
 
 class SourceRange:
@@ -103,16 +86,15 @@ class SourceRange:
     end: SourceLocation
 
     @staticmethod
-    def from_locations(start: SourceLocation, end: SourceLocation) -> SourceRange:
-        ...
-    
+    def from_locations(start: SourceLocation, end: SourceLocation) -> SourceRange: ...
+
 class Token:
     spelling: str
-        
+
 class CursorKind(Enum):
     INCLUSION_DIRECTIVE: TypeKind
     MACRO_INSTANTIATION: TypeKind
-    
+
     ENUM_DECL: TypeKind
     MACRO_DEFINITION: TypeKind
     STRUCT_DECL: TypeKind
@@ -123,7 +105,7 @@ class CursorKind(Enum):
     UNION_DECL: TypeKind
     PARM_DECL: TypeKind
     ENUM_CONSTANT_DECL: TypeKind
-    
+
     ANNOTATE_ATTR: TypeKind
     TYPE_REF: TypeKind
 
@@ -135,16 +117,11 @@ class Cursor:
     location: SourceLocation
     extent: SourceRange
     translation_unit: TranslationUnit
-    
-    def get_children(self) -> Iterator[Cursor]:
-        ...
 
-    def get_arguments(self) -> Iterator[Cursor]:
-        ...
+    def get_children(self) -> Iterator[Cursor]: ...
+    def get_arguments(self) -> Iterator[Cursor]: ...
+    def get_tokens(self) -> Iterator[Token]: ...
 
-    def get_tokens(self) -> Iterator[Token]:
-        ...
-        
     underlying_typedef_type: Type
     result_type: Type
     enum_value: int
