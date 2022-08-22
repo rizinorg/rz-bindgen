@@ -20,6 +20,9 @@ Binding specification file.
 Generator backend for SWIG.
 Also see `snippets_swig`, which holds longer snippets of code to be used in this generator.
 
+## `generator_sphinx.py`
+Generator backend for Python Sphinx documentation.
+
 ## `writer.py`
 Helper class for writing lines and snippets to a file with indentation.
 

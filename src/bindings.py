@@ -145,6 +145,8 @@ def bind_analysis(analysis_h: Header) -> None:
     """
     RzAnalysis
     """
+    analysis_h.ignore("rz_analysis_version")
+
     rz_analysis = Class(
         analysis_h,
         typedef="RzAnalysis",
@@ -179,6 +181,7 @@ def bind_bin(bin_h: Header) -> None:
     """
     RzBin
     """
+    bin_h.ignore("rz_bin_version")
 
     rz_bin_file = Class(bin_h, typedef="RzBinFile")
     rz_bin_file.add_prefixed_methods("rz_bin_file_")
@@ -260,6 +263,8 @@ def bind_cons(cons_h: Header) -> None:
     """
     RzCons
     """
+    cons_h.ignore("rz_cons_version")
+
     rz_cons = Class(
         cons_h,
         typedef="RzCons",
@@ -299,6 +304,8 @@ def bind_core(core_h: Header) -> None:
     """
     RzCore
     """
+    core_h.ignore("rz_core_version")
+
     rz_core = Class(
         core_h,
         typedef="RzCore",
@@ -339,6 +346,7 @@ def bind_flag(flag_h: Header) -> None:
     """
     RzFlag
     """
+    flag_h.ignore("rz_flag_version")
 
     rz_flag_item = Class(flag_h, typedef="RzFlagItem")
     rz_flag_item.add_prefixed_methods("rz_flag_item_")
@@ -371,6 +379,8 @@ def bind_main(main_h: Header) -> None:
     """
     RzMain
     """
+    main_h.ignore("rz_main_version")
+
     rz_main = Class(main_h, typedef="RzMain")
     rz_main.add_constructor("rz_main_new")
     rz_main.add_destructor("rz_main_free")
@@ -393,6 +403,8 @@ def bind_reg(reg_h: Header) -> None:
     """
     RzReg
     """
+    reg_h.ignore("rz_reg_version")
+
     rz_reg = Class(reg_h, typedef="RzReg", rename_fields={"regset": "_regset"})
     rz_reg.add_method("rz_reg_32_to_64", rename="convert_32_to_64")
     rz_reg.add_method("rz_reg_64_to_32", rename="convert_64_to_32")
