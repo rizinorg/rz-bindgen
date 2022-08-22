@@ -372,7 +372,7 @@ def bind_io(io_h: Header) -> None:
     """
     RzIO
     """
-    Class(io_h, typedef="RzIO", ignore_fields={"ptrace_wrap"})
+    Class(io_h, typedef="RzIO", ignore_fields={"ptrace_wrap", "priv_w32dbg_wrap"})
     Class(io_h, typedef="RzIODesc")
     Class(io_h, typedef="RzIOPlugin")
 
