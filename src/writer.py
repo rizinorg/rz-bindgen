@@ -18,7 +18,7 @@ class Writer:
     indent_level: int
     indent_amount: int
 
-    def __init__(self, output: TextIO, indent_amount: int = 4):
+    def __init__(self, output: TextIO, *, indent_amount: int = 4):
         self.output = output
         self.indent_level = 0
         self.indent_amount = indent_amount

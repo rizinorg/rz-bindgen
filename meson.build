@@ -6,6 +6,12 @@ py = pymod.find_installation('python')
 clang_path = get_option('clang_path')
 clang_args = get_option('clang_args')
 rizin_include_path = get_option('rizin_include_path')
+targets = get_option('targets')
+
+target_swig = targets.contains('SWIG')
+target_sphinx = targets.contains('sphinx')
+
+doxygen_path = get_option('doxygen_path')
 
 if clang_path == ''
   llvm = dependency('llvm', required: false)
@@ -40,48 +46,76 @@ if clang_args == ''
   endif
 endif
 
-swig_sources = custom_target(
-  'swig_sources',
+bindgen_output_names = []
+if target_swig
+  swig_source_idx = bindgen_output_names.length()
+  bindgen_output_names += ['rizin.i']
+endif
+
+if target_sphinx
+  sphinx_dir_idx = bindgen_output_names.length()
+  bindgen_output_names += ['sphinx']
+endif
+
+bindgen_outputs = custom_target(
+  'bindgen_outputs',
   input: 'src' / 'main.py',
-  output: 'rizin.i',
+  output: bindgen_output_names,
   command: [
     py, '@INPUT@',
     '-o', '@OUTDIR@',
     '--clang-path', clang_path,
     '--clang-args', clang_args,
-    '--rizin-include-path', rizin_include_path
-  ]
+    '--rizin-include-path', rizin_include_path,
+    '--targets', ','.join(targets)
+  ] + (doxygen_path != '' ? ['--doxygen-path', doxygen_path] : [])
 )
 
-swig_output = custom_target(
-  'swig_output',
-  input: swig_sources,
-  output: ['rizin.py', 'rizin_wrap.cxx'],
-  command: [
-    find_program('swig'),
-    '-python', '-c++',
-    '-outdir', '@OUTDIR@', '@INPUT@'
-  ],
-  install: true,
-  install_dir: [false, py.get_install_dir()]
-)
-swig_py = swig_output[0]
-swig_wrap = swig_output[1]
+if target_swig
+  swig_output = custom_target(
+    'swig_output',
+    input: bindgen_outputs[swig_source_idx],
+    output: ['rizin.py', 'rizin_wrap.cxx'],
+    command: [
+      find_program('swig'),
+      '-python', '-c++',
+      '-outdir', '@OUTDIR@', '@INPUT@'
+    ],
+    install: true,
+    install_dir: [false, py.get_install_dir()]
+  )
+  swig_py = swig_output[0]
+  swig_wrap = swig_output[1]
 
-py.extension_module(
-  '_rizin',
-  swig_wrap,
-  dependencies: [
-    py.dependency(),
-    dependency('openssl', required: false),
-    dependency('rz_main')
-  ],
-  include_directories: include_directories(
-    rizin_include_path,
-    rizin_include_path / 'sdb'
-  ),
-  install: true
-)
+  py.extension_module(
+    '_rizin',
+    swig_wrap,
+    dependencies: [
+      py.dependency(),
+      dependency('openssl', required: false),
+      dependency('rz_main')
+    ],
+    include_directories: include_directories(
+      rizin_include_path,
+      rizin_include_path / 'sdb'
+    ),
+    install: true
+  )
+endif
+
+if target_sphinx
+  custom_target(
+    'sphinx',
+    input: bindgen_outputs[sphinx_dir_idx],
+    output: 'sphinx_output',
+    command: [
+      find_program('sphinx-build'),
+      '@INPUT@',
+      '@OUTPUT@'
+    ],
+    build_by_default: true
+  )
+endif
 
 if get_option('plugin').enabled()
   subdir('plugin')

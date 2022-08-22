@@ -1,5 +1,5 @@
 swig_runtime = custom_target(
-  'swig_sources',
+  'swig_runtime',
   output: 'swig_runtime.h',
   command: [
     find_program('swig'),
