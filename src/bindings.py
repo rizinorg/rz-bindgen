@@ -46,6 +46,9 @@ def run() -> None:
         for translation_unit, builder, func in zip(
             translation_units, builders, threaded_headers.values()
         ):
+            for diagnostic in translation_unit.diagnostics:
+                print(diagnostic)
+
             func(Header(translation_unit, builder))
 
 

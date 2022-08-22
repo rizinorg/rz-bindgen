@@ -11,6 +11,8 @@ class Config:
     @staticmethod
     def set_library_path(path: str) -> None: ...
 
+class Diagnostic: ...
+
 class TranslationUnit:
     PARSE_DETAILED_PROCESSING_RECORD: int
 
@@ -20,6 +22,7 @@ class TranslationUnit:
     ) -> TranslationUnit: ...
 
     cursor: Cursor
+    diagnostics: List[Diagnostic]
 
     def get_tokens(self, *, extent: SourceRange) -> Iterator[Token]: ...
 
