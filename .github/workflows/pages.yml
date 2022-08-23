@@ -1,0 +1,76 @@
+name: deploy-rz-bindgen-pages
+on:
+  push:
+    paths:
+    - 'src/**.py'
+    - 'src/**.pyi'
+    - 'src/**.i'
+    - 'meson.build'
+    - 'meson_options.txt'
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build rz-bindings reference
+    runs-on: ubuntu-22.04
+    steps:
+    - name: Checkout rizin
+      uses: actions/checkout@v3
+      with:
+        repository: wingdeans/rizin
+        ref: header-types
+        path: rizin
+
+    - name: Install deps
+      run: |
+        sudo pip install meson ninja sphinx furo
+        sudo apt update
+        sudo apt install libclang-14-dev doxygen
+
+    - name: Build rizin
+      working-directory: rizin
+      run: |
+        meson setup build
+        sudo meson install -C build
+
+    - name: Run doxygen
+      working-directory: rizin
+      run: |
+        sed -i -e 's/\(GENERATE_XML.*\)NO/\1YES/' \
+            -e 's/\(XML_PROGRAMLISTING.*\)YES/NO/' Doxyfile
+        doxygen
+
+    - name: Checkout rz-bindgen
+      uses: actions/checkout@v3
+      with:
+        path: rz-bindgen
+
+    - name: Run rz-bindgen
+      working-directory: rz-bindgen
+      run: |
+        meson setup -Dtargets=sphinx \
+                    -Ddoxygen_path="$GITHUB_WORKSPACE/rizin/doc/doxygen/" build
+        ninja -C build
+
+    - name: Configure Pages
+      uses: actions/configure-pages@v1
+
+    - name: Upload Pages artifact
+      uses: actions/upload-pages-artifact@v1
+      with:
+        path: rz-bindgen/build/sphinx_output
+
+  deploy:
+    name: Deploy to Github Pages
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    permissions:
+      pages: write
+      id-token: write
+    steps:
+    - name: Deploy to GitHub Pages
+      id: deployment
+      uses: actions/deploy-pages@v1
