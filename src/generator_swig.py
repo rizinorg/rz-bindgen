@@ -258,6 +258,8 @@ def write_func(writer: Writer, func: Func, name: str, kind: FuncKind) -> None:
         args_inner = []
         args = func.cfunc.args
 
+    args_nonnull = []  # Used for nullability contract
+
     for arg in args:
         arg_name = arg.cursor.spelling
         if arg_name == "self":
@@ -275,8 +277,19 @@ def write_func(writer: Writer, func: Func, name: str, kind: FuncKind) -> None:
         args_outer.append(arg_decl)
         args_inner.append(arg_name)
 
+        if "RZ_NONNULL" in arg.attrs:
+            args_nonnull.append(arg_name)
+
     args_outer_str = ", ".join(args_outer)
     args_inner_str = ", ".join(args_inner)
+
+    # Nullability checking contract
+    if args_nonnull:
+        writer.line(f"%contract {name}({args_outer_str}) {{", "require:")
+        with writer.indent():
+            for contract_arg in args_nonnull:
+                writer.line(f"{contract_arg} != NULL;")
+        writer.line("}")
 
     if kind in [FuncKind.METHOD, FuncKind.GENERIC]:
         writer.line(f"{decl}({args_outer_str}) {{")
