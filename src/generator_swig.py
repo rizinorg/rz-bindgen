@@ -288,6 +288,11 @@ def write_func(writer: Writer, func: Func, name: str, kind: FuncKind) -> None:
         writer.line(f"~{name}({args_outer_str}) {{")
 
     with writer.indent():
+        if "RZ_DEPRECATE" in func.cfunc.attrs:
+            writer.line(
+                f'rizin_try_warn_deprecate("{name}", "{func.cfunc.cursor.spelling}");'
+            )
+
         if kind == FuncKind.GENERIC:
             typecast = stringify_decl(
                 "",

@@ -192,7 +192,9 @@ class SphinxWriter(Writer):
 
         self.line("")
         yield
+
         self.indent_level -= 1
+        self.line("")
 
 
 def generate(output_dir: str) -> None:
@@ -309,11 +311,23 @@ def write_class(writer: SphinxWriter, cls: Class) -> None:
 
         for name, func in sorted(cls.funcs.items()):
             with writer.directive("py:staticmethod", stringify_func(name, func)):
+                if "RZ_DEPRECATE" in func.cfunc.attrs:
+                    with writer.directive("warning"):
+                        writer.line(
+                            f"Calls deprecated function ``{func.cfunc.cursor.spelling}``"
+                        )
+
                 if doxygen_path:
                     write_doxygen_function(writer, func.cfunc.cursor.spelling)
 
         for name, method in sorted(cls.methods.items()):
             with writer.directive("py:method", stringify_func(name, method)):
+                if "RZ_DEPRECATE" in method.cfunc.attrs:
+                    with writer.directive("warning"):
+                        writer.line(
+                            f"Calls deprecated function ``{method.cfunc.cursor.spelling}``"
+                        )
+
                 if doxygen_path:
                     write_doxygen_function(writer, method.cfunc.cursor.spelling)
 
