@@ -309,27 +309,20 @@ def write_class(writer: SphinxWriter, cls: Class) -> None:
             result = stringify_ctype(func.cfunc.result_ctype)
             return f"{name}({args_str}) -> {result}"
 
-        for name, func in sorted(cls.funcs.items()):
-            with writer.directive("py:staticmethod", stringify_func(name, func)):
-                if "RZ_DEPRECATE" in func.cfunc.attrs:
-                    with writer.directive("warning"):
-                        writer.line(
-                            f"Calls deprecated function ``{func.cfunc.cursor.spelling}``"
-                        )
+        for directive, func_dict in [
+            ("py:staticmethod", cls.funcs),
+            ("py:method", cls.methods),
+        ]:
+            for name, func in sorted(func_dict.items()):
+                with writer.directive(directive, stringify_func(name, func)):
+                    if "RZ_DEPRECATE" in func.cfunc.attrs:
+                        with writer.directive("warning"):
+                            writer.line(
+                                f"Calls deprecated function ``{func.cfunc.cursor.spelling}``"
+                            )
 
-                if doxygen_path:
-                    write_doxygen_function(writer, func.cfunc.cursor.spelling)
-
-        for name, method in sorted(cls.methods.items()):
-            with writer.directive("py:method", stringify_func(name, method)):
-                if "RZ_DEPRECATE" in method.cfunc.attrs:
-                    with writer.directive("warning"):
-                        writer.line(
-                            f"Calls deprecated function ``{method.cfunc.cursor.spelling}``"
-                        )
-
-                if doxygen_path:
-                    write_doxygen_function(writer, method.cfunc.cursor.spelling)
+                    if doxygen_path:
+                        write_doxygen_function(writer, func.cfunc.cursor.spelling)
 
 
 doxygen_escape_table = str.maketrans({"*": "\\*", "_": "\\_"})
