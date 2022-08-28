@@ -3,7 +3,7 @@ SPDX-FileCopyrightText: 2022 wingdeans <wingdeans@protonmail.com>
 SPDX-License-Identifier: LGPL-3.0-only
 """
 
-from typing import List, Tuple, Iterator
+from typing import List, Tuple, Optional, Iterator
 
 from enum import Enum
 
@@ -18,7 +18,7 @@ class TranslationUnit:
 
     @staticmethod
     def from_source(
-        filename: str, args: List[str], options: int
+        filename: str, args: List[str], options: Optional[int] = ...
     ) -> TranslationUnit: ...
 
     cursor: Cursor
@@ -83,6 +83,13 @@ class SourceLocation:
     class File:
         name: str
     file: File
+    line: int
+    column: int
+
+    @staticmethod
+    def from_position(
+        tu: TranslationUnit, file: File, line: int, column: int
+    ) -> SourceLocation: ...
 
 class SourceRange:
     start: SourceLocation
@@ -90,9 +97,11 @@ class SourceRange:
 
     @staticmethod
     def from_locations(start: SourceLocation, end: SourceLocation) -> SourceRange: ...
+    def __contains__(self, location: SourceLocation) -> bool: ...
 
 class Token:
     spelling: str
+    extent: SourceRange
 
 class CursorKind(Enum):
     INCLUSION_DIRECTIVE: TypeKind
