@@ -26,6 +26,9 @@ Generator backend for Python Sphinx documentation.
 ## `writer.py`
 Helper class for writing lines and snippets to a file with indentation.
 
+## `lint.py`
+Runs checks on rizin source code for annotations (`RZ_*` macros and `/*<type>*/` comments)
+
 ## Binding
 ### `binding_class.py`
 Helpers to specify a class with fields, methods, and static functions.
