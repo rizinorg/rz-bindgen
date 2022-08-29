@@ -120,6 +120,7 @@ class CursorKind(Enum):
 
     ANNOTATE_ATTR: TypeKind
     TYPE_REF: TypeKind
+    PACKED_ATTR: TypeKind
 
 class Cursor:
     kind: CursorKind

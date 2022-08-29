@@ -55,9 +55,13 @@ def cursor_get_annotations(cursor: Cursor) -> List[str]:
 generic_types = {"RzList", "RzListIter", "RzPVector", "RzVector", "RzGraph"}
 
 
-def cursor_get_comment(cursor: Cursor) -> Optional[str]:
+def cursor_get_comment(cursor: Cursor, *, packed: bool = False) -> Optional[str]:
     """
     Get /*<type>*/ comment on a cursor
+
+    The packed argument is used to mark a struct field is marked by
+    the RZ_PACK macro, so that the /*<type>*/ comment is searched for
+    at the original location within the macro call
     """
 
     assert cursor.kind in [
@@ -76,17 +80,23 @@ def cursor_get_comment(cursor: Cursor) -> Optional[str]:
     except StopIteration:
         return None
 
-    # Reconstruct SourceLocation
-    start, end, translation_unit = (
-        typeref.extent.end,
-        cursor.location,
-        cursor.translation_unit,
-    )
-    start = SourceLocation.from_position(
-        translation_unit, start.file, start.line, start.column
-    )
-    end = SourceLocation.from_position(translation_unit, end.file, end.line, end.column)
-    src_range = SourceRange.from_locations(start, end)
+    if packed:
+        assert cursor.kind == CursorKind.FIELD_DECL
+        src_range = SourceRange.from_locations(typeref.extent.end, cursor.location)
+    else:
+        # Reconstruct SourceLocation without macro bit
+        start, end, translation_unit = (
+            typeref.extent.end,
+            cursor.location,
+            cursor.translation_unit,
+        )
+        start = SourceLocation.from_position(
+            translation_unit, start.file, start.line, start.column
+        )
+        end = SourceLocation.from_position(
+            translation_unit, end.file, end.line, end.column
+        )
+        src_range = SourceRange.from_locations(start, end)
 
     # Ensure comment token exists
     try:
@@ -245,10 +255,17 @@ def check_translation_unit(
                 function.diff(functions[function.name])
             functions[function.name] = function
         elif cursor.kind == CursorKind.STRUCT_DECL:
+            packed = False
             for field in cursor.get_children():
-                if field.kind == CursorKind.FIELD_DECL:
-                    cursor_get_comment(field)
-                elif field.kind not in [CursorKind.STRUCT_DECL, CursorKind.UNION_DECL]:
+                if field.kind == CursorKind.PACKED_ATTR:
+                    packed = True
+                elif field.kind == CursorKind.FIELD_DECL:
+                    cursor_get_comment(field, packed=packed)
+                elif field.kind not in [
+                    CursorKind.STRUCT_DECL,
+                    CursorKind.UNION_DECL,
+                    CursorKind.ENUM_DECL,
+                ]:
                     warn(f"Unknown field cursor kind: {field.kind}")
 
 
