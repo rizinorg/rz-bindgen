@@ -26,6 +26,8 @@ class TranslationUnit:
 
     def get_tokens(self, *, extent: SourceRange) -> Iterator[Token]: ...
 
+class TranslationUnitLoadError(Exception): ...
+
 ### Type ###
 class TypeKind(Enum):
     TYPEDEF: TypeKind

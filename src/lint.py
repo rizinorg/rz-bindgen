@@ -14,6 +14,7 @@ from itertools import zip_longest
 from clang.cindex import (
     Config,
     TranslationUnit,
+    TranslationUnitLoadError,
     Cursor,
     CursorKind,
     SourceRange,
@@ -341,11 +342,14 @@ def main() -> None:
                 for include in includes
             ]
 
-            check_translation_unit(
-                TranslationUnit.from_source(abspath, clang_args),
-                skipped_paths=skipped_paths,
-                rizin_path=rizin_path,
-            )
+            try:
+                check_translation_unit(
+                    TranslationUnit.from_source(abspath, clang_args),
+                    skipped_paths=skipped_paths,
+                    rizin_path=rizin_path,
+                )
+            except TranslationUnitLoadError:
+                print(f"Failed to parse file {relpath}")
 
 
 if __name__ == "__main__":
