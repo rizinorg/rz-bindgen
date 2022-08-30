@@ -5,6 +5,7 @@ SPDX-License-Identifier: LGPL-3.0-only
 from typing import List, Dict, Set, TypedDict, Optional, cast
 
 import os
+import sys
 import json
 import shlex
 from argparse import ArgumentParser
@@ -22,16 +23,16 @@ from clang.cindex import (
 )
 
 
-messages = set()
+warnings = set()
 
 
-def warn(message: str) -> None:
+def warn(warning: str) -> None:
     """
     Print a warning only once
     """
-    if message not in messages:
-        print(message)
-        messages.add(message)
+    if warning not in warnings:
+        print(warning)
+        warnings.add(warning)
 
 
 def cursor_get_location(cursor: Cursor) -> str:
@@ -235,6 +236,9 @@ def check_translation_unit(
     Check for issues in translation_unit
     """
 
+    for diagnostic in translation_unit.diagnostics:
+        warn(diagnostic.spelling)
+
     functions: Dict[str, Function] = {}
 
     for cursor in translation_unit.cursor.get_children():
@@ -280,7 +284,7 @@ class Command(TypedDict):
     command: str
 
 
-def main() -> None:
+def main() -> int:
     """
     CLI Entrypoint
     """
@@ -349,8 +353,10 @@ def main() -> None:
                     rizin_path=rizin_path,
                 )
             except TranslationUnitLoadError:
-                print(f"Failed to parse file {relpath}")
+                warn(f"Failed to parse file {relpath}")
+
+    return len(warnings)
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

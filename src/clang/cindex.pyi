@@ -11,7 +11,8 @@ class Config:
     @staticmethod
     def set_library_path(path: str) -> None: ...
 
-class Diagnostic: ...
+class Diagnostic:
+    spelling: str
 
 class TranslationUnit:
     PARSE_DETAILED_PROCESSING_RECORD: int
