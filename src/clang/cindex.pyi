@@ -13,6 +13,7 @@ class Config:
 
 class Diagnostic:
     spelling: str
+    location: SourceLocation
 
 class TranslationUnit:
     PARSE_DETAILED_PROCESSING_RECORD: int

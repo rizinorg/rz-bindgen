@@ -1,6 +1,27 @@
 """
 SPDX-FileCopyrightText: 2022 wingdeans <wingdeans@protonmail.com>
 SPDX-License-Identifier: LGPL-3.0-only
+
+This is a Rizin linter script, intended for use in CI.
+It parses the compile_commands.json created by meson,
+then runs libclang on those files with the specified arguments.
+
+It detects TYPEREF cursors in function parameters, function return types
+and struct fields. If the TYPEREF spelling is one of the prespecified
+generic types, expect a /*<type>*/ comment and emits a warning if none is found.
+
+Certain generic types, such as RzList, must include a pointer in their comment.
+This is since many RzList specializations are for char*, pointing to a string's starting
+character, and eliding the pointer would result in an RzList /*<char>*/, which loses
+the implied meaning of holding a string.
+
+Other generic types, such as RzVector, should not contain a pointer (RzPVector
+should be used in cases where something must be pointed to).
+
+The linter also enforces consistency in type comments between function declarations
+and definitions. It also does this for Rizin annotations, such as RZ_OWN. This works
+by defining the RZ_BINDINGS preprocessor flag, which sets the annotations to expand to
+__attribute__((annotate)), which can be picked up by libclang.
 """
 from typing import List, Dict, Set, TypedDict, Optional, cast
 
@@ -35,12 +56,12 @@ def warn(warning: str) -> None:
         warnings.add(warning)
 
 
-def cursor_get_location(cursor: Cursor) -> str:
+def stringify_location(location: SourceLocation) -> str:
     """
-    Get filename:line for a cursor location
+    Get <relpath:filename:line> for a SourceLocation
     """
-    location = cursor.location
-    return f"in line {location.line} of file {os.path.abspath(location.file.name)}"
+    path = os.path.relpath(os.path.abspath(location.file.name))
+    return f"<{path}:{location.line}:{location.column}>"
 
 
 def cursor_get_annotations(cursor: Cursor) -> List[str]:
@@ -106,7 +127,7 @@ def cursor_get_comment(cursor: Cursor, *, packed: bool = False) -> Optional[str]
     except StopIteration:
         if typeref_spelling in generic_types:
             warn(
-                f"Missing type comment at {cursor_get_location(cursor)} "
+                f"Missing type comment at {stringify_location(cursor.location)} "
                 f"for {typeref_spelling}"
             )
         return None
@@ -116,34 +137,38 @@ def cursor_get_comment(cursor: Cursor, *, packed: bool = False) -> Optional[str]
     if not comment.startswith("/*") or not comment.endswith("*/"):
         if typeref_spelling in generic_types:
             warn(
-                f"Missing type comment at {cursor_get_location(cursor)} (token is not a comment)"
+                f"Missing type comment at {stringify_location(cursor.location)} "
+                "(token is not a comment)"
             )
         return None
     comment = comment[2:-2]
 
     if not comment.startswith("<") or not comment.endswith(">"):
         if typeref_spelling in generic_types:
-            warn(f"Type comment at {cursor_get_location(cursor)} lacks angle bracks")
+            warn(
+                f"Type comment at {stringify_location(cursor.location)} lacks angle brackets"
+            )
         return comment
 
     # Check pointer (or lack of) and space between pointer
     if typeref_spelling in {"RzList", "RzListIter", "RzPVector", "RzGraph"}:
         if comment[-2] != "*":
-            warn(f"Type comment at {cursor_get_location(cursor)} lacks pointer")
+            warn(f"Type comment at {stringify_location(cursor.location)} lacks pointer")
         elif comment[-3] != " ":
             warn(
-                f"Type comment at {cursor_get_location(cursor)} lacks space between pointer"
+                f"Type comment at {stringify_location(cursor.location)} lacks space between pointer"
             )
     elif typeref_spelling in {"RzVector"}:
         if comment[-2] == "*":
             warn(
-                f"Type comment at {cursor_get_location(cursor)} should not have pointer"
+                f"Type comment at {stringify_location(cursor.location)} should not have pointer"
             )
     elif typeref_spelling in {"HtPP", "HtUP", "HtUU", "RBTree", "SdbList"}:
         pass
     else:
         warn(
-            f"Type comment at {cursor_get_location(cursor)} for unknown type {typeref_spelling}"
+            f"Type comment at {stringify_location(cursor.location)} "
+            f"for unknown type {typeref_spelling}"
         )
 
     return comment
@@ -172,7 +197,7 @@ class Function:
 
     def __init__(self, cursor: Cursor):
         self.name = cursor.spelling
-        self.location = cursor_get_location(cursor)
+        self.location = stringify_location(cursor.location)
 
         self.annotations = cursor_get_annotations(cursor)
         self.comment = cursor_get_comment(cursor)
@@ -237,7 +262,10 @@ def check_translation_unit(
     """
 
     for diagnostic in translation_unit.diagnostics:
-        warn(diagnostic.spelling)
+        warn(
+            f"Translation unit diagnostic at "
+            f"{stringify_location(diagnostic.location)}: {diagnostic.spelling}"
+        )
 
     functions: Dict[str, Function] = {}
 
