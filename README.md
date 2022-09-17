@@ -8,11 +8,9 @@ For usage information, see [the documentation](doc/README.md).
 
 ## Building python plugin
 Requirements:
-- rizin > 0.4.0 (needs commit [6b7ea38](https://github.com/rizinorg/rizin/commit/6b7ea389698818beebaa55425b05d966cf3d7117))
-
+- rizin > 0.4.1 (needs commit [59b38e6](https://github.com/rizinorg/rizin/commit/59b38e6efaf00b9b9869e0ec5baba4f1b9605f37))
 - meson
 - ninja
-
 - python >= 3.7
 - libclang
 - SWIG
@@ -23,10 +21,8 @@ Meson options:
   - Otherwise, use Xcode clang path on MacOS
   - Otherwise, use `clang.exe` directory on windows
   - Otherwise, use `/usr/lib`
-
 - `clang_args`: Extra arguments to pass to libclang
   - Defaults to setting resource-dir to result of `clang -print-resource-dir`
-
 - `rizin_include_path`: Directory containing rizin header files
   - Defaults to using rizin found in pkg-config and CMake
   - To customize pkg-config search, set `PKG_CONFIG_PATH`
