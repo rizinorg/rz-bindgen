@@ -1,52 +1,29 @@
 # Code structure
 
-## `main.py`
-Entrypoint.
-First, parses args and sets up program.
-Then, calls the binding specification file
-Finally, calls appropriate binding generator(s) and writes output.
+# Core
+1. `main.py` is the entrypoint.
+It parses args and sets up libclang before calling the binding specification file and appropriate binding generator(s).
 
-## `cparser_header.py`
-Parses header files into libclang cursor wrapper nodes.
+2. `cparser_header.py` parses header files into libclang cursor wrapper nodes.
+`cparser_types.py` contains wrappers for libclang types used during parsing. This is useful for exhaustive type checking.
 
-## `cparser_types.py`
-Parses and wraps libclang types.
-Useful for exhaustive type checking.
+3. `bindings.py` is the binding specification file. It calls the parser and arranges C functions and structs into classes and generics.
 
-## `bindings.py`
-Binding specification file.
+4. `generator_swig.py` and `generator_sphinx.py` are the backends for SWIG and Sphinx, respectively.
+Also see `snippets_swig`, which holds longer snippets of code to be used in the SWIG generator.
 
-## `generator_swig.py`
-Generator backend for SWIG.
-Also see `snippets_swig`, which holds longer snippets of code to be used in this generator.
+# Binding
+`binding_class.py` allows bindings to specify a class with fields, methods, and static functions.
+`binding_func.py` contains function specification logic. It is not called directly by bindings, but instead through `binding_class` to specify methods and static functions.
 
-## `generator_sphinx.py`
-Generator backend for Python Sphinx documentation.
+`binding_enum.py` allows bindings to specify an enum or group of related `#define`s.
 
-## `writer.py`
-Helper class for writing lines and snippets to a file with indentation.
+`binding_generic.py` allows bindings to specify a generic class with methods.
+`binding_generic_specialization.py` is used to parse types and generate specializations for generics. It is factored out of binding_generic to fix a circular import.
 
-## `lint.py`
-Runs checks on rizin source code for annotations (`RZ_*` macros and `/*<type>*/` comments)
+`binding_director.py` allows bindings to specify a SWIG director class (to call guest language functions from rizin).
 
-## Binding
-### `binding_class.py`
-Helpers to specify a class with fields, methods, and static functions.
+# Misc
+`writer.py` contains helpers for writing lines and snippets to a file with indentation.
 
-### `binding_director.py`
-Helpers to specify a SWIG director class.
-This is used to call guest language functions from rizin.
-
-### `binding_enum.py`
-Helpers to specify an enum or group of `#define`s.
-
-### `binding_func.py`
-Helpers to specify functions.
-Called from `binding_class` to specify methods and static functions.
-
-### `binding_generic.py`
-Helpers to specify a generic class with methods.
-
-### `binding_generic_specialization.py`
-Used to parse types and generate specializations for generics.
-Factored out of binding_generic to fix a circular import.
+`lint.py` is ran on rizin source code for annotations (`RZ_*` macros and `/*<type>*/` comments)
