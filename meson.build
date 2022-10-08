@@ -1,4 +1,6 @@
-project('rz-bindgen', 'c', 'cpp')
+project('rz-bindgen', 'c', 'cpp',
+  version: 'v0.5.0dev',
+  license: 'LGPL3')
 
 pymod = import('python')
 py = pymod.find_installation('python')
@@ -39,7 +41,7 @@ if clang_args == ''
   clang = find_program('clang', 'clang-7', required: false)
   if clang.found()
     clang_args += ' -resource-dir='
-    clang_args += run_command(clang, '-print-resource-dir').stdout().strip()
+    clang_args += run_command(clang, '-print-resource-dir', check: true).stdout().strip()
   endif
   if build_machine.system() == 'darwin'
     clang_args += ' -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk'
@@ -56,6 +58,11 @@ if target_sphinx
   sphinx_dir_idx = bindgen_output_names.length()
   bindgen_output_names += ['sphinx']
 endif
+
+summary({
+  'Rizin include path': rizin_include_path,
+  'Clang path': clang_path,
+})
 
 bindgen_outputs = custom_target(
   'bindgen_outputs',
