@@ -18,5 +18,5 @@ archs = ["AMD64"]
 
 [project]
 name = "rz-bindings"
-version = "0.0.1"
+version = "0.5.0"
 requires-python = ">=3.8"
