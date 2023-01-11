@@ -377,20 +377,6 @@ def bind_io(io_h: Header) -> None:
     Class(io_h, typedef="RzIOPlugin")
 
 
-@threaded_header("rz_main.h")
-def bind_main(main_h: Header) -> None:
-    """
-    RzMain
-    """
-    main_h.ignore("rz_main_version")
-
-    rz_main = Class(main_h, typedef="RzMain")
-    rz_main.add_constructor("rz_main_new")
-    rz_main.add_destructor("rz_main_free")
-    rz_main.add_prefixed_methods("rz_main_")
-    rz_main.add_prefixed_funcs("rz_main_")
-
-
 @threaded_header("rz_util/rz_num.h")
 def bind_num(num_h: Header) -> None:
     """
