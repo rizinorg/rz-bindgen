@@ -4,11 +4,8 @@ def register_group(self, cmd, summary):
     help_desc.summary = summary
     self.rcmd.register_swig_command(cmd, None, None, help_desc)
 
-
-import inspect
-
-
 def register_command(self, cmd, fn):
+    import inspect
     params = list(inspect.signature(fn).parameters.values())
 
     core_arg = None
@@ -61,19 +58,31 @@ def register_command(self, cmd, fn):
                 if core_arg:
                     args[core_arg] = core
                 for i, param in enumerate(params):
-                    arg = args_array[i + 1]
+                    orig_arg = args_array[i + 1]
+                    arg = orig_arg
                     if param.annotation == RzNumArg:
+                        if not core.num.is_valid_input(arg):
+                            raise ValueError(f"Could not convert '{orig_arg}' to RzNum value")
+
                         arg = core.num.math(arg)
                     elif param.annotation == int:
-                        arg = int(arg)
+                        try:
+                            arg = int(arg)
+                        except ValueError:
+                            raise ValueError(f"Could not convert '{orig_arg}' to int") from e
                     elif param.annotation == RzFlagItem:
                         arg = core.flags.get(arg)
+                        if arg is None:
+                            raise ValueError(f"Could not find a flag named '{orig_arg}'")
                     elif param.annotation == RzAnalysisFunction:
                         arg = core.analysis.get_function_byname(arg)
+                        if arg is None:
+                            raise ValueError(f"Could not find a function named '{orig_arg}'")
                     args[param.name] = arg
                 return fn(**args)
             except Exception as e:
                 print(e)
+                return False
 
     director = wrapper()
     director.__disown__()
