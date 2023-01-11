@@ -1,9 +1,11 @@
 project('rz-bindgen', 'c', 'cpp',
   version: 'v0.5.0dev',
-  license: 'LGPL3')
+  license: 'LGPL3',
+  meson_version: '>=0.53.0')
 
 pymod = import('python')
-py = pymod.find_installation('python')
+fs = import('fs')
+py = pymod.find_installation()
 
 clang_path = get_option('clang_path')
 clang_args = get_option('clang_args')
@@ -26,6 +28,10 @@ if clang_path == ''
   else
     clang_path = '/usr/lib/'
   endif
+endif
+
+if not fs.exists(clang_path)
+  error('CLang path does not exist')
 endif
 
 if rizin_include_path == ''
@@ -79,6 +85,14 @@ bindgen_outputs = custom_target(
 )
 
 if target_swig
+  install_dir = py.get_install_dir()
+  plat_dir = py.get_path('platlib')
+  if plat_dir.startswith('/opt/homebrew') and (install_dir.endswith(plat_dir) or install_dir.endswith(plat_dir / '/'))
+    # Just use directly the platlib, this is a bug in Homebrew python / Meson
+    # See https://github.com/mesonbuild/meson/issues/10459
+    install_dir = plat_dir
+  endif
+
   swig_output = custom_target(
     'swig_output',
     input: bindgen_outputs[swig_source_idx],
@@ -89,7 +103,7 @@ if target_swig
       '-outdir', '@OUTDIR@', '@INPUT@'
     ],
     install: true,
-    install_dir: [py.get_install_dir(), false]
+    install_dir: [install_dir, false]
   )
   swig_py = swig_output[0]
   swig_wrap = swig_output[1]
@@ -106,7 +120,8 @@ if target_swig
       rizin_include_path,
       rizin_include_path / 'sdb'
     ),
-    install: true
+    install: true,
+    install_dir: install_dir
   )
 endif
 
