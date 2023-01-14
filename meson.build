@@ -70,10 +70,29 @@ summary({
   'Clang path': clang_path,
 })
 
+src_files = files(
+  'src/binding_class.py',
+  'src/binding_director.py',
+  'src/binding_enum.py',
+  'src/binding_func.py',
+  'src/binding_generic.py',
+  'src/binding_generic_specializations.py',
+  'src/binding_typemap.py',
+  'src/bindings.py',
+  'src/cparser_header.py',
+  'src/cparser_types.py',
+  'src/generator_sphinx.py',
+  'src/generator_swig.py',
+  'src/lint.py',
+  'src/main.py',
+  'src/writer.py',
+)
+
 bindgen_outputs = custom_target(
   'bindgen_outputs',
   input: 'src' / 'main.py',
   output: bindgen_output_names,
+  depend_files: src_files,
   command: [
     py, '@INPUT@',
     '-o', '@OUTDIR@',
