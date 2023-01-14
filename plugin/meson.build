@@ -8,12 +8,17 @@ swig_runtime = custom_target(
   ]
 )
 
+rz_core_dep = dependency('rz_core')
+rizin_plugdir = rz_core_dep.get_variable(pkgconfig: 'plugindir', cmake: 'rz_core_PLUGINDIR')
+
 library(
   'rz-bindings-plugin',
   ['plugin.c', swig_runtime],
   dependencies: [
     py.dependency(embed: true),
     dependency('openssl', required: false),
-    dependency('rz_main')
+    rz_core_dep,
   ],
+  install: true,
+  install_dir: rizin_plugdir,
 )
