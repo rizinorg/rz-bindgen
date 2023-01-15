@@ -17,8 +17,8 @@ jobs:
     - name: Checkout rizin
       uses: actions/checkout@v3
       with:
-        repository: wingdeans/rizin
-        ref: header-types
+        repository: rizinorg/rizin
+        ref: stable
         path: rizin
 
     - name: Install deps
