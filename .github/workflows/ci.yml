@@ -23,6 +23,12 @@ jobs:
     - name: Checkout rz-bindgen
       uses: actions/checkout@v3
 
+    - name: Checkout rizin
+      uses: actions/checkout@v3
+      with:
+        repository: rizinorg/rizin
+        path: rizin
+
     - name: Run rz-bindgen
       uses: pypa/cibuildwheel@v2.8.0
 
