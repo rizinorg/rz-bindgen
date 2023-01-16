@@ -21,22 +21,10 @@ void rizin_try_warn_deprecate(const char *name, const char *c_name) {
 
 // Buffer typemaps
 %include <pybuffer.i>
-
-%define %buffer_len_activate(TYPE, SIZE)
-%pybuffer_mutable_binary(TYPE, SIZE);
-%enddef
-
-%define %const_buffer_len_activate(TYPE, SIZE)
-%pybuffer_binary(TYPE, SIZE);
-%enddef
-
-%define %buffer_len_deactivate(TYPE, SIZE)
-%typemap(in) (TYPE, SIZE);
-%enddef
-
-%define %const_buffer_len_deactivate(TYPE, SIZE)
-%typemap(in) (TYPE, SIZE);
-%enddef
+%pybuffer_mutable_binary(unsigned char *buf, unsigned long long len);
+%pybuffer_binary(const unsigned char *buf, unsigned long long len);
+%pybuffer_mutable_binary(unsigned char *buf, int len);
+%pybuffer_binary(const unsigned char *buf, int len);
 
 // CArrays
 %include <carrays.i>
