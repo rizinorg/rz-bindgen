@@ -55,17 +55,3 @@ class Typemap:
             f"Function {func.cfunc.cursor.spelling} did not match typemap `{self.args}`. "
             f"Contents were: {args}"
         )
-
-
-buffer_len_typemap = Typemap(
-    "buffer_len",
-    [TypemapArg("unsigned char *", "buf"), TypemapArg("unsigned long long", "len")],
-)
-
-const_buffer_len_typemap = Typemap(
-    "const_buffer_len",
-    [
-        TypemapArg("const unsigned char *", "buf"),
-        TypemapArg("unsigned long long", "len"),
-    ],
-)

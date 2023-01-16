@@ -12,7 +12,6 @@ from binding_class import Class
 from binding_director import Director
 from binding_enum import Enum, MacroEnum
 from binding_generic import Generic
-from binding_typemap import buffer_len_typemap, const_buffer_len_typemap
 
 HeaderFunc = Callable[[Header], None]
 threaded_headers: OrderedDict[str, HeaderFunc] = OrderedDict()
@@ -221,27 +220,7 @@ def bind_buf(buf_h: Header) -> None:
     RzBuf
     """
     rz_buf = Class(buf_h, typedef="RzBuffer")
-
-    # const ut8 *buffer, ut64 len
-    for name in [
-        "append_bytes",
-        "prepend_bytes",
-        "set_bytes",
-        "insert_bytes",
-        "write",
-        "write_at",
-    ]:
-        rz_buf.add_method(
-            f"rz_buf_{name}",
-            rename=name,
-            typemaps=[const_buffer_len_typemap],
-        )
-
-    # ut8 *buffer, ut64 len
-    rz_buf.add_method("rz_buf_read", rename="read", typemaps=[buffer_len_typemap])
-    rz_buf.add_method("rz_buf_read_at", rename="read_at", typemaps=[buffer_len_typemap])
-
-    rz_buf.add_method("rz_buf_seek", rename="seek")
+    rz_buf.add_prefixed_methods("rz_buf_")
 
     MacroEnum(buf_h, "RZ_BUF_SET", "RZ_BUF_CUR", "RZ_BUF_END")
 
