@@ -174,5 +174,4 @@ RzLibStruct rizin_plugin = {
     .data = &rz_lang_plugin_bindings,
     .version = RZ_VERSION,
     .free = NULL,
-    .pkgname = "rz-bindings",
 };
