@@ -1,7 +1,8 @@
 project('rz-bindgen', 'c', 'cpp',
   version: 'v0.5.0dev',
   license: 'LGPL3',
-  meson_version: '>=0.53.0')
+  meson_version: '>=0.53.0',
+  default_options: ['python.install_env=auto'])
 
 pymod = import('python')
 fs = import('fs')
@@ -34,12 +35,13 @@ if not fs.exists(clang_path)
   error('CLang path does not exist')
 endif
 
+rz_core = disabler()
 if rizin_include_path == ''
-  rz_main = dependency('rz_main')
-  if rz_main.type_name() == 'pkgconfig'
-    rizin_include_path = rz_main.get_variable(pkgconfig: 'includedir') / 'librz'
-  elif rz_main.type_name() == 'cmake'
-    rizin_include_path = rz_main.get_variable(cmake: 'PACKAGE_INCLUDE_DIRS').split(';')[0]
+  rz_core = dependency('rz_core')
+  if rz_core.type_name() == 'pkgconfig'
+    rizin_include_path = rz_core.get_variable(pkgconfig: 'includedir') / 'librz'
+  elif rz_core.type_name() == 'cmake'
+    rizin_include_path = rz_core.get_variable(cmake: 'PACKAGE_INCLUDE_DIRS').split(';')[0]
   endif
 endif
 
@@ -70,48 +72,42 @@ summary({
   'Clang path': clang_path,
 })
 
-src_files = files(
-  'src/binding_class.py',
-  'src/binding_director.py',
-  'src/binding_enum.py',
-  'src/binding_func.py',
-  'src/binding_generic.py',
-  'src/binding_generic_specializations.py',
-  'src/binding_typemap.py',
-  'src/bindings.py',
-  'src/cparser_header.py',
-  'src/cparser_types.py',
-  'src/generator_sphinx.py',
-  'src/generator_swig.py',
-  'src/lint.py',
-  'src/main.py',
-  'src/writer.py',
-)
+if target_swig or target_sphinx
+  src_files = files(
+    'src/binding_class.py',
+    'src/binding_director.py',
+    'src/binding_enum.py',
+    'src/binding_func.py',
+    'src/binding_generic.py',
+    'src/binding_generic_specializations.py',
+    'src/binding_typemap.py',
+    'src/bindings.py',
+    'src/cparser_header.py',
+    'src/cparser_types.py',
+    'src/generator_sphinx.py',
+    'src/generator_swig.py',
+    'src/lint.py',
+    'src/main.py',
+    'src/writer.py',
+  )
 
-bindgen_outputs = custom_target(
-  'bindgen_outputs',
-  input: 'src' / 'main.py',
-  output: bindgen_output_names,
-  depend_files: src_files,
-  command: [
-    py, '@INPUT@',
-    '-o', '@OUTDIR@',
-    '--clang-path', clang_path,
-    '--clang-args', clang_args,
-    '--rizin-include-path', rizin_include_path,
-    '--targets', ','.join(targets)
-  ] + (doxygen_path != '' ? ['--doxygen-path', doxygen_path] : [])
-)
+  bindgen_outputs = custom_target(
+    'bindgen_outputs',
+    input: 'src' / 'main.py',
+    output: bindgen_output_names,
+    depend_files: src_files,
+    command: [
+      py, '@INPUT@',
+      '-o', '@OUTDIR@',
+      '--clang-path', clang_path,
+      '--clang-args', clang_args,
+      '--rizin-include-path', rizin_include_path,
+      '--targets', ','.join(targets)
+    ] + (doxygen_path != '' ? ['--doxygen-path', doxygen_path] : [])
+  )
+endif
 
 if target_swig
-  install_dir = py.get_install_dir()
-  plat_dir = py.get_path('platlib')
-  if plat_dir.startswith('/opt/homebrew') and (install_dir.endswith(plat_dir) or install_dir.endswith(plat_dir / '/'))
-    # Just use directly the platlib, this is a bug in Homebrew python / Meson
-    # See https://github.com/mesonbuild/meson/issues/10459
-    install_dir = plat_dir
-  endif
-
   swig_output = custom_target(
     'swig_output',
     input: bindgen_outputs[swig_source_idx],
@@ -122,25 +118,23 @@ if target_swig
       '-outdir', '@OUTDIR@', '@INPUT@'
     ],
     install: true,
-    install_dir: [install_dir, false]
+    install_dir: [py.get_install_dir(), false]
   )
   swig_py = swig_output[0]
   swig_wrap = swig_output[1]
+
+  if not rz_core.found()
+    rz_core = dependency('rz_core')
+  endif
 
   py.extension_module(
     '_rizin',
     swig_wrap,
     dependencies: [
       py.dependency(),
-      dependency('openssl', required: false),
-      dependency('rz_main')
+      rz_core,
     ],
-    include_directories: include_directories(
-      rizin_include_path,
-      rizin_include_path / 'sdb'
-    ),
     install: true,
-    install_dir: install_dir
   )
 endif
 
