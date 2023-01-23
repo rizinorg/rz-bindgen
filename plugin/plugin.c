@@ -3,6 +3,7 @@
 
 #include <Python.h>
 #include <rz_core.h>
+#include <rz_util/rz_file.h>
 #include <swig_runtime.h>
 
 static PyObject *rizin_module = NULL;
@@ -27,6 +28,11 @@ static PyObject *rizin_module = NULL;
                 Py_XDECREF(deferred_pyobjs[i]);                                \
         }                                                                      \
         return result;
+
+static int rz_bindings_run_file(RzLang *lang, const char *filename) {
+        FILE *file = fopen(filename, "rb");
+        return PyRun_SimpleFile(file, filename) == 0;
+}
 
 static int rz_bindings_init(RzLang *lang) {
         DEFER_SETUP;
@@ -69,12 +75,23 @@ static int rz_bindings_init(RzLang *lang) {
         Py_INCREF(py_rz_core);
         Py_INCREF(rizin_module);
 
+        char *globpath = rz_file_path_join(bindings_dir, "*.py");
+        RzList *files = rz_file_globsearch(globpath, 1);
+        RzListIter *it;
+        char *filename;
+
+        rz_list_foreach(files, it, filename) {
+                rz_bindings_run_file(lang, filename);
+        }
+        free(globpath);
+        rz_list_free(files);
+
         DEFER_CLEANUP;
 }
 
 static int rz_bindings_fini(RzLang *lang) {
         Py_XDECREF(rizin_module);
-        return Py_FinalizeEx();
+        return Py_FinalizeEx() == 0;
 }
 
 static int rz_bindings_prompt(RzLang *lang) {
@@ -151,11 +168,6 @@ static int rz_bindings_prompt(RzLang *lang) {
         ABORT_IF(!interact_res, "Could not call console.interact\n");
 
         DEFER_CLEANUP;
-}
-
-static int rz_bindings_run_file(RzLang *lang, const char *filename) {
-        FILE *file = fopen(filename, "rb");
-        return PyRun_SimpleFile(file, filename) == 0;
 }
 
 RzLangPlugin rz_lang_plugin_bindings = {
