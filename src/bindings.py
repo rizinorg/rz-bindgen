@@ -169,6 +169,13 @@ def bind_analysis(analysis_h: Header) -> None:
     Class(analysis_h, typedef="RzAnalysisEsil")
     Class(analysis_h, typedef="RzAnalysisPlugin")
 
+    Class(
+        analysis_h,
+        typedef="RzAnalysisXRef",
+        rename_fields={"from": "from_addr", "to": "to_addr"},
+    )
+    Enum(analysis_h, typedef="RzAnalysisXRefType")
+
 
 @threaded_header("rz_asm.h")
 def bind_asm(asm_h: Header) -> None:
