@@ -30,12 +30,6 @@ jobs:
         path: rizin
         ref: ${{ inputs.rizin_ref }}
 
-    - uses: actions/setup-python@v4
-      with:
-        python-version: '3.10'
-    - name: Create sdist
-      run: pip install build && python -m build --sdist
-
     - name: Run rz-bindgen
       uses: pypa/cibuildwheel@v2.8.0
 

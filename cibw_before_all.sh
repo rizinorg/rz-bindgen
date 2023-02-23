@@ -4,7 +4,7 @@
 set -ex
 
 # Install deps
-pip3 install meson ninja meson-python
+pip3 install meson ninja meson-python build
 
 if command -v apt; then
     apt update && apt install --assume-yes libclang-7-dev clang-7 llvm-7
@@ -22,3 +22,4 @@ fi
 
 meson install -C build
 popd
+python3 -m build --sdist
