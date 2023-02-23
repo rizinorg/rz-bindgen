@@ -12,6 +12,7 @@ from clang.cindex import TranslationUnit, Cursor, CursorKind
 
 from cparser_types import CType, wrap_type
 
+
 ### Cursor wrappers ###
 class AttrCursor:
     """
