@@ -2,7 +2,7 @@ name: release-rz-bindgen
 on:
   push:
     tags:
-      - rizin-v*-v*
+      - rizin-v*_*
   workflow_dispatch:
 
 jobs:
