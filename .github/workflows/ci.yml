@@ -1,12 +1,6 @@
 name: run-rz-bindgen
 on:
   push:
-    paths:
-    - 'src/**.py'
-    - 'src/**.pyi'
-    - 'src/**.i'
-    - 'meson.build'
-    - 'meson_options.txt'
   workflow_dispatch:
   workflow_call:
     inputs:
