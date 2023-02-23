@@ -1,12 +1,8 @@
-name: run-rz-bindgen
+name: release-rz-bindgen
 on:
   push:
-    paths:
-    - 'src/**.py'
-    - 'src/**.pyi'
-    - 'src/**.i'
-    - 'meson.build'
-    - 'meson_options.txt'
+    tags:
+      - v*
   workflow_dispatch:
 
 jobs:
@@ -28,6 +24,7 @@ jobs:
       with:
         repository: rizinorg/rizin
         path: rizin
+        ref: ${{ github.ref }}
 
     - name: Run rz-bindgen
       uses: pypa/cibuildwheel@v2.8.0
@@ -36,3 +33,18 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         path: wheelhouse/*.whl
+
+  publish-pypi:
+    name: Publish PyPi
+    runs-on: ubuntu-latest
+    needs: [run-bindgen]
+    steps:
+    - name: Download artifacts
+      uses: actions/download-artifact@v3
+      with:
+        name: artifact
+        path: dist
+    - name: Publish wheels
+      uses: pypa/gh-action-pypi-publish@v1.5.1
+      with:
+        password: ${{ secrets.PYPI_TOKEN }}
