@@ -2,37 +2,23 @@ name: release-rz-bindgen
 on:
   push:
     tags:
-      - v*
+      - rizin-v*-v*
   workflow_dispatch:
 
 jobs:
-  run-bindgen:
-    name: Run bindgen
-    runs-on: ${{ matrix.os }}
-
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-latest, windows-2019, macos-latest]
-
+  extract-rizin-version:
+    runs-on: ubuntu-latest
+    outputs:
+      rizin_version: ${{ steps.extract_version.outputs.result }}
     steps:
-    - name: Checkout rz-bindgen
-      uses: actions/checkout@v3
+      - id: extract_version
+        run: echo "result=$(echo ${{ github.ref }} | cut -d'_' -f1 | cut -d'-' -f2-)" >> "$GITHUB_OUTPUT"
 
-    - name: Checkout rizin
-      uses: actions/checkout@v3
-      with:
-        repository: rizinorg/rizin
-        path: rizin
-        ref: ${{ github.ref }}
-
-    - name: Run rz-bindgen
-      uses: pypa/cibuildwheel@v2.8.0
-
-    - name: Upload artifacts
-      uses: actions/upload-artifact@v3
-      with:
-        path: wheelhouse/*.whl
+  run-bindgen:
+    uses: ./.github/workflows/ci.yml
+    needs: [extract-rizin-version]
+    with:
+      rizin_ref: ${{ needs.extract-rizin-version.outputs.rizin_version }}
 
   publish-pypi:
     name: Publish PyPi
@@ -42,7 +28,12 @@ jobs:
     - name: Download artifacts
       uses: actions/download-artifact@v3
       with:
-        name: artifact
+        name: wheels
+        path: dist
+    - name: Download sdist
+      uses: actions/download-artifact@v3
+      with:
+        name: sdist
         path: dist
     - name: Publish wheels
       uses: pypa/gh-action-pypi-publish@v1.5.1
