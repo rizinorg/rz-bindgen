@@ -24,7 +24,7 @@ meson install -C build
 popd
 
 if command -v apt; then
-    if dist/*.tar.gz ; then
+    if [ ! -e dist/*.tar.gz ] ; then
         python3 -m build --sdist
     fi
 fi
