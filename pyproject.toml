@@ -18,6 +18,8 @@ archs = ["AMD64"]
 
 [project]
 name = "rz-bindings"
-version = "0.5.0"
+dynamic = [
+  'version',
+]
 requires-python = ">=3.8"
 readme = "README.md"

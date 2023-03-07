@@ -1,5 +1,5 @@
 project('rz-bindgen', 'c', 'cpp',
-  version: 'v0.5.0dev',
+  version: '0.5.1',
   license: 'LGPL3',
   meson_version: '>=0.53.0',
   default_options: ['python.install_env=auto'])

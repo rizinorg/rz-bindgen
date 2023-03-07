@@ -1,13 +1,13 @@
 name: run-rz-bindgen
 on:
   push:
-    paths:
-    - 'src/**.py'
-    - 'src/**.pyi'
-    - 'src/**.i'
-    - 'meson.build'
-    - 'meson_options.txt'
   workflow_dispatch:
+  workflow_call:
+    inputs:
+      rizin_ref:
+        required: false
+        type: string
+        default: 'dev'
 
 jobs:
   run-bindgen:
@@ -28,11 +28,19 @@ jobs:
       with:
         repository: rizinorg/rizin
         path: rizin
+        ref: ${{ inputs.rizin_ref }}
 
     - name: Run rz-bindgen
       uses: pypa/cibuildwheel@v2.8.0
 
-    - name: Upload artifacts
+    - name: Upload sdist
       uses: actions/upload-artifact@v3
       with:
+        name: sdist
+        path: dist/*.tar.gz
+
+    - name: Upload wheels
+      uses: actions/upload-artifact@v3
+      with:
+        name: wheels
         path: wheelhouse/*.whl
