@@ -21,7 +21,7 @@ doxygen_path = get_option('doxygen_path')
 if clang_path == ''
   llvm = dependency('llvm', required: false)
   if llvm.found()
-    clang_path = llvm.get_variable(configtool: 'libdir', default_value: 'none')
+    clang_path = llvm.get_variable(cmake: 'LLVM_LIBRARY_DIRS', configtool: 'libdir', default_value: 'none')
   elif build_machine.system() == 'darwin'
     clang_path = '/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/'
   elif build_machine.system() == 'windows'
