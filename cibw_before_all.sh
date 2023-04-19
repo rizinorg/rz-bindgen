@@ -7,7 +7,7 @@ set -ex
 pip3 install meson ninja meson-python build
 
 if command -v apt; then
-    apt update && apt install --assume-yes libclang-15-dev clang-15 llvm-15
+    apt update && apt install --assume-yes libclang-dev clang llvm
 elif command -v apk; then
     apk update && apk add clang-dev
 fi
