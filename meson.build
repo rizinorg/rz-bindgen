@@ -155,3 +155,4 @@ endif
 if get_option('plugin').enabled()
   subdir('plugin')
 endif
+
