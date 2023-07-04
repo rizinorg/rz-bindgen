@@ -31,7 +31,10 @@ jobs:
         ref: ${{ inputs.rizin_ref }}
 
     - name: Run rz-bindgen
-      uses: pypa/cibuildwheel@v2.8.0
+      uses: pypa/cibuildwheel@v2.14.1
+      env:
+        CIBW_ARCHS_MACOS: x86_64 arm64 universal2
+        CIBW_ARCHS_LINUX: auto aarch64 ppc64le s390x
 
     - name: Upload sdist
       uses: actions/upload-artifact@v3
