@@ -10,6 +10,8 @@ if command -v apt; then
     apt update && apt install --assume-yes libclang-dev clang llvm
 elif command -v apk; then
     apk update && apk add clang-dev
+elif command -v yum; then
+    yum install -y clang llvm clang-devel
 fi
 
 pushd rizin
@@ -23,8 +25,6 @@ fi
 meson install -C build
 popd
 
-if command -v apt; then
-    if [ ! -e dist/*.tar.gz ] ; then
-        python3 -m build --sdist
-    fi
+if [ ! -e dist/*.tar.gz ] ; then
+    python3 -m build --sdist
 fi
