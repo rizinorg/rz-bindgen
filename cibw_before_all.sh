@@ -7,11 +7,16 @@ set -ex
 pip3 install meson ninja meson-python build
 
 if command -v apt; then
-    apt update && apt install --assume-yes libclang-dev clang llvm
+    grep VERSION_CODENAME=stretch /etc/os-release >/dev/null 2>/dev/null
+    if [[ $? == 0 ]] ; then
+	# Required because manylinux_2_24 uses Debian Stretch and the repos are not available anymore
+        echo "deb http://archive.debian.org/debian stretch main" > /etc/apt/sources.list
+        echo "deb http://archive.debian.org/debian-security stretch/updates main" >> /etc/apt/sources.list
+        echo "Acquire::Check-Valid-Until no;" > /etc/apt/apt.conf.d/99no-check-valid-until
+    fi
+    apt update && apt install --assume-yes libclang-7-dev clang-7 llvm-7
 elif command -v apk; then
     apk update && apk add clang-dev
-elif command -v yum; then
-    yum install -y clang llvm clang-devel
 fi
 
 pushd rizin
@@ -25,6 +30,8 @@ fi
 meson install -C build
 popd
 
-if [ ! -e dist/*.tar.gz ] ; then
-    python3 -m build --sdist
+if command -v apt; then
+    if [ ! -e dist/*.tar.gz ] ; then
+        python3 -m build --sdist
+    fi
 fi
