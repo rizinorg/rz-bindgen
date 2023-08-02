@@ -7,7 +7,9 @@ set -ex
 pip3 install meson ninja meson-python build
 
 if command -v apt; then
+    set +e
     grep VERSION_CODENAME=stretch /etc/os-release >/dev/null 2>/dev/null
+    set -e
     if [[ $? == 0 ]] ; then
 	# Required because manylinux_2_24 uses Debian Stretch and the repos are not available anymore
         echo "deb http://archive.debian.org/debian stretch main" > /etc/apt/sources.list
