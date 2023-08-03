@@ -29,10 +29,6 @@ jobs:
         repository: rizinorg/rizin
         path: rizin
         ref: ${{ inputs.rizin_ref }}
-      
-    - name: Install pkg-config with Homebrew
-      if: matrix.os == 'macos-latest'
-      run: brew install pkg-config
 
     - name: Run rz-bindgen
       uses: pypa/cibuildwheel@v2.14.1
