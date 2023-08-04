@@ -153,7 +153,7 @@ def bind_analysis(analysis_h: Header) -> None:
         analysis_h,
         typedef="RzAnalysis",
         ignore_fields={"leaddrs"},
-        rename_fields={"type_links": "_type_links"},
+        rename_fields={},
     )
 
     rz_analysis_function = Class(analysis_h, typedef="RzAnalysisFunction")
