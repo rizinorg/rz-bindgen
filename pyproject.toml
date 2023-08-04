@@ -23,7 +23,8 @@ environment = { CMAKE_PREFIX_PATH="C:\\rizin" }
 archs = ["AMD64"]
 
 [tool.cibuildwheel.linux]
-archs = ["x86_64", "aarch64", "ppc64le", "s390x"]
+#archs = ["x86_64", "aarch64", "ppc64le", "s390x"]
+archs = ["x86_64", "aarch64"]
 
 [tool.cibuildwheel.macos]
 #archs = ["x86_64", "arm64", "universal2"]
