@@ -98,12 +98,6 @@ class HeaderBuilder:
 
         assert rizin_include_path
         filename = os.path.abspath(os.path.join(rizin_include_path, *name_segments))
-
-        # Fix sdb path if using source librz/include
-        if name_segments[0] == "sdb" and not os.path.exists(filename):
-            name_segments = ["..", "util", "sdb", "src"] + name_segments[1:]
-            filename = os.path.abspath(os.path.join(rizin_include_path, *name_segments))
-
         assert os.path.exists(filename)
         self.filename = filename
 

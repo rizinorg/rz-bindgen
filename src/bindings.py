@@ -425,7 +425,7 @@ def bind_ls(ls_h: Header) -> None:
     Class(ls_h, typedef="SdbList")
 
 
-@threaded_header("sdb/ht_pp.h")
+@threaded_header("rz_util/ht_pp.h")
 def bind_ht_pp(ht_pp_h: Header) -> None:
     """
     ht_pp
@@ -433,7 +433,7 @@ def bind_ht_pp(ht_pp_h: Header) -> None:
     Class(ht_pp_h, typedef="HtPP")
 
 
-@threaded_header("sdb/ht_pu.h")
+@threaded_header("rz_util/ht_pu.h")
 def bind_ht_pu(ht_pu_h: Header) -> None:
     """
     ht_pu
@@ -441,7 +441,7 @@ def bind_ht_pu(ht_pu_h: Header) -> None:
     Class(ht_pu_h, typedef="HtPU")
 
 
-@threaded_header("sdb/ht_up.h")
+@threaded_header("rz_util/ht_up.h")
 def bind_ht_up(ht_up_h: Header) -> None:
     """
     ht_up
@@ -449,7 +449,7 @@ def bind_ht_up(ht_up_h: Header) -> None:
     Class(ht_up_h, typedef="HtUP")
 
 
-@threaded_header("sdb/ht_uu.h")
+@threaded_header("rz_util/ht_uu.h")
 def bind_ht_uu(ht_uu_h: Header) -> None:
     """
     ht_uu
