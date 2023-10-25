@@ -19,7 +19,7 @@ target_sphinx = targets.contains('sphinx')
 doxygen_path = get_option('doxygen_path')
 
 if clang_path == ''
-  llvm_config = find_program('llvm-config', required: false)
+  llvm_config = find_program('llvm-config', 'llvm-config-7', required: false)
   if llvm_config.found()
     clang_path = run_command(llvm_config, '--libdir', check: true).stdout().strip()
   elif build_machine.system() == 'darwin'
