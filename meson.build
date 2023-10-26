@@ -19,9 +19,9 @@ target_sphinx = targets.contains('sphinx')
 doxygen_path = get_option('doxygen_path')
 
 if clang_path == ''
-  llvm = dependency('llvm', required: false)
-  if llvm.found()
-    clang_path = llvm.get_variable(cmake: 'LLVM_LIBRARY_DIRS', configtool: 'libdir', default_value: 'none')
+  llvm_config = find_program('llvm-config', 'llvm-config-7', required: false)
+  if llvm_config.found()
+    clang_path = run_command(llvm_config, '--libdir', check: true).stdout().strip()
   elif build_machine.system() == 'darwin'
     clang_path = '/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/'
   elif build_machine.system() == 'windows'
