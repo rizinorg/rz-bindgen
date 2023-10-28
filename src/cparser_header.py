@@ -173,7 +173,9 @@ class Header:
                 continue
 
             # Check for redefinitions
-            if name in self.cursor_kinds and cursor.kind == self.cursor_kinds[name]:  # Redefinition
+            if (
+                name in self.cursor_kinds and cursor.kind == self.cursor_kinds[name]
+            ):  # Redefinition
                 prev = self.cursors[cursor.kind][name]
                 if cursor.kind == CursorKind.STRUCT_DECL:
                     assert prev.kind == CursorKind.STRUCT_DECL
