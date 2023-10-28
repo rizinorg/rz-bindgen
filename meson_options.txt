@@ -1,6 +1,6 @@
 option('clang_path', type: 'string', value: '')
 option('clang_args', type: 'string', value: '')
-option('rizin_include_path', type: 'string', value: '')
+option('rizin_include_path', type: 'string', value: 'C:/rizin/include/librz')
 option('targets', type: 'array', choices: ['SWIG', 'sphinx'], value: ['SWIG'])
 
 option('plugin', type: 'feature', value: 'disabled')
