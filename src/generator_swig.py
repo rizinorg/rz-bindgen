@@ -153,7 +153,12 @@ def stringify_decl(expr: str, ctype: CType, generic: bool = False) -> str:
 
         if isinstance(ctype, CPointerType):
             expr = "*" + expr
+
+            # HACK!
+            pointee_type_ = ctype.type_.get_pointee()
             ctype = ctype.pointee
+            ctype.type_ = pointee_type_
+
             pointing = True
             continue
 
