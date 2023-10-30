@@ -100,29 +100,32 @@ def wrap_type(type_: Type) -> CType:
     """
     Wrap a type
     """
+    orig_type = type_
     while type_.kind == TypeKind.ELABORATED:
         type_ = type_.get_named_type()
 
     # Complex types
     if type_.kind == TypeKind.POINTER:
-        return CPointerType(type_, pointee=wrap_type(type_.get_pointee()))
+        return CPointerType(orig_type, pointee=wrap_type(type_.get_pointee()))
 
     if type_.kind in [TypeKind.CONSTANTARRAY, TypeKind.INCOMPLETEARRAY]:
-        array_t = CArrayType(type_, element=wrap_type(type_.get_array_element_type()))
+        array_t = CArrayType(
+            orig_type, element=wrap_type(type_.get_array_element_type())
+        )
         if type_.kind == TypeKind.CONSTANTARRAY:
             array_t.element_count = type_.element_count
         return array_t
 
     if type_.kind == TypeKind.TYPEDEF:
         return CTypedefType(
-            type_,
+            orig_type,
             canonical=wrap_type(type_.get_canonical()),
             cursor=type_.get_declaration(),
         )
 
     if type_.kind == TypeKind.FUNCTIONPROTO:
         return CFunctionType(
-            type_,
+            orig_type,
             result=wrap_type(type_.get_result()),
             args=[wrap_type(arg) for arg in type_.argument_types()],
         )
@@ -132,7 +135,7 @@ def wrap_type(type_: Type) -> CType:
         if decl_spelling.startswith("const "):
             decl_spelling = decl_spelling[len("const ") :]
 
-        return CRecordType(type_, decl_spelling=decl_spelling)
+        return CRecordType(orig_type, decl_spelling=decl_spelling)
 
     # Primitive types
     if type_.kind in [

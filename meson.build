@@ -49,7 +49,7 @@ if clang_args == ''
   clang = find_program('clang', 'clang-7', required: false)
   if clang.found()
     clang_args += ' -resource-dir='
-    clang_args += run_command(clang, '-print-resource-dir', check: true).stdout().strip()
+    clang_args += '"' + run_command(clang, '-print-resource-dir', check: true).stdout().strip() + '"'
   endif
   if build_machine.system() == 'darwin'
     clang_args += ' -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk'
