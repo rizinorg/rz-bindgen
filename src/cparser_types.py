@@ -109,7 +109,9 @@ def wrap_type(type_: Type) -> CType:
         return CPointerType(orig_type, pointee=wrap_type(type_.get_pointee()))
 
     if type_.kind in [TypeKind.CONSTANTARRAY, TypeKind.INCOMPLETEARRAY]:
-        array_t = CArrayType(orig_type, element=wrap_type(type_.get_array_element_type()))
+        array_t = CArrayType(
+            orig_type, element=wrap_type(type_.get_array_element_type())
+        )
         if type_.kind == TypeKind.CONSTANTARRAY:
             array_t.element_count = type_.element_count
         return array_t
