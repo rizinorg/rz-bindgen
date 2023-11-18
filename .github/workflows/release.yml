@@ -7,7 +7,7 @@ on:
 
 jobs:
   extract-rizin-version:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     outputs:
       rizin_version: ${{ steps.extract_version.outputs.result }}
     steps:
@@ -21,7 +21,7 @@ jobs:
       rizin_ref: ${{ needs.extract-rizin-version.outputs.rizin_version }}
 
   publish-pypi:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     needs: [build]
     steps:
     - name: Download artifacts
