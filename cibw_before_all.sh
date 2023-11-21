@@ -4,7 +4,7 @@
 set -ex
 
 # Install deps
-pip3 install meson ninja meson-python build
+pip3 install meson==1.2.3 ninja meson-python build
 
 if command -v apt; then
     set +e
