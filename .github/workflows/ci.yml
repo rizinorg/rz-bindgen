@@ -46,6 +46,8 @@ jobs:
 
   ubuntu-llvm-15:
     runs-on: ubuntu-22.04
+    env:
+      CC: clang-15
 
     steps:
     - name: Checkout rz-bindgen
