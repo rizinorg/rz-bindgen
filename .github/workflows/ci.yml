@@ -48,6 +48,7 @@ jobs:
     runs-on: ubuntu-22.04
     env:
       CC: clang-15
+      CXX: clang++-15
 
     steps:
     - name: Checkout rz-bindgen
