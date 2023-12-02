@@ -19,7 +19,7 @@ target_sphinx = targets.contains('sphinx')
 doxygen_path = get_option('doxygen_path')
 
 if clang_path == ''
-  llvm_config = find_program('llvm-config', 'llvm-config-7', required: false)
+  llvm_config = find_program('llvm-config-15', 'llvm-config', 'llvm-config-7', required: false)
   if llvm_config.found()
     clang_path = run_command(llvm_config, '--libdir', check: true).stdout().strip()
   elif build_machine.system() == 'darwin'
@@ -46,7 +46,7 @@ if rizin_include_path == ''
 endif
 
 if clang_args == ''
-  clang = find_program('clang', 'clang-7', required: false)
+  clang = find_program('clang-15', 'clang', 'clang-7', required: false)
   if clang.found()
     clang_args += ' -resource-dir='
     clang_args += '"' + run_command(clang, '-print-resource-dir', check: true).stdout().strip() + '"'
