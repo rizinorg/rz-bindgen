@@ -43,3 +43,43 @@ jobs:
       with:
         name: wheels
         path: wheelhouse/*.whl
+
+  ubuntu-llvm-15:
+    runs-on: ubuntu-22.04
+
+    steps:
+    - name: Checkout rz-bindgen
+      uses: actions/checkout@v3
+
+    - name: Checkout rizin
+      uses: actions/checkout@v3
+      with:
+        repository: rizinorg/rizin
+        path: rizin
+        fetch-depth: 2
+
+    - name: Install dependencies
+      run: |
+        sudo apt update
+        sudo apt-get --assume-yes install cmake swig pkg-config clang-15 libclang-15-dev llvm-15 wget unzip python3-wheel python3-setuptools build-essential python3-pip && sudo pip3 install meson ninja
+
+    - name: Install rizin
+      run: |
+        export PATH=$PATH:/usr/local/bin
+        meson setup --prefix=/usr --buildtype=release build && ninja -C build && sudo ninja -C build install
+      working-directory: rizin
+
+    - name: Build rz-bindgen
+      run: |
+        meson setup --prefix=/usr -Dplugin=enabled build
+        meson compile -C build
+        sudo meson install -C build
+      working-directory: rz-bindgen
+
+    - name: Test python lang plugin
+      run: rizin -qc "Ll" | grep "Python SWIG"
+
+    - name: Test rizin.py
+      run: |
+        echo "import rizin" > testimport.py
+        python3 testimport.py
