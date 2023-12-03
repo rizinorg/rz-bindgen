@@ -46,9 +46,6 @@ jobs:
 
   ubuntu-default-llvm:
     runs-on: ubuntu-22.04
-    env:
-      CC: clang
-      CXX: clang++
 
     steps:
     - name: Checkout rz-bindgen
