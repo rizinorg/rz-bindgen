@@ -44,11 +44,11 @@ jobs:
         name: wheels
         path: wheelhouse/*.whl
 
-  ubuntu-llvm-15:
+  ubuntu-default-llvm:
     runs-on: ubuntu-22.04
     env:
-      CC: clang-15
-      CXX: clang++-15
+      CC: clang
+      CXX: clang++
 
     steps:
     - name: Checkout rz-bindgen
@@ -66,7 +66,7 @@ jobs:
     - name: Install dependencies
       run: |
         sudo apt update
-        sudo apt-get --assume-yes install cmake swig pkg-config clang-15 libclang-15-dev llvm-15 wget unzip python3-wheel python3-setuptools build-essential python3-pip && sudo pip3 install meson ninja
+        sudo apt-get --assume-yes install cmake swig pkg-config clang libclang-dev llvm wget unzip python3-wheel python3-setuptools build-essential python3-pip && sudo pip3 install meson ninja
 
     - name: Install rizin
       run: |
