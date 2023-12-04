@@ -58,7 +58,6 @@ jobs:
       with:
         repository: rizinorg/rizin
         path: rizin
-        fetch-depth: 2
 
     - name: Install dependencies
       run: |
