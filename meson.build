@@ -1,7 +1,7 @@
 project('rz-bindgen', 'c', 'cpp',
   version: '0.6.0',
   license: 'LGPL3',
-  meson_version: '>=0.53.0',
+  meson_version: '>=0.62.2',
   default_options: ['python.install_env=auto'])
 
 pymod = import('python')
