@@ -166,6 +166,7 @@ def bind_analysis(analysis_h: Header) -> None:
 
     Class(analysis_h, typedef="RzAnalysisBlock")
     Class(analysis_h, typedef="RzAnalysisEsil")
+    Class(analysis_h, typedef="RzAnalysisEsilInterState")
     Class(analysis_h, typedef="RzAnalysisPlugin")
 
     Class(
