@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+"""
+SPDX-FileCopyrightText: 2024 kazarmy <kazarmy@gmail.com>
+SPDX-License-Identifier: LGPL-3.0-only
+"""
 
 import os
 import shutil
