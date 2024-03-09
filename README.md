@@ -9,9 +9,9 @@ For usage information, see [the documentation](doc/README.md).
 ## Building python plugin
 Requirements:
 - rizin > 0.4.1 (needs commit [59b38e6](https://github.com/rizinorg/rizin/commit/59b38e6efaf00b9b9869e0ec5baba4f1b9605f37))
-- meson >= 0.62.2
+- meson >= 1.1.0
 - ninja
-- python >= 3.7
+- python >= 3.10
 - libclang
 - SWIG
 
