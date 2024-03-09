@@ -117,7 +117,7 @@ if target_swig
       '-python', '-c++',
       '-outdir', '@OUTDIR@', '@INPUT@'
     ],
-    install: true,
+    install: host_machine.system() == 'windows',
     install_dir: [py.get_install_dir(), false]
   )
   swig_py = swig_output[0]
@@ -127,15 +127,18 @@ if target_swig
     rz_core = dependency('rz_core')
   endif
 
-  py.extension_module(
+  ext_mod = py.extension_module(
     '_rizin',
     swig_wrap,
     dependencies: [
       py.dependency(),
       rz_core,
     ],
-    install: true,
+    install: host_machine.system() == 'windows',
   )
+  if host_machine.system() != 'windows'
+    meson.add_install_script('py_install.py', swig_py.full_path(), ext_mod.full_path())
+  endif
 endif
 
 if target_sphinx
@@ -155,4 +158,3 @@ endif
 if get_option('plugin').enabled()
   subdir('plugin')
 endif
-
