@@ -2,6 +2,7 @@
 SPDX-FileCopyrightText: 2022 wingdeans <wingdeans@protonmail.com>
 SPDX-License-Identifier: LGPL-3.0-only
 """
+
 from typing import List, Dict, TYPE_CHECKING
 
 from clang.cindex import Cursor, CursorKind
