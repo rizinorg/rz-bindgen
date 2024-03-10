@@ -23,6 +23,7 @@ and definitions. It also does this for Rizin annotations, such as RZ_OWN. This w
 by defining the RZ_BINDINGS preprocessor flag, which sets the annotations to expand to
 __attribute__((annotate)), which can be picked up by libclang.
 """
+
 from typing import List, Dict, Set, TypedDict, Optional, cast
 
 import os

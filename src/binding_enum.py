@@ -46,12 +46,10 @@ class MacroEnum:
     defines: OrderedDict[str, str]
 
     @overload
-    def __init__(self, header: Header, *defines: str):
-        ...
+    def __init__(self, header: Header, *defines: str): ...
 
     @overload
-    def __init__(self, header: Header, *, prefix: str):
-        ...
+    def __init__(self, header: Header, *, prefix: str): ...
 
     def __init__(
         self,
