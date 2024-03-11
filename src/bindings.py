@@ -147,8 +147,6 @@ def bind_analysis(analysis_h: Header) -> None:
     """
     RzAnalysis
     """
-    analysis_h.ignore("rz_analysis_version")
-
     rz_analysis = Class(
         analysis_h,
         typedef="RzAnalysis",
