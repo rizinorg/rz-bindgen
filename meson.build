@@ -117,7 +117,7 @@ if target_swig
       '-python', '-c++',
       '-outdir', '@OUTDIR@', '@INPUT@'
     ],
-    install: host_machine.system() == 'windows',
+    install: true, # host_machine.system() == 'windows',
     install_dir: [py.get_install_dir(), false]
   )
   swig_py = swig_output[0]
@@ -134,7 +134,7 @@ if target_swig
       py.dependency(),
       rz_core,
     ],
-    install: host_machine.system() == 'windows',
+    install: true, # host_machine.system() == 'windows',
   )
   if host_machine.system() != 'windows'
     meson.add_install_script('py_install.py', swig_py.full_path(), ext_mod.full_path())
