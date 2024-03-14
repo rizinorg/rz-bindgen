@@ -31,7 +31,7 @@ jobs:
 
     - name: Patch meson.build for wheel build
       if: matrix.os != 'windows-2019'
-      run: sed -i 's/^\([[:blank:]]*install:\) host_machine.*$/\1 true,/' meson.build
+      run: sed -i.bak 's/^\([[:blank:]]*install:\) host_machine.*$/\1 true,/' meson.build
 
     - name: Build rz-bindgen
       uses: pypa/cibuildwheel@v2.8.0
