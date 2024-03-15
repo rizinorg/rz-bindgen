@@ -4,5 +4,6 @@ option('rizin_include_path', type: 'string', value: '')
 option('targets', type: 'array', choices: ['SWIG', 'sphinx'], value: ['SWIG'])
 
 option('plugin', type: 'feature', value: 'disabled')
+option('wheel', type: 'boolean', value: false, description: 'Set up for pypa wheel build')
 
 option('doxygen_path', type: 'string', value: '')

@@ -5,6 +5,9 @@ requires = [
 ]
 build-backend = "mesonpy"
 
+[tool.meson-python.args]
+setup = ['-Dwheel=true']
+
 [tool.cibuildwheel]
 build-verbosity = 3
 before-all = "bash {project}/cibw_before_all.sh"
