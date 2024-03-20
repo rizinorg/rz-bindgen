@@ -210,6 +210,18 @@ class Function:
             for arg in cursor.get_arguments()
         ]
 
+    def check_ownership(self) -> None:
+        """
+        Check if a function returns RzList pointer and if it does,
+        verify if the function has either RZ_OWN or RZ_BORROW annotation.
+        If not, add a warning.
+        """
+        if self.name.startswith('RzList*') and not ('RZ_OWN' in self.annotations or 'RZ_BORROW' in self.annotations):
+            warn(
+                f"Missing ownership annotation for {self.name} "
+                f"at {self.location}. Expected RZ_OWN or RZ_BORROW."
+            )
+
     def diff(self, new: "Function") -> None:
         """
         Compare annotations and comments on function return type and arguments.
@@ -284,6 +296,7 @@ def check_translation_unit(
 
         if cursor.kind == CursorKind.FUNCTION_DECL:
             function = Function(cursor)
+            function.check_ownership()
 
             if function.name in functions:
                 function.diff(functions[function.name])
