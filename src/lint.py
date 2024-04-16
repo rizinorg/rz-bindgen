@@ -164,7 +164,7 @@ def cursor_get_comment(cursor: Cursor, *, packed: bool = False) -> Optional[str]
             warn(
                 f"Type comment at {stringify_location(cursor.location)} should not have pointer"
             )
-    elif typeref_spelling in {"HtPP", "HtUP", "HtUU", "RBTree", "SdbList"}:
+    elif typeref_spelling in {"HtPP", "HtUP", "HtUU", "HtSP", "HtSS", "RBTree", "SdbList"}:
         pass
     else:
         warn(
