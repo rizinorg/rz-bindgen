@@ -455,6 +455,7 @@ def bind_ht_uu(ht_uu_h: Header) -> None:
     """
     Class(ht_uu_h, typedef="HtUU")
 
+
 @threaded_header("rz_util/ht_sp.h")
 def bind_ht_sp(ht_sp_h: Header) -> None:
     """
@@ -462,12 +463,14 @@ def bind_ht_sp(ht_sp_h: Header) -> None:
     """
     Class(ht_sp_h, typedef="HtSP")
 
+
 @threaded_header("rz_util/ht_ss.h")
 def bind_ht_ss(ht_ss_h: Header) -> None:
     """
     ht_ss
     """
     Class(ht_ss_h, typedef="HtSS")
+
 
 @threaded_header("rz_util/ht_su.h")
 def bind_ht_su(ht_su_h: Header) -> None:
