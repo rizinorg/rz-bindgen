@@ -20,26 +20,26 @@ jobs:
 
     steps:
     - name: Checkout rz-bindgen
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Checkout rizin
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         repository: rizinorg/rizin
         path: rizin
         ref: ${{ inputs.rizin_ref }}
 
     - name: Build rz-bindgen
-      uses: pypa/cibuildwheel@v2.8.0
+      uses: pypa/cibuildwheel@v2.17.0
 
     - name: Upload sdist
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: sdist
         path: dist/*.tar.gz
 
     - name: Upload wheels
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: wheels
         path: wheelhouse/*.whl
@@ -49,12 +49,12 @@ jobs:
 
     steps:
     - name: Checkout rz-bindgen
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         path: rz-bindgen
 
     - name: Checkout rizin
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         repository: rizinorg/rizin
         path: rizin
