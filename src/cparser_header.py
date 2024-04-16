@@ -103,7 +103,7 @@ class HeaderBuilder:
 
         # Parse ht_inc.h if importing SDB hashtable header
         self.extra_filename = None
-        if name_segments[-1] in ["ht_pp.h", "ht_pu.h", "ht_up.h", "ht_uu.h"]:
+        if name_segments[-1] in ["ht_pp.h", "ht_pu.h", "ht_up.h", "ht_uu.h", "ht_sp.h", "ht_ss.h", "ht_su.h"]:
             self.extra_filename = "ht_inc.h"
 
     def translation_unit(self) -> TranslationUnit:
