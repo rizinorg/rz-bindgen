@@ -28,8 +28,7 @@ class Func:
         *,
         default_args: Optional[Dict[str, str]] = ...,
         typemaps: Optional[List[Typemap]] = ...,
-    ):
-        ...
+    ): ...
 
     @overload
     def __init__(
@@ -39,8 +38,7 @@ class Func:
         cfunc: "CFunc",
         default_args: Optional[Dict[str, str]] = ...,
         typemaps: Optional[List[Typemap]] = ...,
-    ):
-        ...
+    ): ...
 
     def __init__(
         self,

@@ -54,8 +54,7 @@ class Class:
         typedef: str,
         ignore_fields: Optional[Set[str]] = ...,
         rename_fields: Optional[Dict[str, str]] = ...,
-    ):
-        ...
+    ): ...
 
     @overload
     def __init__(
@@ -66,8 +65,7 @@ class Class:
         struct: str,
         ignore_fields: Optional[Set[str]] = ...,
         rename_fields: Optional[Dict[str, str]] = ...,
-    ):
-        ...
+    ): ...
 
     def __init__(
         self,

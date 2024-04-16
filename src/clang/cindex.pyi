@@ -86,6 +86,7 @@ class Type:
 class SourceLocation:
     class File:
         name: str
+
     file: File
     line: int
     column: int
