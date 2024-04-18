@@ -17,6 +17,7 @@ skip = "pp*"
 
 [tool.cibuildwheel.linux]
 before-build = "source scl_source enable llvm-toolset-7.0 || true"
+environment = { PATH="/opt/rh/llvm-toolset-7.0/root/usr/bin:/opt/rh/llvm-toolset-7.0/root/usr/sbin:/opt/python/cp38-cp38/bin:/opt/rh/devtoolset-10/root/usr/bin:$PATH" }
 
 [tool.cibuildwheel.windows]
 environment = { CMAKE_PREFIX_PATH="C:\\rizin" }
