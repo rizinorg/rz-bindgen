@@ -20,9 +20,9 @@ if command -v apt; then
 elif command -v apk; then
     apk update && apk add clang-dev
 elif command -v yum; then
-    # yum -y install centos-release-scl llvm-toolset-7.0 llvm-toolset-7.0-llvm-devel
     yum -y install llvm-toolset-7.0 llvm-toolset-7.0-llvm-devel
-    # source scl_source enable llvm-toolset-7.0 || true
+    yum -y install centos-release-scl
+    source scl_source enable llvm-toolset-7.0 || true
 fi
 
 pushd rizin
