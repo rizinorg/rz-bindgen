@@ -20,8 +20,7 @@ if command -v apt; then
 elif command -v apk; then
     apk update && apk add clang-dev
 elif command -v yum; then
-    yum install centos-release-scl
-    yum install llvm-toolset-7.0
+    yum -y install centos-release-scl llvm-toolset-7.0
     scl enable llvm-toolset-7.0 bash
 fi
 
