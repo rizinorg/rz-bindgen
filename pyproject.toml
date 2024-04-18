@@ -11,7 +11,7 @@ setup = ['-Dwheel=true']
 [tool.cibuildwheel]
 build-verbosity = 3
 before-all = "bash {project}/cibw_before_all.sh"
-before-build = "source scl_source enable llvm-toolset-7.0 || true"
+before-build-linux = "source scl_source enable llvm-toolset-7.0 || true"
 manylinux-x86_64-image = "manylinux2014"
 manylinux-i686-image = "manylinux2014"
 skip = "pp*"
