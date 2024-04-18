@@ -19,6 +19,11 @@ if command -v apt; then
     apt update && apt install --assume-yes libclang-7-dev clang-7 llvm-7
 elif command -v apk; then
     apk update && apk add clang-dev
+elif command -v yum; then
+    yum -y install llvm-toolset-7.0 llvm-toolset-7.0-llvm-devel
+    # (CentOS 7) Uncomment following lines to see required paths in build log:
+    #   yum -y install centos-release-scl
+    #   source scl_source enable llvm-toolset-7.0 || true
 fi
 
 pushd rizin
