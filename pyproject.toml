@@ -16,8 +16,10 @@ manylinux-i686-image = "manylinux2014"
 skip = "pp*"
 
 [tool.cibuildwheel.linux]
-before-build = "source scl_source enable llvm-toolset-7.0 || true"
-environment = { PATH="/opt/rh/llvm-toolset-7.0/root/usr/bin:/opt/rh/llvm-toolset-7.0/root/usr/sbin:/opt/python/cp38-cp38/bin:/opt/rh/devtoolset-10/root/usr/bin:$PATH" }
+environment = {
+  PATH="/opt/rh/llvm-toolset-7.0/root/usr/bin:/opt/rh/llvm-toolset-7.0/root/usr/sbin:/opt/python/cp38-cp38/bin:/opt/rh/devtoolset-10/root/usr/bin:$PATH",
+  LD_LIBRARY_PATH="/opt/rh/llvm-toolset-7.0/root/usr/lib64:/opt/rh/devtoolset-10/root/usr/lib64:/opt/rh/devtoolset-10/root/usr/lib:/opt/rh/devtoolset-10/root/usr/lib64/dyninst:/opt/rh/devtoolset-10/root/usr/lib/dyninst:$LD_LIBRARY_PATH",
+}
 
 [tool.cibuildwheel.windows]
 environment = { CMAKE_PREFIX_PATH="C:\\rizin" }
