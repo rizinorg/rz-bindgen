@@ -22,6 +22,8 @@ elif command -v apk; then
 elif command -v yum; then
     yum -y install centos-release-scl llvm-toolset-7.0
     source scl_source enable llvm-toolset-7.0 || true
+    clang --version
+    clang-7 --version
 fi
 
 pushd rizin
