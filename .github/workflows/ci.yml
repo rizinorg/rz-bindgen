@@ -35,13 +35,13 @@ jobs:
     - name: Upload sdist
       uses: actions/upload-artifact@v4
       with:
-        name: sdist
+        name: sdist-${{ matrix.os }}
         path: dist/*.tar.gz
 
     - name: Upload wheels
       uses: actions/upload-artifact@v4
       with:
-        name: wheels
+        name: wheels-${{ matrix.os }}
         path: wheelhouse/*.whl
 
   ubuntu-default-llvm:
