@@ -98,7 +98,7 @@ class HeaderBuilder:
 
         assert rizin_include_path
         filename = os.path.abspath(os.path.join(rizin_include_path, *name_segments))
-        assert os.path.exists(filename)
+        assert os.path.exists(filename), f"File {filename} does not exist"
         self.filename = filename
 
         # Parse ht_inc.h if importing SDB hashtable header
