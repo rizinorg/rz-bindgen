@@ -416,14 +416,6 @@ def bind_sdb(sdb_h: Header) -> None:
     Class(sdb_h, typedef="Sdb", ignore_fields={"db", "m"})
 
 
-@threaded_header("sdb/ls.h")
-def bind_ls(ls_h: Header) -> None:
-    """
-    ls
-    """
-    Class(ls_h, typedef="SdbList")
-
-
 @threaded_header("rz_util/ht_pp.h")
 def bind_ht_pp(ht_pp_h: Header) -> None:
     """
