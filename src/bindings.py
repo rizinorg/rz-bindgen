@@ -258,7 +258,6 @@ def bind_cons(cons_h: Header) -> None:
         typedef="RzCons",
         ignore_fields={"term_raw", "term_buf"},  # struct termios
         rename_fields={
-            "lastline": "_lastline",
             "echo": "_echo",
             "highlight": "_highlight",
             "newline": "_newline",
