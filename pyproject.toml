@@ -22,10 +22,13 @@ archs = ["x86_64"]
 environment = { CMAKE_PREFIX_PATH="C:\\rizin" }
 archs = ["AMD64"]
 
+[tool.cibuildwheel.macos]
+environment = { PATH="/opt/homebrew/bin:$PATH", MACOSX_DEPLOYMENT_TARGET="14.0" }
+
 [project]
 name = "rz-bindings"
 dynamic = [
   'version',
 ]
-requires-python = ">=3.8"
+requires-python = ">=3.9"
 readme = "README.md"
