@@ -4,7 +4,12 @@
 set -ex
 
 # Install deps
-pip3 install meson ninja meson-python build
+pygt311=$(python3 -c 'import sys; print(0) if sys.version_info.minor > 11 else print(1)' 2>&1)
+if [[ $pygt311 == '0' ]]; then
+    pip3 install --break-system-packages meson ninja meson-python build
+else
+    pip3 install meson ninja meson-python build
+fi
 
 if command -v brew; then
     brew install --require-sha swig
