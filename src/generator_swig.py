@@ -265,6 +265,11 @@ def write_func(writer: Writer, func: Func, name: str, kind: FuncKind) -> None:
         if arg_name == "self":
             arg_name = "_self"
 
+        # if function arg is the same as the function name
+        # we rename the argument
+        if arg_name == name:
+            arg_name += "_arg"
+
         arg_decl = stringify_decl(
             arg_name,
             arg.ctype,
