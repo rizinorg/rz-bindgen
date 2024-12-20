@@ -285,7 +285,7 @@ def write_func(writer: Writer, func: Func, name: str, kind: FuncKind) -> None:
 
     # Nullability checking contract
     if args_nonnull:
-        writer.line(f"%contract {name}({args_outer_str}) {{", "require:")
+        writer.line(f"%contract {name}({args_inner_str}) {{", "require:")
         with writer.indent():
             for contract_arg in args_nonnull:
                 writer.line(f"{contract_arg} != NULL;")
