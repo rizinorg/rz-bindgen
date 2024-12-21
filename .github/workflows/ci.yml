@@ -80,11 +80,30 @@ jobs:
       with:
         path: rz-bindgen
 
+    # runned only from workflow_call
     - name: Checkout rizin
+      if: ${{ inputs.external_call }}
       uses: actions/checkout@v4
       with:
         repository: rizinorg/rizin
         path: rizin
+        ref: ${{ inputs.rizin_ref }}
+
+    - name: Checkout rizin (stable)
+      if: ${{ !inputs.external_call && ((github.ref_name == 'stable') || (github.base_ref == 'stable')) }}
+      uses: actions/checkout@v4
+      with:
+        repository: rizinorg/rizin
+        path: rizin
+        ref: stable
+
+    - name: Checkout rizin (dev)
+      if: ${{ !inputs.external_call && ((github.ref_name != 'stable') && (github.base_ref != 'stable')) }}
+      uses: actions/checkout@v4
+      with:
+        repository: rizinorg/rizin
+        path: rizin
+        ref: dev
 
     - name: Install dependencies
       run: |
