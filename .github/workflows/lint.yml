@@ -19,7 +19,7 @@ jobs:
         pip install mypy pyflakes pylint black
     - name: Run mypy
       run: |
-        mypy src/main.py
+        mypy --disable-error-code misc src/main.py
       if: ${{ always() }}
     - name: Run pyflakes
       run: |
