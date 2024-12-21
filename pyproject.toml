@@ -19,7 +19,7 @@ environment = { PATH="/opt/rh/llvm-toolset-7.0/root/usr/bin:/opt/rh/llvm-toolset
 archs = ["x86_64"]
 
 [tool.cibuildwheel.windows]
-environment = { CMAKE_PREFIX_PATH="C:\\rizin" }
+environment = { CMAKE_PREFIX_PATH="C:/rizin" }
 archs = ["AMD64"]
 
 [tool.cibuildwheel.macos]
