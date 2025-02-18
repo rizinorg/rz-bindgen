@@ -2224,7 +2224,7 @@ class Type(Structure):
 
                 return result
 
-        assert self.kind == TypeKind.FUNCTIONPROTO
+        assert self.kind == TypeKind.FUNCTIONPROTO or self.kind == TypeKind.FUNCTIONNOPROTO
         return ArgumentsIterator(self)
 
     @property
@@ -2320,7 +2320,7 @@ class Type(Structure):
 
     def is_function_variadic(self):
         """Determine whether this function Type is a variadic function type."""
-        assert self.kind == TypeKind.FUNCTIONPROTO
+        assert self.kind == TypeKind.FUNCTIONPROTO or self.kind == TypeKind.FUNCTIONNOPROTO
 
         return conf.lib.clang_isFunctionTypeVariadic(self)
 
