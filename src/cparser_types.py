@@ -123,7 +123,7 @@ def wrap_type(type_: Type) -> CType:
             cursor=type_.get_declaration(),
         )
 
-    if type_.kind == TypeKind.FUNCTIONPROTO or type_.kind == TypeKind.FUNCTIONNOPROTO:
+    if type_.kind in (TypeKind.FUNCTIONPROTO, TypeKind.FUNCTIONNOPROTO):
         return CFunctionType(
             orig_type,
             result=wrap_type(type_.get_result()),
