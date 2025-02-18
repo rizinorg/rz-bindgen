@@ -2,6 +2,13 @@
 // SPDX-License-Identifier: LGPL-3.0-only
 
 #include <Python.h>
+/**
+ * Some defines in rz_userconf.h are conflicting with the ones in python.h
+ **/
+#undef HAVE_EXPLICIT_BZERO
+#undef HAVE_SIGACTION
+#undef HAVE_REALPATH
+
 #include <rz_core.h>
 #include <rz_util/rz_file.h>
 #include <swig_runtime.h>

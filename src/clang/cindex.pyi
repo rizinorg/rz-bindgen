@@ -38,6 +38,7 @@ class TypeKind(Enum):
     POINTER: TypeKind
     CONSTANTARRAY: TypeKind
     FUNCTIONPROTO: TypeKind
+    FUNCTIONNOPROTO: TypeKind
     INCOMPLETEARRAY: TypeKind
 
     RECORD: TypeKind
