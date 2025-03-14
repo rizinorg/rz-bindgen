@@ -21,7 +21,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-22.04, windows-2019, macos-14]
+        os: [ubuntu-24.04, windows-2019, macos-14]
 
     steps:
     - name: Install SWIG with Homebrew
@@ -72,7 +72,7 @@ jobs:
         path: wheelhouse/*.whl
 
   ubuntu-default-llvm:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
 
     steps:
     - name: Checkout rz-bindgen
@@ -109,12 +109,7 @@ jobs:
       run: |
         sudo apt update
         sudo apt-get --assume-yes install cmake swig pkg-config clang libclang-dev llvm wget unzip python3-wheel python3-setuptools build-essential python3-pip
-        pygt311=$(python3 -c 'import sys; print(0) if sys.version_info.minor > 11 else print(1)' 2>&1)
-        if [[ $pygt311 == '0' ]]; then
-          sudo pip3 --break-system-packages install meson ninja
-        else
-          sudo pip3 install meson ninja
-        fi
+        sudo pip3 install meson ninja
 
     - name: Install rizin
       run: |
