@@ -38,6 +38,9 @@ pushd rizin
 if [[ "$OSTYPE" =~ msys* ]]; then
     meson setup --buildtype=release --prefix='c:/rizin' --vsenv build
     meson install -C build
+elif [[ "$OSTYPE" =~ linux* ]]; then
+    CFLAGS="-include linux/limits.h" meson setup --buildtype=release --libdir=lib build
+    sudo meson install -C build
 else
     meson setup --buildtype=release --libdir=lib build
     sudo meson install -C build
