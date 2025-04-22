@@ -39,6 +39,9 @@ if [[ "$OSTYPE" =~ msys* ]]; then
     meson setup --buildtype=release --prefix='c:/rizin' --vsenv build
     meson install -C build
 else
+    if [[ "$OSTYPE" =~ linux* ]]; then
+        export CFLAGS="-include linux/limits.h"
+    fi
     meson setup --buildtype=release --libdir=lib build
     sudo meson install -C build
 fi

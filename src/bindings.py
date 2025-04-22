@@ -258,7 +258,6 @@ def bind_cons(cons_h: Header) -> None:
         typedef="RzCons",
         ignore_fields={"term_raw", "term_buf"},  # struct termios
         rename_fields={
-            "lastline": "_lastline",
             "echo": "_echo",
             "highlight": "_highlight",
             "newline": "_newline",
@@ -416,14 +415,6 @@ def bind_sdb(sdb_h: Header) -> None:
     Class(sdb_h, typedef="Sdb", ignore_fields={"db", "m"})
 
 
-@threaded_header("sdb/ls.h")
-def bind_ls(ls_h: Header) -> None:
-    """
-    ls
-    """
-    Class(ls_h, typedef="SdbList")
-
-
 @threaded_header("rz_util/ht_pp.h")
 def bind_ht_pp(ht_pp_h: Header) -> None:
     """
@@ -454,3 +445,27 @@ def bind_ht_uu(ht_uu_h: Header) -> None:
     ht_uu
     """
     Class(ht_uu_h, typedef="HtUU")
+
+
+@threaded_header("rz_util/ht_sp.h")
+def bind_ht_sp(ht_sp_h: Header) -> None:
+    """
+    ht_sp
+    """
+    Class(ht_sp_h, typedef="HtSP")
+
+
+@threaded_header("rz_util/ht_ss.h")
+def bind_ht_ss(ht_ss_h: Header) -> None:
+    """
+    ht_ss
+    """
+    Class(ht_ss_h, typedef="HtSS")
+
+
+@threaded_header("rz_util/ht_su.h")
+def bind_ht_su(ht_su_h: Header) -> None:
+    """
+    ht_su
+    """
+    Class(ht_su_h, typedef="HtSU")
