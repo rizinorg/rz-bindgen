@@ -327,6 +327,29 @@ def bind_core(core_h: Header) -> None:
 
     Class(core_h, typedef="RzCoreFile")
 
+@threaded_header("rz_util/rz_annotated_code.h")
+def bind_annotated_code(annotated_code_h: Header) -> None:
+    """
+    RzAnnotatedCode
+    """
+    rz_code_annotation = Class(
+        annotated_code_h,
+        typedef="RzCodeAnnotation",
+        struct="rz_code_annotation_t",
+    )
+    rz_code_annotation.add_prefixed_methods("rz_annotation_")
+    rz_code_annotation.add_prefixed_funcs("rz_annotation_")
+
+    rz_annotated_code = Class(
+        annotated_code_h,
+        typedef="RzAnnotatedCode",
+        struct="rz_annotated_code_t",
+    )
+    rz_annotated_code.add_constructor("rz_annotated_code_new")
+    rz_annotated_code.add_destructor("rz_annotated_code_free")
+
+    rz_annotated_code.add_prefixed_methods("rz_annotated_code_")
+    rz_annotated_code.add_prefixed_funcs("rz_annotated_code_")
 
 @threaded_header("rz_flag.h")
 def bind_flag(flag_h: Header) -> None:
