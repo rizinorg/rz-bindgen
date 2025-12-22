@@ -70,8 +70,8 @@ def bind_list(list_h: Header) -> None:
     rz_list = Generic(list_h, "RzList", dependencies=[rz_list_iter], pointer=True)
     rz_list.add_method("rz_list_length", rename="length")
 
-    rz_list.add_method("rz_list_first", rename="first", generic_ret=True)
-    rz_list.add_method("rz_list_last", rename="last", generic_ret=True)
+    rz_list.add_method("rz_list_first_val", rename="first", generic_ret=True)
+    rz_list.add_method("rz_list_last_val", rename="last", generic_ret=True)
     rz_list.add_method("rz_list_iterator", rename="iterator", generic_ret=True)
 
     rz_list.add_method(
