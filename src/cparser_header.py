@@ -76,7 +76,7 @@ class CFunc(AttrCursor):
 
 
 ### Configuration ###
-rizin_include_path: Optional[str] = None
+rizin_include_path: Optional[str] = None  # pylint: disable=invalid-name
 clang_args: List[str] = []
 
 ### Headers ###
