@@ -30,6 +30,7 @@ import os
 import sys
 import json
 import shlex
+import re
 from argparse import ArgumentParser
 from dataclasses import dataclass
 from itertools import zip_longest
@@ -43,6 +44,30 @@ from clang.cindex import (
     SourceRange,
     SourceLocation,
 )
+
+# Detect /** ... */ or /*! ... */ style Doxygen block comments
+_DOXY_BLOCK_RE = re.compile(r'/\*[*!][\s\S]*?\*/')
+
+# Detect consecutive /// or //! style Doxygen line comments
+_DOXY_LINE_RE = re.compile(r'(?:(?:\/\/[\/!])[^\n]*\n?)+')
+
+# Match any @-prefixed Doxygen command with word boundary
+_DOXY_COMMAND_RE = re.compile(r'@(\w+)\b')
+
+# Map of @-prefixed commands to their correct backslash equivalents
+_DOXY_COMMANDS = {
+    "param": "\\param",
+    "return": "\\return",
+    "brief": "\\brief",
+    "ref": "\\ref",
+    "p": "\\p",
+    "see": "\\see",
+    "file": "\\file",
+    "ingroup": "\\ingroup",
+    "post": "\\post",
+    "sa": "\\sa",
+    "test": "\\test",
+}
 
 
 warnings = set()
@@ -265,6 +290,49 @@ class Function:
                     )
 
 
+def check_doxygen_syntax(file_path: str, rizin_path: str) -> None:
+    """
+    Check for incorrect Doxygen syntax in a file.
+    
+    Rizin uses backslash syntax (\\param, \\return, etc.) instead of at-sign syntax (@param, @return, etc.).
+    This function scans Doxygen comment blocks and reports any @-prefixed command usage.
+    """
+    if not (file_path.endswith(".c") or file_path.endswith(".h")):
+        return
+
+    try:
+        with open(file_path, "r", encoding="utf-8", errors="ignore") as f:
+            content = f.read()
+    except (OSError, IOError):
+        return
+
+    relpath = os.path.relpath(os.path.abspath(file_path), rizin_path)
+
+    comment_matches = list(_DOXY_BLOCK_RE.finditer(content)) + \
+                      list(_DOXY_LINE_RE.finditer(content))
+
+    comment_matches.sort(key=lambda m: m.start())
+
+    for match in comment_matches:
+        block_text = match.group(0)
+        block_start_pos = match.start()
+
+        line_offset = content[:block_start_pos].count("\n")
+
+        lines = block_text.splitlines()
+        for line_idx, line in enumerate(lines):
+            for cmd_match in _DOXY_COMMAND_RE.finditer(line):
+                command = cmd_match.group(1).lower()
+                if command in _DOXY_COMMANDS:
+                    line_num = line_offset + line_idx + 1
+                    column = cmd_match.start() + 1
+                    correct_syntax = _DOXY_COMMANDS[command]
+                    warn(
+                        f"<{relpath}:{line_num}:{column}> "
+                        f"Found @{command}, should use {correct_syntax}"
+                    )
+
+
 def check_translation_unit(
     translation_unit: TranslationUnit, *, skipped_paths: Set[str], rizin_path: str
 ) -> None:
@@ -384,6 +452,8 @@ def main() -> int:
                 "-I" + os.path.join(command["directory"], include)
                 for include in includes
             ]
+
+            check_doxygen_syntax(abspath, rizin_path)
 
             try:
                 check_translation_unit(
