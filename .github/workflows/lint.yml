@@ -1,5 +1,7 @@
 name: lint
-on: push
+on:
+  push:
+  pull_request:
 jobs:
   licenses:
     runs-on: ubuntu-24.04
