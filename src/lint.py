@@ -46,13 +46,13 @@ from clang.cindex import (
 )
 
 # Detect /** ... */ or /*! ... */ style Doxygen block comments
-_DOXY_BLOCK_RE = re.compile(r'/\*[*!][\s\S]*?\*/')
+_DOXY_BLOCK_RE = re.compile(r"/\*[*!][\s\S]*?\*/")
 
 # Detect consecutive /// or //! style Doxygen line comments
-_DOXY_LINE_RE = re.compile(r'(?:(?:\/\/[\/!])[^\n]*\n?)+')
+_DOXY_LINE_RE = re.compile(r"(?:(?:\/\/[\/!])[^\n]*\n?)+")
 
 # Match any @-prefixed Doxygen command with word boundary
-_DOXY_COMMAND_RE = re.compile(r'@(\w+)\b')
+_DOXY_COMMAND_RE = re.compile(r"@(\w+)\b")
 
 # Map of @-prefixed commands to their correct backslash equivalents
 _DOXY_COMMANDS = {
@@ -293,8 +293,9 @@ class Function:
 def check_doxygen_syntax(file_path: str, rizin_path: str) -> None:
     """
     Check for incorrect Doxygen syntax in a file.
-    
-    Rizin uses backslash syntax (\\param, \\return, etc.) instead of at-sign syntax (@param, @return, etc.).
+
+    Rizin uses backslash syntax (\\param, \\return, etc.)
+    instead of at-sign syntax (@param, @return, etc.).
     This function scans Doxygen comment blocks and reports any @-prefixed command usage.
     """
     if not (file_path.endswith(".c") or file_path.endswith(".h")):
@@ -308,8 +309,9 @@ def check_doxygen_syntax(file_path: str, rizin_path: str) -> None:
 
     relpath = os.path.relpath(os.path.abspath(file_path), rizin_path)
 
-    comment_matches = list(_DOXY_BLOCK_RE.finditer(content)) + \
-                      list(_DOXY_LINE_RE.finditer(content))
+    comment_matches = list(_DOXY_BLOCK_RE.finditer(content)) + list(
+        _DOXY_LINE_RE.finditer(content)
+    )
 
     comment_matches.sort(key=lambda m: m.start())
 
