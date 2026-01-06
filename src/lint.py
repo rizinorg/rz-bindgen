@@ -379,6 +379,7 @@ def check_translation_unit(
                     CursorKind.STRUCT_DECL,
                     CursorKind.UNION_DECL,
                     CursorKind.ENUM_DECL,
+                    CursorKind.ALIGNED_ATTR,
                 ]:
                     warn(f"Unknown field cursor kind: {field.kind}")
 
