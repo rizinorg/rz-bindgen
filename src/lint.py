@@ -22,6 +22,10 @@ The linter also enforces consistency in type comments between function declarati
 and definitions. It also does this for Rizin annotations, such as RZ_OWN. This works
 by defining the RZ_BINDINGS preprocessor flag, which sets the annotations to expand to
 __attribute__((annotate)), which can be picked up by libclang.
+
+Additionally, the linter checks for missing ownership annotations (RZ_OWN or RZ_BORROW)
+on functions that return pointer types requiring ownership tracking (e.g., RzList,
+RzPVector, RzGraph, etc.). This helps ensure proper memory management documentation.
 """
 
 from typing import List, Dict, Set, TypedDict, Optional, cast
@@ -42,6 +46,7 @@ from clang.cindex import (
     CursorKind,
     SourceRange,
     SourceLocation,
+    TypeKind,
 )
 
 
@@ -77,6 +82,23 @@ def cursor_get_annotations(cursor: Cursor) -> List[str]:
 
 
 generic_types = {"RzList", "RzListIter", "RzPVector", "RzVector", "RzGraph"}
+
+ownership_required_types = {
+    "RzList",
+    "RzListIter",
+    "RzPVector",
+    "RzVector",
+    "RzGraph",
+    "RBTree",
+    "SdbList",
+    "HtPP",
+    "HtUP",
+    "HtUU",
+    "HtPU",
+    "HtSP",
+    "HtSS",
+    "HtSU",
+}
 
 
 def cursor_get_comment(cursor: Cursor, *, packed: bool = False) -> Optional[str]:
@@ -185,6 +207,31 @@ def cursor_get_comment(cursor: Cursor, *, packed: bool = False) -> Optional[str]
     return comment
 
 
+def cursor_returns_pointer_type(cursor: Cursor) -> Optional[str]:
+    """
+    Check if a function cursor returns a pointer to a type that requires ownership annotation.
+
+    Returns the type name if it does, None otherwise.
+    """
+    if cursor.kind != CursorKind.FUNCTION_DECL:
+        return None
+
+    return_type = cursor.result_type
+    if return_type.kind != TypeKind.POINTER:
+        return None
+
+    for child in cursor.get_children():
+        if child.kind == CursorKind.PARM_DECL:
+            break
+
+        if child.kind == CursorKind.TYPE_REF:
+            type_name = child.spelling
+            if type_name in ownership_required_types:
+                return type_name
+
+    return None
+
+
 @dataclass
 class Arg:
     """
@@ -212,6 +259,18 @@ class Function:
 
         self.annotations = cursor_get_annotations(cursor)
         self.comment = cursor_get_comment(cursor)
+
+        returned_type = cursor_returns_pointer_type(cursor)
+        if returned_type:
+            has_ownership = any(
+                ann in self.annotations for ann in ["RZ_OWN", "RZ_BORROW"]
+            )
+            if not has_ownership:
+                warn(
+                    f"Missing ownership annotation (RZ_OWN or RZ_BORROW) at "
+                    f"{self.location} for function '{self.name}' "
+                    f"returning {returned_type} pointer"
+                )
 
         self.args = [
             Arg(
