@@ -128,7 +128,6 @@ jobs:
     - name: Test python lang plugin
       run: rizin -qc "Ll" | grep "Python SWIG"
 
-    - name: Test rizin.py
-      run: |
-        echo "import rizin" > testimport.py
-        python3 testimport.py
+    - name: Run rz-test
+      run: rz-test -C . -L tests/
+      working-directory: rz-bindgen
