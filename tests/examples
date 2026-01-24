@@ -1,0 +1,17 @@
+NAME=1-rz_core.py =
+FILE=--
+CMDS=<<EOF
+!echo 'q!!' | python3 examples/1-rz_core.py =
+EOF
+EXPECT=<<EOF
+Loaded 1 file(s)
+Corefile #1 has 1 binfile(s)
+ * malloc://512
+rizin> Warning: `next` calls deprecated function `rz_list_get_next`
+To disable this warning, set rizin_warn_deprecate to false
+The way to do this depends on the SWIG language being used
+For python, do `rizin.cvar.rizin_warn_deprecate = False`
+EOF
+EXPECT_ERR=<<EOF
+EOF
+RUN
