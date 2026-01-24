@@ -130,3 +130,4 @@ jobs:
 
     - name: Run rz-test
       run: rz-test -C . -L tests/
+      working-directory: rz-bindgen
