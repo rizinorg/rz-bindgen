@@ -25,12 +25,12 @@ jobs:
     needs: [build]
     steps:
     - name: Download artifacts
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v7
       with:
         name: wheels
         path: dist
     - name: Download sdist
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v7
       with:
         name: sdist
         path: dist
