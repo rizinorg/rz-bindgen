@@ -43,7 +43,7 @@ else
         export CFLAGS="-include linux/limits.h"
     fi
     meson setup --buildtype=release --libdir=lib build
-    sudo PATH="$PATH" meson install -C build
+    sudo PATH="$PATH" bash -c "meson install -C build"
 fi
 
 popd
