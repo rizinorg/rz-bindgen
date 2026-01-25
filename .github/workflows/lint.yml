@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
     - name: Checkout rz-bindgen
-      uses: actions/checkout@v3
+      uses: actions/checkout@v6
     - name: REUSE compliance check
       uses: fsfe/reuse-action@v1
 
@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
     - name: Checkout rz-bindgen
-      uses: actions/checkout@v3
+      uses: actions/checkout@v6
     - name: Install tools
       run: |
         pip install mypy pyflakes pylint black
@@ -42,7 +42,7 @@ jobs:
       security-events: write
     steps:
     - name: Checkout rz-bindgen
-      uses: actions/checkout@v3
+      uses: actions/checkout@v6
     - name: Initialize CodeQL
       uses: github/codeql-action/init@v2
       with:
