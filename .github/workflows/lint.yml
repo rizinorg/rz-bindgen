@@ -9,7 +9,7 @@ jobs:
     - name: Checkout rz-bindgen
       uses: actions/checkout@v6
     - name: REUSE compliance check
-      uses: fsfe/reuse-action@v1
+      uses: fsfe/reuse-action@v6
 
   python:
     runs-on: ubuntu-24.04
