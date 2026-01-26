@@ -61,13 +61,13 @@ jobs:
       uses: pypa/cibuildwheel@v3.3.1
 
     - name: Upload sdist
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v6
       with:
         name: sdist-${{ matrix.os }}
         path: dist/*.tar.gz
 
     - name: Upload wheels
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v6
       with:
         name: wheels-${{ matrix.os }}
         path: wheelhouse/*.whl
