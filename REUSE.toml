@@ -1,0 +1,58 @@
+version = 1
+SPDX-PackageName = "rz-bindgen"
+SPDX-PackageSupplier = "wingdeans <wingdeans@protonmail.com>"
+SPDX-PackageDownloadLocation = "https://github.com/rizinorg/rz-bindgen/"
+
+[[annotations]]
+path = ["src/clang/__init__.py", "src/clang/cindex.py", "src/clang/enumerations.py"]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2022 The LLVM Project"
+SPDX-License-Identifier = "Apache-2.0 WITH LLVM-exception"
+
+[[annotations]]
+path = "src/snippets_swig/**"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2022 wingdeans <wingdeans@protonmail.com>"
+SPDX-License-Identifier = "LGPL-3.0-only"
+
+[[annotations]]
+path = [".github/workflows/**", ".gitignore", "README.md", "src/README.md"]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2022 wingdeans <wingdeans@protonmail.com>"
+SPDX-License-Identifier = "LGPL-3.0-only"
+
+[[annotations]]
+path = ["meson.build", "plugin/meson.build", "meson_options.txt"]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2022 wingdeans <wingdeans@protonmail.com>"
+SPDX-License-Identifier = "LGPL-3.0-only"
+
+[[annotations]]
+path = ["pyproject.toml", "mypy.ini", "pylintrc"]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2022 wingdeans <wingdeans@protonmail.com>"
+SPDX-License-Identifier = "LGPL-3.0-only"
+
+[[annotations]]
+path = ["cutter/PythonConsole.ui", "cutter/CMakeLists.txt", ".clang-format"]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2022 wingdeans <wingdeans@protonmail.com>"
+SPDX-License-Identifier = "LGPL-3.0-only"
+
+[[annotations]]
+path = "doc/**.md"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2022 wingdeans <wingdeans@protonmail.com>"
+SPDX-License-Identifier = "LGPL-3.0-only"
+
+[[annotations]]
+path = "tests/**"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2026 RizinOrg <info@rizin.re>"
+SPDX-License-Identifier = "LGPL-3.0-only"
+
+[[annotations]]
+path = ".github/**"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2026 RizinOrg <info@rizin.re>"
+SPDX-License-Identifier = "LGPL-3.0-only"
