@@ -23,9 +23,9 @@ and definitions. It also does this for Rizin annotations, such as RZ_OWN. This w
 by defining the RZ_BINDINGS preprocessor flag, which sets the annotations to expand to
 __attribute__((annotate)), which can be picked up by libclang.
 
-Additionally, the linter checks for missing ownership annotations (RZ_OWN or RZ_BORROW)
-on functions that return pointer types requiring ownership tracking (e.g., RzList,
-RzPVector, RzGraph, etc.). This helps ensure proper memory management documentation.
+Additionally, the linter checks for missing ownership annotations on functions that
+return pointers. Non-const pointer returns must have RZ_OWN or RZ_BORROW, and using
+RZ_OWN on const pointer returns triggers a warning since const implies borrowed.
 """
 
 from typing import List, Dict, Set, TypedDict, Optional, cast
@@ -82,23 +82,6 @@ def cursor_get_annotations(cursor: Cursor) -> List[str]:
 
 
 generic_types = {"RzList", "RzListIter", "RzPVector", "RzVector", "RzGraph"}
-
-ownership_required_types = {
-    "RzList",
-    "RzListIter",
-    "RzPVector",
-    "RzVector",
-    "RzGraph",
-    "RBTree",
-    "SdbList",
-    "HtPP",
-    "HtUP",
-    "HtUU",
-    "HtPU",
-    "HtSP",
-    "HtSS",
-    "HtSU",
-}
 
 
 def cursor_get_comment(cursor: Cursor, *, packed: bool = False) -> Optional[str]:
@@ -207,29 +190,32 @@ def cursor_get_comment(cursor: Cursor, *, packed: bool = False) -> Optional[str]
     return comment
 
 
-def cursor_returns_pointer_type(cursor: Cursor) -> Optional[str]:
+def get_return_pointer_info(cursor: Cursor) -> Optional[tuple]:
     """
-    Check if a function cursor returns a pointer to a type that requires ownership annotation.
+    Check if a function cursor returns a data pointer (not a function pointer).
 
-    Returns the type name if it does, None otherwise.
+    Returns:
+        None: if not a data pointer return
+        (is_const, type_spelling): tuple where:
+            - is_const: True if pointee is const-qualified (e.g., const char *)
+            - type_spelling: spelling of the pointed-to type (for error messages)
     """
     if cursor.kind != CursorKind.FUNCTION_DECL:
         return None
 
     return_type = cursor.result_type
-    if return_type.kind != TypeKind.POINTER:
+
+    canonical_type = return_type.get_canonical()
+
+    if canonical_type.kind != TypeKind.POINTER:
         return None
 
-    for child in cursor.get_children():
-        if child.kind == CursorKind.PARM_DECL:
-            break
+    pointee = canonical_type.get_pointee()
 
-        if child.kind == CursorKind.TYPE_REF:
-            type_name = child.spelling
-            if type_name in ownership_required_types:
-                return type_name
+    if pointee.kind in [TypeKind.FUNCTIONPROTO, TypeKind.FUNCTIONNOPROTO]:
+        return None
 
-    return None
+    return (pointee.is_const_qualified(), pointee.spelling)
 
 
 @dataclass
@@ -260,17 +246,26 @@ class Function:
         self.annotations = cursor_get_annotations(cursor)
         self.comment = cursor_get_comment(cursor)
 
-        returned_type = cursor_returns_pointer_type(cursor)
-        if returned_type:
-            has_ownership = any(
-                ann in self.annotations for ann in ["RZ_OWN", "RZ_BORROW"]
-            )
-            if not has_ownership:
-                warn(
-                    f"Missing ownership annotation (RZ_OWN or RZ_BORROW) at "
-                    f"{self.location} for function '{self.name}' "
-                    f"returning {returned_type} pointer"
-                )
+        ptr_info = get_return_pointer_info(cursor)
+        if ptr_info is not None:
+            is_const, type_spelling = ptr_info
+            has_rz_own = "RZ_OWN" in self.annotations
+            has_rz_borrow = "RZ_BORROW" in self.annotations
+            has_ownership = has_rz_own or has_rz_borrow
+
+            if is_const:
+                if has_rz_own:
+                    warn(
+                        f"RZ_OWN annotation used with const pointer return at "
+                        f"{self.location} for function '{self.name}' returning {type_spelling}. "
+                        f"Const pointers should use RZ_BORROW."
+                    )
+            else:
+                if not has_ownership:
+                    warn(
+                        f"Missing ownership annotation (RZ_OWN or RZ_BORROW) at "
+                        f"{self.location} for function '{self.name}' returning {type_spelling}"
+                    )
 
         self.args = [
             Arg(
