@@ -129,5 +129,5 @@ jobs:
       run: rizin -qc "Ll" | grep "Python SWIG"
 
     - name: Run rz-test
-      run: rz-test -C . -L tests/
+      run: rz-test -L tests/
       working-directory: rz-bindgen
