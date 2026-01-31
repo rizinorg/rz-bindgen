@@ -343,6 +343,11 @@ def check_translation_unit(
         if not abspath.startswith(rizin_path):
             continue
 
+        if "/subprojects/" in abspath:
+            subproject_name = abspath.split("/subprojects/")[1].split("/")[0]
+            if not subproject_name.startswith("rz"):
+                continue
+
         if abspath in skipped_paths:
             continue
 
@@ -425,7 +430,7 @@ def main() -> int:
             )
             relpath = os.path.relpath(abspath, rizin_path)
 
-            if relpath.startswith("subproject") or relpath.startswith("test"):
+            if relpath.startswith("subprojects") or relpath.startswith("test"):
                 continue
 
             namespace, _ = cmd_parser.parse_known_args(shlex.split(command["command"]))
