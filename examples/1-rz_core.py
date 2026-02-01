@@ -20,5 +20,5 @@ for i, corefile in enumerate(core.files):
     for binfile in corefile.binfiles:
         print(f" * {binfile.file}")
 
-while True:
-    core.flush(input("rizin> "))
+while core.flush(input("rizin> ")) != -2:
+    pass
