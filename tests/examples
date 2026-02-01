@@ -1,7 +1,7 @@
 NAME=1-rz_core.py =
 FILE=--
 CMDS=<<EOF
-!echo 'q!!' | python3 examples/1-rz_core.py =
+!echo q | python3 examples/1-rz_core.py =
 echo
 EOF
 EXPECT=<<EOF

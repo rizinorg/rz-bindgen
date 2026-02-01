@@ -36,5 +36,5 @@ core.bin.plugins.append(plugin)
 core.bin.force_plugin(plugin.name)
 core.file_open_load(sys.argv[1])
 
-while True:
-    core.flush(input("> "))
+while core.flush(input("rizin> ")) != -2:
+    pass
