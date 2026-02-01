@@ -1,6 +1,7 @@
 name: build
 on:
   push:
+  pull_request:
   workflow_dispatch:
   workflow_call:
     inputs:
@@ -29,12 +30,12 @@ jobs:
       run: brew install swig
 
     - name: Checkout rz-bindgen
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
 
     # runned only from workflow_call
     - name: Checkout rizin
       if: ${{ inputs.external_call }}
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
       with:
         repository: rizinorg/rizin
         path: rizin
@@ -42,7 +43,7 @@ jobs:
 
     - name: Checkout rizin (stable)
       if: ${{ !inputs.external_call && ((github.ref_name == 'stable') || (github.base_ref == 'stable')) }}
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
       with:
         repository: rizinorg/rizin
         path: rizin
@@ -50,23 +51,23 @@ jobs:
 
     - name: Checkout rizin (dev)
       if: ${{ !inputs.external_call && ((github.ref_name != 'stable') && (github.base_ref != 'stable')) }}
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
       with:
         repository: rizinorg/rizin
         path: rizin
         ref: dev
 
     - name: Build rz-bindgen
-      uses: pypa/cibuildwheel@v2.22.0
+      uses: pypa/cibuildwheel@v3.3.1
 
     - name: Upload sdist
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v6
       with:
         name: sdist-${{ matrix.os }}
         path: dist/*.tar.gz
 
     - name: Upload wheels
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v6
       with:
         name: wheels-${{ matrix.os }}
         path: wheelhouse/*.whl
@@ -76,14 +77,14 @@ jobs:
 
     steps:
     - name: Checkout rz-bindgen
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
       with:
         path: rz-bindgen
 
     # runned only from workflow_call
     - name: Checkout rizin
       if: ${{ inputs.external_call }}
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
       with:
         repository: rizinorg/rizin
         path: rizin
@@ -91,7 +92,7 @@ jobs:
 
     - name: Checkout rizin (stable)
       if: ${{ !inputs.external_call && ((github.ref_name == 'stable') || (github.base_ref == 'stable')) }}
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
       with:
         repository: rizinorg/rizin
         path: rizin
@@ -99,7 +100,7 @@ jobs:
 
     - name: Checkout rizin (dev)
       if: ${{ !inputs.external_call && ((github.ref_name != 'stable') && (github.base_ref != 'stable')) }}
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
       with:
         repository: rizinorg/rizin
         path: rizin
@@ -127,7 +128,6 @@ jobs:
     - name: Test python lang plugin
       run: rizin -qc "Ll" | grep "Python SWIG"
 
-    - name: Test rizin.py
-      run: |
-        echo "import rizin" > testimport.py
-        python3 testimport.py
+    - name: Run rz-test
+      run: rz-test -L tests/
+      working-directory: rz-bindgen
