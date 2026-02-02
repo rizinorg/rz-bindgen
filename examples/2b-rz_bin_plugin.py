@@ -4,6 +4,7 @@ SPDX-License-Identifier: LGPL-3.0-only
 """
 
 import rizin
+from rizin import RZ_CORE_CMD_EXIT as CMD_EXIT
 import sys
 
 
@@ -26,5 +27,5 @@ core.bin.plugins.append(plugin_struct)
 core.bin.force_plugin(plugin.name)
 core.file_open_load(sys.argv[1])
 
-while core.flush(input("rizin> ")) != -2:
+while core.flush(input("rizin> ")) != CMD_EXIT:
     pass

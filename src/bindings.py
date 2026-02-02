@@ -327,6 +327,8 @@ def bind_core(core_h: Header) -> None:
 
     Class(core_h, typedef="RzCoreFile")
 
+    MacroEnum(core_h, prefix="RZ_CORE_CMD_")
+
 
 @threaded_header("rz_flag.h")
 def bind_flag(flag_h: Header) -> None:
