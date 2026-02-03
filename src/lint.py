@@ -24,8 +24,8 @@ by defining the RZ_BINDINGS preprocessor flag, which sets the annotations to exp
 __attribute__((annotate)), which can be picked up by libclang.
 
 Additionally, the linter checks for missing ownership annotations on functions that
-return pointers. Non-const pointer returns must have RZ_OWN or RZ_BORROW, and using
-RZ_OWN on const pointer returns triggers a warning since const implies borrowed.
+return pointers. Non-`const` pointer returns must have `RZ_OWN` or `RZ_BORROW`, and using
+`RZ_OWN` on `const` pointer returns triggers a warning since `const` implies borrowed.
 """
 
 from typing import List, Dict, Set, TypedDict, Optional, cast
