@@ -114,6 +114,9 @@ def write_generic(writer: Writer, generic: Generic) -> None:
             for name, method in generic.methods.items():
                 write_func(writer, method, name, FuncKind.GENERIC)
 
+            for c_lines in generic.c_methods.values():
+                writer.line(*c_lines)
+
             for python_lines in generic.python_methods.values():
                 writer.line("%pythoncode %{")
                 with writer.indent():

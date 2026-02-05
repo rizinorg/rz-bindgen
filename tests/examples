@@ -11,9 +11,5 @@ Corefile #1 has 1 binfile(s)
 rizin> 
 EOF
 EXPECT_ERR=<<EOF
-Warning: `next` calls deprecated function `rz_list_get_next`
-To disable this warning, set rizin_warn_deprecate to false
-The way to do this depends on the SWIG language being used
-For python, do `rizin.cvar.rizin_warn_deprecate = False`
 EOF
 RUN
