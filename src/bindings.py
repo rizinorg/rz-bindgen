@@ -63,7 +63,12 @@ def bind_list(list_h: Header) -> None:
     """
     ### RzListIter ###
     rz_list_iter = Generic(list_h, "RzListIter", pointer=True)
-    rz_list_iter.add_method("rz_list_get_next", rename="next", generic_ret=True)
+    rz_list_iter.add_c_method(
+        "rz_list_next",
+        "RzListIter_##TYPE *next() {",
+        "    return (RzListIter_##TYPE *)rz_list_next($self);",
+        "}",
+    )
     rz_list_iter.add_method("rz_list_iter_get_data", rename="data", generic_ret=True)
 
     ### RzList ###
