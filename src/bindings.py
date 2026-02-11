@@ -64,7 +64,7 @@ def bind_list(list_h: Header) -> None:
     ### RzListIter ###
     rz_list_iter = Generic(list_h, "RzListIter", pointer=True)
     rz_list_iter.add_method("rz_list_next", rename="next", generic_ret=True)
-    rz_list_iter.add_method("rz_list_iter_get_data", rename="data", generic_ret=True)
+    rz_list_iter.add_method("rz_list_val", rename="data", generic_ret=True)
 
     ### RzList ###
     rz_list = Generic(list_h, "RzList", dependencies=[rz_list_iter], pointer=True)
