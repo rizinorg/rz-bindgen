@@ -45,7 +45,7 @@ def gen_ctype_specializations(cursors: List[Cursor], ctype: CType) -> None:
         cursor_children = [cursor for cursor in cursors[-1].get_children()]
         # Handle typedef of typedef of a function pointer
         while len(cursor_children) == 1 and cursor_children[0].kind == CursorKind.TYPE_REF:
-            cursor_children = [cursor for cursor in cursor_children[0].referenced.get_children()]
+            cursor_children = [cursor for cursor in cursor_children[0].referenced.get_children()]  # type: ignore[attr-defined]
 
         gen_ctype_specializations(cursors, ctype.result)
         cursor_args = [
