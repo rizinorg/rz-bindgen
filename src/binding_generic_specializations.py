@@ -44,15 +44,16 @@ def gen_ctype_specializations(cursors: List[Cursor], ctype: CType) -> None:
     elif isinstance(ctype, CFunctionType):
         cursor_children = list(cursors[-1].get_children())
         # Handle typedef of typedef of a function pointer
-        while len(cursor_children) == 1 and cursor_children[0].kind == CursorKind.TYPE_REF:
-            cursor_children = \
-                list(cursor_children[0].referenced.get_children())  # type: ignore[attr-defined]
+        while (
+            len(cursor_children) == 1 and cursor_children[0].kind == CursorKind.TYPE_REF
+        ):
+            cursor_children = list(
+                cursor_children[0].referenced.get_children()  # type: ignore[attr-defined]
+            )
 
         gen_ctype_specializations(cursors, ctype.result)
         cursor_args = [
-            cursor
-            for cursor in cursor_children
-            if cursor.kind == CursorKind.PARM_DECL
+            cursor for cursor in cursor_children if cursor.kind == CursorKind.PARM_DECL
         ]
 
         assert len(cursor_args) == len(ctype.args)
