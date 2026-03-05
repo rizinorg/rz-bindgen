@@ -42,10 +42,15 @@ def gen_ctype_specializations(cursors: List[Cursor], ctype: CType) -> None:
             # eg. typedef RzVector /*<ut64>*/ (*func)(void)
             gen_ctype_specializations(cursors + [ctype.cursor], ctype.canonical)
     elif isinstance(ctype, CFunctionType):
+        cursor_children = [cursor for cursor in cursors[-1].get_children()]
+        # Handle typedef of typedef of a function pointer
+        while len(cursor_children) == 1 and cursor_children[0].kind == CursorKind.TYPE_REF:
+            cursor_children = [cursor for cursor in cursor_children[0].referenced.get_children()]
+
         gen_ctype_specializations(cursors, ctype.result)
         cursor_args = [
             cursor
-            for cursor in cursors[-1].get_children()
+            for cursor in cursor_children
             if cursor.kind == CursorKind.PARM_DECL
         ]
 
