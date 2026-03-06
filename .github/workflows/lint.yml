@@ -1,6 +1,10 @@
 name: lint
 on:
   push:
+    branches:
+      - dev
+      - stable
+      - 'ci-*'
   pull_request:
 jobs:
   licenses:

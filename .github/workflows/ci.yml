@@ -1,6 +1,10 @@
 name: build
 on:
   push:
+    branches:
+      - dev
+      - stable
+      - 'ci-*'
   pull_request:
   workflow_dispatch:
   workflow_call:
