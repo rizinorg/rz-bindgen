@@ -9,6 +9,7 @@ build-backend = "mesonpy"
 setup = ['-Dwheel=true']
 
 [tool.cibuildwheel]
+build-frontend = "build[uv]"
 build-verbosity = 3
 before-all = "bash {project}/cibw_before_all.sh"
 manylinux-x86_64-image = "manylinux2014"
