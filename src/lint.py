@@ -34,6 +34,7 @@ import re
 from argparse import ArgumentParser
 from dataclasses import dataclass
 from itertools import zip_longest
+from pathlib import Path
 
 from clang.cindex import (
     Config,
@@ -82,6 +83,14 @@ def warn(warning: str) -> None:
         warnings.add(warning)
 
 
+def location_get_filename(location: SourceLocation) -> str:
+    """
+    Get filename for a SourceLocation
+    """
+    path = Path(os.path.abspath(location.file.name))
+    return path.name
+
+
 def stringify_location(location: SourceLocation) -> str:
     """
     Get <relpath:filename:line> for a SourceLocation
@@ -101,7 +110,8 @@ def cursor_get_annotations(cursor: Cursor) -> List[str]:
     ]
 
 
-generic_types = {"RzList", "RzListIter", "RzPVector", "RzVector", "RzGraph"}
+generic_types = {"RzList", "RzListIter", "RzPVector", "RzVector", "RzGraph", "HtPP"}
+skip_files = {"ht_inc.c", "ht_inc.h", "rz_th_ht.h", "thread_hash_table.c"}
 
 
 def cursor_get_comment(cursor: Cursor, *, packed: bool = False) -> Optional[str]:
@@ -161,7 +171,10 @@ def cursor_get_comment(cursor: Cursor, *, packed: bool = False) -> Optional[str]
     # Filter out other tokens
     comment = token.spelling
     if not comment.startswith("/*") or not comment.endswith("*/"):
-        if typeref_spelling in generic_types:
+        if (
+            typeref_spelling in generic_types
+            and location_get_filename(cursor.location) not in skip_files
+        ):
             warn(
                 f"Missing type comment at {stringify_location(cursor.location)} "
                 "(token is not a comment)"
@@ -177,7 +190,7 @@ def cursor_get_comment(cursor: Cursor, *, packed: bool = False) -> Optional[str]
         return comment
 
     # Check pointer (or lack of) and space between pointer
-    if typeref_spelling in {"RzList", "RzListIter", "RzPVector", "RzGraph"}:
+    if typeref_spelling in {"RzList", "RzListIter", "RzPVector"}:
         if comment[-2] != "*":
             warn(f"Type comment at {stringify_location(cursor.location)} lacks pointer")
         elif comment[-3] != " ":
@@ -189,8 +202,19 @@ def cursor_get_comment(cursor: Cursor, *, packed: bool = False) -> Optional[str]
             warn(
                 f"Type comment at {stringify_location(cursor.location)} should not have pointer"
             )
+    elif typeref_spelling in {"RzGraph", "HtPP"}:
+        if not re.match(r"<(struct )?[A-Za-z0-9_]+ \*, (struct )?[A-Za-z0-9_]+ \*>", comment):
+            if typeref_spelling == "RzGraph":
+                warn(
+                    f"Type comment at {stringify_location(cursor.location)} must "
+                    f"follow exactly the pattern '/*<NodeType *, EdgeType *>*/'. Is: '{comment}'"
+                )
+            elif typeref_spelling == "HtPP":
+                warn(
+                    f"Type comment at {stringify_location(cursor.location)} must "
+                    f"follow exactly the pattern '/*<KeyType *, ValueType *>*/'. Is: '{comment}'"
+                )
     elif typeref_spelling in {
-        "HtPP",
         "HtUP",
         "HtUU",
         "HtPU",
