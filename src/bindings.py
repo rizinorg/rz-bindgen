@@ -180,7 +180,13 @@ def bind_asm(asm_h: Header) -> None:
     """
     RzAsm
     """
-    Class(asm_h, typedef="RzAsm")  # TODO: Add functions
+
+    rz_asm = Class(asm_h, typedef="RzAsm", struct="rz_asm_t")  # TODO: Add functions
+    rz_asm.add_constructor("rz_asm_new")
+    rz_asm.add_destructor("rz_asm_free")
+    rz_asm.add_prefixed_methods("rz_asm_")
+    rz_asm.add_prefixed_funcs("rz_asm_")
+
     Class(asm_h, typedef="RzAsmPlugin")
 
 
