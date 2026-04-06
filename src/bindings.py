@@ -150,8 +150,7 @@ def bind_analysis(analysis_h: Header) -> None:
     rz_analysis = Class(
         analysis_h,
         typedef="RzAnalysis",
-        ignore_fields={"leaddrs"},
-        rename_fields={},
+        struct="rz_analysis_t",
     )
 
     rz_analysis_function = Class(analysis_h, typedef="RzAnalysisFunction")
@@ -159,10 +158,11 @@ def bind_analysis(analysis_h: Header) -> None:
     rz_analysis_function.add_prefixed_methods("rz_analysis_function_")
 
     rz_analysis.add_method("rz_analysis_reflines_get", rename="get_reflines")
-    rz_analysis.add_prefixed_methods("rz_analysis_")
-    rz_analysis.add_prefixed_funcs("rz_analysis_")
+    rz_analysis.add_constructor("rz_analysis_new")
+    rz_analysis.add_destructor("rz_analysis_free")
 
-    Class(analysis_h, typedef="RzAnalysisBlock")
+    Class(analysis_h, typedef="RzAnalysisBlock", struct="rz_analysis_bb_t")
+
     Class(analysis_h, typedef="RzAnalysisEsil")
     Class(analysis_h, typedef="RzAnalysisEsilInterState")
     Class(analysis_h, typedef="RzAnalysisPlugin")
