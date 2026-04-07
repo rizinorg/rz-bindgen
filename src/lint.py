@@ -203,7 +203,9 @@ def cursor_get_comment(cursor: Cursor, *, packed: bool = False) -> Optional[str]
                 f"Type comment at {stringify_location(cursor.location)} should not have pointer"
             )
     elif typeref_spelling in {"RzGraph", "HtPP"}:
-        if not re.match(r"<(struct )?[A-Za-z0-9_]+ \*, (struct )?[A-Za-z0-9_]+ \*>", comment):
+        if not re.match(
+            r"<(struct )?[A-Za-z0-9_]+ \*, (struct )?[A-Za-z0-9_]+ \*>", comment
+        ):
             if typeref_spelling == "RzGraph":
                 warn(
                     f"Type comment at {stringify_location(cursor.location)} must "
