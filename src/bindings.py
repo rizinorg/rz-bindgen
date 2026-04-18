@@ -162,9 +162,6 @@ def bind_analysis(analysis_h: Header) -> None:
     rz_analysis.add_destructor("rz_analysis_free")
 
     Class(analysis_h, typedef="RzAnalysisBlock", struct="rz_analysis_bb_t")
-
-    Class(analysis_h, typedef="RzAnalysisEsil")
-    Class(analysis_h, typedef="RzAnalysisEsilInterState")
     Class(analysis_h, typedef="RzAnalysisPlugin")
 
     Class(
@@ -334,6 +331,15 @@ def bind_core(core_h: Header) -> None:
     Class(core_h, typedef="RzCoreFile")
 
     MacroEnum(core_h, prefix="RZ_CORE_CMD_")
+
+
+@threaded_header("rz_esil/rz_esil.h")
+def bind_esil(esil_h: Header) -> None:
+    """
+    RzAnalysisEsil
+    """
+    Class(esil_h, typedef="RzAnalysisEsil")
+    Class(esil_h, typedef="RzAnalysisEsilInterState")
 
 
 @threaded_header("rz_flag.h")
