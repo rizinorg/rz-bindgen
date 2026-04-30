@@ -20,6 +20,9 @@ void rizin_try_warn_deprecate(const char *name, const char *c_name) {
 }
 %}
 
+// uint64_t, int64_t etc
+%include <stdint.i>
+
 // Buffer typemaps
 %include <pybuffer.i>
 %pybuffer_mutable_binary(unsigned char *buf, unsigned long long len);
