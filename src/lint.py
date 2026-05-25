@@ -22,6 +22,10 @@ The linter also enforces consistency in type comments between function declarati
 and definitions. It also does this for Rizin annotations, such as RZ_OWN. This works
 by defining the RZ_BINDINGS preprocessor flag, which sets the annotations to expand to
 __attribute__((annotate)), which can be picked up by libclang.
+
+Additionally, the linter checks for missing ownership annotations on functions that
+return pointers. Non-`const` pointer returns must have `RZ_OWN` or `RZ_BORROW`, and using
+`RZ_OWN` on `const` pointer returns triggers a warning since `const` implies borrowed.
 """
 
 from typing import List, Dict, Set, TypedDict, Optional, cast
@@ -44,6 +48,7 @@ from clang.cindex import (
     CursorKind,
     SourceRange,
     SourceLocation,
+    TypeKind,
 )
 
 # Detect /** ... */ or /*! ... */ style Doxygen block comments
@@ -236,6 +241,34 @@ def cursor_get_comment(cursor: Cursor, *, packed: bool = False) -> Optional[str]
     return comment
 
 
+def get_return_pointer_info(cursor: Cursor) -> Optional[tuple]:
+    """
+    Check if a function cursor returns a data pointer (not a function pointer).
+
+    Returns:
+        None: if not a data pointer return
+        (is_const, type_spelling): tuple where:
+            - is_const: True if pointee is const-qualified (e.g., const char *)
+            - type_spelling: spelling of the pointed-to type (for error messages)
+    """
+    if cursor.kind != CursorKind.FUNCTION_DECL:
+        return None
+
+    return_type = cursor.result_type
+
+    canonical_type = return_type.get_canonical()
+
+    if canonical_type.kind != TypeKind.POINTER:
+        return None
+
+    pointee = canonical_type.get_pointee()
+
+    if pointee.kind in [TypeKind.FUNCTIONPROTO, TypeKind.FUNCTIONNOPROTO]:
+        return None
+
+    return (pointee.is_const_qualified(), pointee.spelling)
+
+
 @dataclass
 class Arg:
     """
@@ -263,6 +296,27 @@ class Function:
 
         self.annotations = cursor_get_annotations(cursor)
         self.comment = cursor_get_comment(cursor)
+
+        ptr_info = get_return_pointer_info(cursor)
+        if ptr_info is not None:
+            is_const, type_spelling = ptr_info
+            has_rz_own = "RZ_OWN" in self.annotations
+            has_rz_borrow = "RZ_BORROW" in self.annotations
+            has_ownership = has_rz_own or has_rz_borrow
+
+            if is_const:
+                if has_rz_own:
+                    warn(
+                        f"RZ_OWN annotation used with const pointer return at "
+                        f"{self.location} for function '{self.name}' returning {type_spelling}. "
+                        f"Const pointers should use RZ_BORROW."
+                    )
+            else:
+                if not has_ownership:
+                    warn(
+                        f"Missing ownership annotation (RZ_OWN or RZ_BORROW) at "
+                        f"{self.location} for function '{self.name}' returning {type_spelling}"
+                    )
 
         self.args = [
             Arg(
@@ -385,6 +439,11 @@ def check_translation_unit(
         if not abspath.startswith(rizin_path):
             continue
 
+        if "/subprojects/" in abspath:
+            subproject_name = abspath.split("/subprojects/")[1].split("/")[0]
+            if not subproject_name.startswith("rz"):
+                continue
+
         if abspath in skipped_paths:
             continue
 
@@ -468,7 +527,7 @@ def main() -> int:
             )
             relpath = os.path.relpath(abspath, rizin_path)
 
-            if relpath.startswith("subproject") or relpath.startswith("test"):
+            if relpath.startswith("subprojects") or relpath.startswith("test"):
                 continue
 
             namespace, _ = cmd_parser.parse_known_args(shlex.split(command["command"]))
