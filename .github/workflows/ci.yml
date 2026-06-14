@@ -62,7 +62,7 @@ jobs:
         ref: dev
 
     - name: Build rz-bindgen
-      uses: pypa/cibuildwheel@v3.4.1
+      uses: pypa/cibuildwheel@v4.1.0
 
     - name: Upload sdist
       uses: actions/upload-artifact@v7
