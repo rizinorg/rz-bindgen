@@ -34,3 +34,23 @@ class RzPVectorIterator:
         data = self.rzpvector.at(self.index)
         self.index += 1
         return data
+
+
+class RzIteratorIterator:
+    def __init__(self, rziterator):
+        self.iter = rziterator
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        if self.iter is None:
+            raise StopIteration
+        data = self.iter.next()
+        if data is None:
+            # Iteration is done: hand ownership of the RzIterator to SWIG so
+            # rz_iterator_free is called once the last reference is dropped.
+            self.iter.thisown = True
+            self.iter = None
+            raise StopIteration
+        return data

@@ -114,6 +114,26 @@ generic_types = {"RzList", "RzListIter", "RzPVector", "RzVector", "RzGraph", "Ht
 skip_files = {"ht_inc.c", "ht_inc.h", "rz_th_ht.h", "thread_hash_table.c"}
 
 
+def check_iterator_comment(comment: str, location: SourceLocation) -> None:
+    """
+    Validate an RzIterator /*<type>*/ comment.
+
+    RzIterator is type-erased and takes a single element-type parameter
+    (unlike the two-parameter RzGraph/HtPP form). The comment is optional in
+    rizin -- the element type is often not known statically -- so RzIterator is
+    deliberately kept out of `generic_types`. When present, the comment must
+    name exactly one type.
+    """
+    inner = comment[1:-1].strip()
+    if not inner:
+        warn(f"Type comment at {stringify_location(location)} for RzIterator is empty")
+    elif "," in inner:
+        warn(
+            f"Type comment at {stringify_location(location)} for "
+            f"RzIterator must name exactly one type. Is: '{comment}'"
+        )
+
+
 def cursor_get_comment(cursor: Cursor, *, packed: bool = False) -> Optional[str]:
     """
     Get /*<type>*/ comment on a cursor
@@ -182,6 +202,12 @@ def cursor_get_comment(cursor: Cursor, *, packed: bool = False) -> Optional[str]
         return None
     comment = comment[2:-2]
 
+    # Normalize surrounding whitespace so both the compact `/*<T>*/` style and
+    # the space-padded `/* <T> */` style (used by RzIterator helpers) are
+    # recognized. Existing annotations have no padding, so this is a no-op for
+    # them.
+    comment = comment.strip()
+
     if not comment.startswith("<") or not comment.endswith(">"):
         if typeref_spelling in generic_types:
             warn(
@@ -227,6 +253,8 @@ def cursor_get_comment(cursor: Cursor, *, packed: bool = False) -> Optional[str]
         "SdbList",
     }:
         pass
+    elif typeref_spelling == "RzIterator":
+        check_iterator_comment(comment, cursor.location)
     else:
         warn(
             f"Type comment at {stringify_location(cursor.location)} "
