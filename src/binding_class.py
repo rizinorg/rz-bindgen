@@ -42,6 +42,7 @@ class Class:
     fields: OrderedDict[str, Field]
     funcs: OrderedDict[str, Func]
     methods: OrderedDict[str, Func]
+    python_methods: OrderedDict[str, List[str]]
 
     constructor: Optional[Func]
     destructor: Optional[Func]
@@ -82,6 +83,7 @@ class Class:
         self.fields = OrderedDict()
         self.funcs = OrderedDict()
         self.methods = OrderedDict()
+        self.python_methods = OrderedDict()
         self.constructor = None
         self.destructor = None
 
@@ -191,6 +193,17 @@ class Class:
 
         assert rename not in self.methods
         self.methods[rename] = method
+
+    def add_python_method(self, decl: str, *lines: str) -> None:
+        """
+        Add a pure-python method with the given declaration
+
+        Used for protocol methods such as __iter__ and __len__ which
+        have no direct C counterpart. The generated SWIG output wraps
+        these in a %pythoncode block inside the class %extend.
+        """
+        assert decl not in self.python_methods
+        self.python_methods[decl] = [f"def {decl}:"] + [f"    {line}" for line in lines]
 
     def add_prefixed_methods(self, prefix: str) -> None:
         """
