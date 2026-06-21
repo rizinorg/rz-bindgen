@@ -4,6 +4,7 @@ SPDX-License-Identifier: LGPL-3.0-only
 """
 
 import rizin
+from rizin import RZ_CORE_CMD_EXIT as CMD_EXIT
 from sys import argv
 
 filename = argv[1]
@@ -20,5 +21,5 @@ for i, corefile in enumerate(core.files):
     for binfile in corefile.binfiles:
         print(f" * {binfile.file}")
 
-while True:
-    core.flush(input("rizin> "))
+while core.flush(input("rizin> ")) != CMD_EXIT:
+    pass

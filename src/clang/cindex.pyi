@@ -110,23 +110,23 @@ class Token:
     extent: SourceRange
 
 class CursorKind(Enum):
-    INCLUSION_DIRECTIVE: TypeKind
-    MACRO_INSTANTIATION: TypeKind
+    INCLUSION_DIRECTIVE: CursorKind
+    MACRO_INSTANTIATION: CursorKind
 
-    ENUM_DECL: TypeKind
-    MACRO_DEFINITION: TypeKind
-    STRUCT_DECL: TypeKind
-    TYPEDEF_DECL: TypeKind
-    FUNCTION_DECL: TypeKind
+    ENUM_DECL: CursorKind
+    MACRO_DEFINITION: CursorKind
+    STRUCT_DECL: CursorKind
+    TYPEDEF_DECL: CursorKind
+    FUNCTION_DECL: CursorKind
 
-    FIELD_DECL: TypeKind
-    UNION_DECL: TypeKind
-    PARM_DECL: TypeKind
-    ENUM_CONSTANT_DECL: TypeKind
+    FIELD_DECL: CursorKind
+    UNION_DECL: CursorKind
+    PARM_DECL: CursorKind
+    ENUM_CONSTANT_DECL: CursorKind
 
-    ANNOTATE_ATTR: TypeKind
-    TYPE_REF: TypeKind
-    PACKED_ATTR: TypeKind
+    ANNOTATE_ATTR: CursorKind
+    TYPE_REF: CursorKind
+    PACKED_ATTR: CursorKind
 
 class Cursor:
     kind: CursorKind

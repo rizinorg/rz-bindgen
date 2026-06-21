@@ -89,6 +89,11 @@ if target_swig or target_sphinx
     'src/lint.py',
     'src/main.py',
     'src/writer.py',
+    'src/snippets_swig/cmd_director.i',
+    'src/snippets_swig/iterators.py',
+    'src/snippets_swig/prologue.i',
+    'src/snippets_swig/register_command.py',
+    'src/snippets_swig/register_swig_command.cpp',
   )
 
   bindgen_outputs = custom_target(

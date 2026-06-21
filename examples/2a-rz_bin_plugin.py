@@ -8,10 +8,9 @@ SPDX-License-Identifier: LGPL-3.0-only
 # things, see `2b-rz_bin_plugin.py`
 
 import rizin
+from rizin import RZ_CORE_CMD_EXIT as CMD_EXIT
 import sys
 
-
-import rizin
 
 class CustomBinPlugin(rizin.RzBinPluginDirector):
     def __init__(self):
@@ -22,6 +21,7 @@ class CustomBinPlugin(rizin.RzBinPluginDirector):
         print("name: ", bf.file)
         print("size: ", bf.size)
         return True
+
 
 # Construct the director
 builder = rizin.RzBinPluginBuilder()
@@ -36,5 +36,5 @@ core.bin.plugins.append(plugin)
 core.bin.force_plugin(plugin.name)
 core.file_open_load(sys.argv[1])
 
-while True:
-    core.flush(input("> "))
+while core.flush(input("rizin> ")) != CMD_EXIT:
+    pass

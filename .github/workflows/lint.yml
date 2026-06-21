@@ -1,19 +1,25 @@
 name: lint
-on: push
+on:
+  push:
+    branches:
+      - dev
+      - stable
+      - 'ci-*'
+  pull_request:
 jobs:
   licenses:
     runs-on: ubuntu-24.04
     steps:
     - name: Checkout rz-bindgen
-      uses: actions/checkout@v3
+      uses: actions/checkout@v6
     - name: REUSE compliance check
-      uses: fsfe/reuse-action@v1
+      uses: fsfe/reuse-action@v6
 
   python:
     runs-on: ubuntu-24.04
     steps:
     - name: Checkout rz-bindgen
-      uses: actions/checkout@v3
+      uses: actions/checkout@v6
     - name: Install tools
       run: |
         pip install mypy pyflakes pylint black
@@ -40,10 +46,10 @@ jobs:
       security-events: write
     steps:
     - name: Checkout rz-bindgen
-      uses: actions/checkout@v3
+      uses: actions/checkout@v6
     - name: Initialize CodeQL
-      uses: github/codeql-action/init@v2
+      uses: github/codeql-action/init@v4
       with:
         languages: python
     - name: Run CodeQL
-      uses: github/codeql-action/analyze@v2
+      uses: github/codeql-action/analyze@v4

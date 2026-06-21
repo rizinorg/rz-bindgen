@@ -9,15 +9,19 @@ bool rizin_warn_deprecate_instructions = true;
 %{
 void rizin_try_warn_deprecate(const char *name, const char *c_name) {
     if (rizin_warn_deprecate) {
-        printf("Warning: `%s` calls deprecated function `%s`\n", name, c_name);
+        fprintf(stderr, "Warning: `%s` calls deprecated function `%s`\n", name, c_name);
         if (rizin_warn_deprecate_instructions) {
-            puts("To disable this warning, set rizin_warn_deprecate to false");
-            puts("The way to do this depends on the SWIG language being used");
-            puts("For python, do `rizin.cvar.rizin_warn_deprecate = False`");
+            fprintf(stderr,
+                "To disable this warning, set rizin_warn_deprecate to false\n"
+                "The way to do this depends on the SWIG language being used\n"
+                "For python, do `rizin.cvar.rizin_warn_deprecate = False`\n");
         }
     }
 }
 %}
+
+// uint64_t, int64_t etc
+%include <stdint.i>
 
 // Buffer typemaps
 %include <pybuffer.i>

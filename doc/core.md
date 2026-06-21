@@ -50,6 +50,7 @@ In the SWIG bindings, these functions are mapped to methods of RzCore.
 
 ```py
 import rizin
+from rizin import RZ_CORE_CMD_EXIT as CMD_EXIT
 from sys import argv
 
 filename = argv[1]
@@ -66,8 +67,8 @@ for i, corefile in enumerate(core.files):
     for binfile in corefile.binfiles:
         print(f" * {binfile.file}")
 
-while True:
-    core.flush(input("rizin> "))
+while core.flush(input("rizin> ")) != CMD_EXIT:
+    pass
 ```
 
 Here's an example session:
@@ -86,10 +87,11 @@ rizin> aaa
 [x] Applied 0 FLIRT signatures via sigdb
 [x] Propagate noreturn information
 [x] Use -AA or aaaa to perform additional experimental analysis.
-> afl
+rizin> afl
 0x0040233e    1 6            entry0
 0x00402051    3 49   -> 16   sym.HelloWorld::Main
 0x0040205f   99 24482 -> 31854 sym.HelloWorld::.ctor
+rizin> q
 ```
 
 ### Plugins

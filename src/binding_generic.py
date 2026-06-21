@@ -29,6 +29,7 @@ class Generic:
 
     specializations: Set[str]
 
+    c_methods: OrderedDict[str, List[str]]
     python_methods: OrderedDict[str, List[str]]
     specialization_extensions: DefaultDict[str, List[str]]
 
@@ -49,6 +50,7 @@ class Generic:
         self.methods = OrderedDict()
         self.specializations = set()
 
+        self.c_methods = OrderedDict()
         self.python_methods = OrderedDict()
         self.specialization_extensions = DefaultDict(list)
 
@@ -131,9 +133,15 @@ class Generic:
 
         return specialization
 
+    def add_c_method(self, name: str, *lines: str) -> None:
+        """
+        Add C method for name
+        """
+        self.c_methods[name] = list(lines)
+
     def add_python_method(self, decl: str, *lines: str) -> None:
         """
-        Add python function with decl
+        Add python method with decl
         """
         self.python_methods[decl] = [f"def {decl}:"] + [f"    {line}" for line in lines]
 

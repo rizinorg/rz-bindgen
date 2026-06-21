@@ -1,0 +1,15 @@
+NAME=1-rz_core.py =
+FILE=--
+CMDS=<<EOF
+!echo q | python3 examples/1-rz_core.py =
+echo
+EOF
+EXPECT=<<EOF
+Loaded 1 file(s)
+Corefile #1 has 1 binfile(s)
+ * malloc://512
+rizin> 
+EOF
+EXPECT_ERR=<<EOF
+EOF
+RUN

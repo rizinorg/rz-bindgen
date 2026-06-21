@@ -39,7 +39,7 @@ from binding_func import Func
 
 from writer import Writer
 
-doxygen_path: Optional[str] = None
+doxygen_path: Optional[str] = None  # pylint: disable=invalid-name
 
 DoxygenElements = Dict[str, Element]
 
