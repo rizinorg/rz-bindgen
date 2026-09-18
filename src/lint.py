@@ -110,8 +110,17 @@ def cursor_get_annotations(cursor: Cursor) -> List[str]:
     ]
 
 
-generic_types = {"RzList", "RzListIter", "RzPVector", "RzVector", "RzGraph", "HtPP"}
-skip_files = {"ht_inc.c", "ht_inc.h", "rz_th_ht.h", "thread_hash_table.c"}
+generic_types = {
+    "RzList",
+    "RzListIter",
+    "RzPVector",
+    "RzVector",
+    "RzGraph",
+    "HtPP",
+    "RzThreadRingBuf",
+    "RzThreadQueue",
+}
+skip_files = {"ht_inc.c", "ht_inc.h", "rz_th_ht.h", "rz_th.h", "thread_hash_table.c"}
 
 
 def cursor_get_comment(cursor: Cursor, *, packed: bool = False) -> Optional[str]:
@@ -190,7 +199,7 @@ def cursor_get_comment(cursor: Cursor, *, packed: bool = False) -> Optional[str]
         return comment
 
     # Check pointer (or lack of) and space between pointer
-    if typeref_spelling in {"RzList", "RzListIter", "RzPVector"}:
+    if typeref_spelling in {"RzList", "RzListIter", "RzPVector", "RzThreadQueue"}:
         if comment[-2] != "*":
             warn(f"Type comment at {stringify_location(cursor.location)} lacks pointer")
         elif comment[-3] != " ":
