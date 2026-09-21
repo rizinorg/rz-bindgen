@@ -120,7 +120,15 @@ generic_types = {
     "RzThreadRingBuf",
     "RzThreadQueue",
 }
-skip_files = {"ht_inc.c", "ht_inc.h", "rz_th_ht.h", "rz_th.h", "thread_hash_table.c"}
+skip_files = {
+    "ht_inc.c",
+    "ht_inc.h",
+    "rz_th_ht.h",
+    "rz_th.h",
+    "thread_hash_table.c",
+    "thread_queue.c",
+    "thread_ring_buf.c",
+}
 
 
 def cursor_get_comment(cursor: Cursor, *, packed: bool = False) -> Optional[str]:
