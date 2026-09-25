@@ -82,6 +82,29 @@ def warn(warning: str) -> None:
         print(warning)
         warnings.add(warning)
 
+def validate_annotation(comment: str) -> bool:
+    """
+    Validate the structure of a generic type annotation.
+    """
+    if not comment.startswith("<") or not comment.endswith(">"):
+        return False
+
+    if len(comment) <= 2:
+        return False
+
+    depth = 0
+
+    for char in comment:
+        if char == "<":
+            depth += 1
+        elif char == ">":
+            depth -= 1
+
+            if depth < 0:
+                return False
+
+    return depth == 0
+
 
 def location_get_filename(location: SourceLocation) -> str:
     """
@@ -117,6 +140,7 @@ generic_types = {
     "RzVector",
     "RzGraph",
     "HtPP",
+    "HtUP",
     "RzThreadRingBuf",
     "RzThreadQueue",
 }
@@ -233,8 +257,13 @@ def cursor_get_comment(cursor: Cursor, *, packed: bool = False) -> Optional[str]
                     f"Type comment at {stringify_location(cursor.location)} must "
                     f"follow exactly the pattern '/*<KeyType *, ValueType *>*/'. Is: '{comment}'"
                 )
+    elif typeref_spelling == "HtUP":
+        if not validate_annotation(comment):
+            warn(
+                f"Type comment at {stringify_location(cursor.location)} "
+                f"has invalid HtUP annotation: '{comment}'"
+            )
     elif typeref_spelling in {
-        "HtUP",
         "HtUU",
         "HtPU",
         "HtSP",
