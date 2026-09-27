@@ -221,7 +221,8 @@ def cursor_get_comment(cursor: Cursor, *, packed: bool = False) -> Optional[str]
             )
     elif typeref_spelling in {"RzGraph", "HtPP"}:
         if not re.match(
-            r"<(struct )?[A-Za-z0-9_]+ \*, (struct )?[A-Za-z0-9_]+ \*>", comment
+            r"<(struct |const )?[A-Za-z0-9_]+ \*, (struct |const )?[A-Za-z0-9_]+ \*>",
+            comment,
         ):
             if typeref_spelling == "RzGraph":
                 warn(
