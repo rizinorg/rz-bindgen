@@ -51,6 +51,20 @@ def run() -> None:
             func(Header(translation_unit, builder))
 
 
+def bind_ht_iterators(ht: Class, prefix: str) -> None:
+    """
+    Bind the RzIterator-returning helpers shared by every hashtable type
+    (see ht_inc.h). These return an `RzIterator *`, which is bound as an
+    iterable class by ``bind_iterator``.
+
+    ``as_iter``/``as_iter_keys`` yield immutable values/keys; ``as_iter_mut``
+    yields mutable values.
+    """
+    ht.add_method(f"{prefix}as_iter", rename="as_iter")
+    ht.add_method(f"{prefix}as_iter_keys", rename="as_iter_keys")
+    ht.add_method(f"{prefix}as_iter_mut", rename="as_iter_mut")
+
+
 ############
 # GENERICS #
 ############
@@ -135,6 +149,35 @@ def bind_vector(vector_h: Header) -> None:
 
     rz_pvector.add_python_method("__len__(self)", "return self.length()")
     rz_pvector.add_python_method("__iter__(self)", "return RzPVectorIterator(self)")
+
+
+@threaded_header("rz_util/rz_iterator.h")
+def bind_iterator(iterator_h: Header) -> None:
+    """
+    RzIterator
+
+    The generic, lazy Rizin iterator (see rz_iterator.h / iterator.c).
+    Many Rizin functions return an `RzIterator *` (e.g. the hashtable
+    `as_iter*` helpers, `rz_set_*_as_iter`, graph traversals, ...).
+
+    `RzIterator` is type-erased in C: `rz_iterator_next` returns a borrowed
+    `void *`, so elements are yielded as opaque pointers. Binding it as a
+    class makes every such return value directly usable from a `for` loop
+    via the `RzIteratorIterator` python helper, and ties its lifetime to
+    `rz_iterator_free` through the destructor.
+    """
+    # rz_iterator_new takes C callbacks and cannot be bound
+    iterator_h.ignore("rz_iterator_new")
+
+    rz_iterator = Class(
+        iterator_h,
+        typedef="RzIterator",
+        # Internal state and callbacks, not useful from the guest language
+        ignore_fields={"cur", "u", "next", "free", "free_u"},
+    )
+    rz_iterator.add_method("rz_iterator_next", rename="next")
+    rz_iterator.add_destructor("rz_iterator_free")
+    rz_iterator.add_python_method("__iter__(self)", "return RzIteratorIterator(self)")
 
 
 ###########
@@ -434,7 +477,8 @@ def bind_ht_pp(ht_pp_h: Header) -> None:
     """
     ht_pp
     """
-    Class(ht_pp_h, typedef="HtPP")
+    ht_pp = Class(ht_pp_h, typedef="HtPP")
+    bind_ht_iterators(ht_pp, "ht_pp_")
 
 
 @threaded_header("rz_util/ht_pu.h")
@@ -442,7 +486,8 @@ def bind_ht_pu(ht_pu_h: Header) -> None:
     """
     ht_pu
     """
-    Class(ht_pu_h, typedef="HtPU")
+    ht_pu = Class(ht_pu_h, typedef="HtPU")
+    bind_ht_iterators(ht_pu, "ht_pu_")
 
 
 @threaded_header("rz_util/ht_up.h")
@@ -450,7 +495,8 @@ def bind_ht_up(ht_up_h: Header) -> None:
     """
     ht_up
     """
-    Class(ht_up_h, typedef="HtUP")
+    ht_up = Class(ht_up_h, typedef="HtUP")
+    bind_ht_iterators(ht_up, "ht_up_")
 
 
 @threaded_header("rz_util/ht_uu.h")
@@ -458,7 +504,8 @@ def bind_ht_uu(ht_uu_h: Header) -> None:
     """
     ht_uu
     """
-    Class(ht_uu_h, typedef="HtUU")
+    ht_uu = Class(ht_uu_h, typedef="HtUU")
+    bind_ht_iterators(ht_uu, "ht_uu_")
 
 
 @threaded_header("rz_util/ht_sp.h")
@@ -466,7 +513,8 @@ def bind_ht_sp(ht_sp_h: Header) -> None:
     """
     ht_sp
     """
-    Class(ht_sp_h, typedef="HtSP")
+    ht_sp = Class(ht_sp_h, typedef="HtSP")
+    bind_ht_iterators(ht_sp, "ht_sp_")
 
 
 @threaded_header("rz_util/ht_ss.h")
@@ -474,7 +522,8 @@ def bind_ht_ss(ht_ss_h: Header) -> None:
     """
     ht_ss
     """
-    Class(ht_ss_h, typedef="HtSS")
+    ht_ss = Class(ht_ss_h, typedef="HtSS")
+    bind_ht_iterators(ht_ss, "ht_ss_")
 
 
 @threaded_header("rz_util/ht_su.h")
@@ -482,4 +531,5 @@ def bind_ht_su(ht_su_h: Header) -> None:
     """
     ht_su
     """
-    Class(ht_su_h, typedef="HtSU")
+    ht_su = Class(ht_su_h, typedef="HtSU")
+    bind_ht_iterators(ht_su, "ht_su_")
