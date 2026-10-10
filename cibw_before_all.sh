@@ -35,11 +35,11 @@ fi
 
 pushd rizin
 
-if [[ "$OSTYPE" =~ msys* ]]; then
+if [[ "$OSTYPE" =~ msys|cygwin ]]; then
     meson setup --buildtype=release --prefix='c:/rizin' --vsenv build
     meson install -C build
 else
-    if [[ "$OSTYPE" =~ linux* ]]; then
+    if [[ "$OSTYPE" == linux* ]]; then
         export CFLAGS="-include linux/limits.h"
     fi
     meson setup --buildtype=release --libdir=lib build
