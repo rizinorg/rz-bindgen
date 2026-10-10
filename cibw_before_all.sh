@@ -35,7 +35,6 @@ fi
 
 pushd rizin
 
-echo OSTYPE: $OSTYPE
 if [[ "$OSTYPE" =~ msys* ]]; then
     meson setup --buildtype=release --prefix='c:/rizin' --vsenv build
     meson install -C build
