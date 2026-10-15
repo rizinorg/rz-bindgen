@@ -221,7 +221,13 @@ def write_class(writer: Writer, cls: Class) -> None:
             writer.line(f'%rename {cls.struct_name}::{field.name} "";')
 
     # Extension
-    if len(cls.funcs) != 0 or len(cls.methods) != 0:
+    if (
+        len(cls.funcs) != 0
+        or len(cls.methods) != 0
+        or len(cls.python_methods) != 0
+        or cls.constructor
+        or cls.destructor
+    ):
         writer.line(f"%extend {cls.struct_name} {{")
         with writer.indent():
             if cls.constructor:
@@ -234,6 +240,12 @@ def write_class(writer: Writer, cls: Class) -> None:
                 write_func(writer, func, name, FuncKind.STATIC)
             for name, method in cls.methods.items():
                 write_func(writer, method, name, FuncKind.METHOD)
+
+            for python_lines in cls.python_methods.values():
+                writer.line("%pythoncode %{")
+                with writer.indent():
+                    writer.line(*python_lines)
+                writer.line("%}")
 
         writer.line("}")
 
