@@ -16,6 +16,7 @@ def install_files(scheme):
         elif file.endswith(".so"):
             dest_type = 'platlib'
         install_dir = sysconfig.get_path(dest_type, scheme)
+        os.makedirs(install_dir, exist_ok=True)
         shutil.copy(file, install_dir)
         print(f"Installing {os.path.basename(file)} to {install_dir}")
 
