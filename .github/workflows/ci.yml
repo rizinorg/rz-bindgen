@@ -132,6 +132,12 @@ jobs:
     - name: Test python lang plugin
       run: rizin -qc "Ll" | grep "Python SWIG"
 
+    - name: Checkout our Testsuite Binaries
+      uses: actions/checkout@v7
+      with:
+        repository: rizinorg/rizin-testbins
+        path: rz-bindgen/tests/bins
+
     - name: Run rz-test
       run: rz-test -L .
       working-directory: rz-bindgen/tests

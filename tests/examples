@@ -13,3 +13,18 @@ EOF
 EXPECT_ERR=<<EOF
 EOF
 RUN
+
+NAME=2a-rz_bin_plugin.py
+FILE=--
+CMDS=<<EOF
+!echo q | python3 ../examples/2a-rz_bin_plugin.py bins/elf/analysis/ls-linux64
+echo
+EOF
+EXPECT=<<EOF
+name:  bins/elf/analysis/ls-linux64
+size:  121584
+rizin> 
+EOF
+EXPECT_ERR=<<EOF
+EOF
+RUN
