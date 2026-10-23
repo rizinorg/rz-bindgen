@@ -136,8 +136,8 @@ jobs:
       uses: actions/checkout@v7
       with:
         repository: rizinorg/rizin-testbins
-        path: rz-bindgen/tests/bins
+        path: rz-bindgen/test/bins
 
     - name: Run rz-test
       run: rz-test -L db/examples
-      working-directory: rz-bindgen/tests
+      working-directory: rz-bindgen/test
