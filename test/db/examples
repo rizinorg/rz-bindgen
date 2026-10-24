@@ -1,0 +1,30 @@
+NAME=1-rz_core.py =
+FILE=--
+CMDS=<<EOF
+!echo q | python3 ../examples/1-rz_core.py =
+echo
+EOF
+EXPECT=<<EOF
+Loaded 1 file(s)
+Corefile #1 has 1 binfile(s)
+ * malloc://512
+rizin> 
+EOF
+EXPECT_ERR=<<EOF
+EOF
+RUN
+
+NAME=2a-rz_bin_plugin.py
+FILE=--
+CMDS=<<EOF
+!echo q | python3 ../examples/2a-rz_bin_plugin.py bins/elf/analysis/ls-linux64
+echo
+EOF
+EXPECT=<<EOF
+name:  bins/elf/analysis/ls-linux64
+size:  121584
+rizin> 
+EOF
+EXPECT_ERR=<<EOF
+EOF
+RUN

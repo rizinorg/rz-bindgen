@@ -29,12 +29,12 @@ builder.enable_load_buffer = True
 plugin = builder.build(CustomBinPlugin())
 ```
 
-`RzBinPluginBuilder::build` returns an `RzBinPlugin` struct which has the enabled function pointers set to custom C functions which call into the currently active director. Enabling functions is done using variables on the builder which are named the same as their corresponding struct function pointer prefixed with `enable_`. To use the plugin, simply append the struct to `core.bin.plugins`.
+`RzBinPluginBuilder::build` returns an `RzBinPlugin` struct which has the enabled function pointers set to custom C functions which call into the currently active director. Enabling functions is done using variables on the builder which are named the same as their corresponding struct function pointer prefixed with `enable_`. To use the plugin, simply add the plugin to `core.bin`.
 
 ```py
 core = rizin.RzCore()
 plugin.thisown = False
-core.bin.plugins.append(plugin)
+core.bin.plugin_add(plugin)
 ```
 
 Now it is possible to see the `SWIGCustom` plugin when listing the binary plugins with `iL`:

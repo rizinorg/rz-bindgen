@@ -30,7 +30,7 @@ builder.enable_load_buffer = True
 plugin = builder.build(CustomBinPlugin())
 
 core = rizin.RzCore()
-core.bin.plugins.append(plugin)
+core.bin.plugin_add(plugin)
 
 # Run rizin and load binary
 core.bin.force_plugin(plugin.name)
