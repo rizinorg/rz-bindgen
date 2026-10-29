@@ -10,8 +10,7 @@ Corefile #1 has 1 binfile(s)
  * malloc://512
 rizin> 
 EOF
-EXPECT_ERR=<<EOF
-EOF
+EXPECT_ERR=
 RUN
 
 NAME=2a-rz_bin_plugin.py
@@ -25,6 +24,19 @@ name:  bins/elf/analysis/ls-linux64
 size:  121584
 rizin> 
 EOF
-EXPECT_ERR=<<EOF
+EXPECT_ERR=
+RUN
+
+NAME=2b-rz_bin_plugin.py
+FILE=--
+CMDS=<<EOF
+!echo q | python3 ../examples/2b-rz_bin_plugin.py bins/pe/hello_world_arm/hello_world_arm64.exe
+echo
 EOF
+EXPECT=<<EOF
+name:  bins/pe/hello_world_arm/hello_world_arm64.exe
+size:  8704
+rizin> 
+EOF
+EXPECT_ERR=
 RUN
