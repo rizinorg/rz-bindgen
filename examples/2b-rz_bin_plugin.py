@@ -21,7 +21,7 @@ plugin, plugin_struct = rizin.register_RzBinPlugin(CustomBinPlugin)
 
 core = rizin.RzCore()
 plugin_struct.thisown = False
-core.bin.plugins.append(plugin_struct)
+core.bin.plugin_add(plugin_struct)
 
 # Run rizin and load binary
 core.bin.force_plugin(plugin.name)
