@@ -23,7 +23,7 @@ environment = { CMAKE_PREFIX_PATH="C:/rizin", PATH="C:/rizin/bin;$PATH" }
 archs = ["AMD64"]
 
 [tool.cibuildwheel.macos]
-environment = { PATH="/opt/homebrew/bin:$PATH", MACOSX_DEPLOYMENT_TARGET="14.0" }
+environment = { PATH="/opt/homebrew/bin:$PATH", MACOSX_DEPLOYMENT_TARGET="15.0" }
 
 [project]
 name = "rz-bindings"

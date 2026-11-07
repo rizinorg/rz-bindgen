@@ -26,11 +26,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-24.04, windows-2022, macos-14]
+        os: [ubuntu-24.04, windows-2022, macos-15]
 
     steps:
     - name: Install SWIG with Homebrew
-      if: matrix.os == 'macos-14' && matrix.enabled
+      if: matrix.os == 'macos-15' && matrix.enabled
       run: brew install swig
 
     - name: Checkout rz-bindgen
