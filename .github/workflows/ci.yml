@@ -114,7 +114,7 @@ jobs:
       run: |
         sudo apt update
         sudo apt-get --assume-yes install cmake swig pkg-config clang libclang-dev llvm wget unzip python3-wheel python3-setuptools build-essential python3-pip
-        sudo pip3 install meson ninja
+        sudo pip3 install meson ninja cle
 
     - name: Install rizin
       run: |
