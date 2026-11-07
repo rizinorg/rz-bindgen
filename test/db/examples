@@ -40,3 +40,329 @@ rizin>
 EOF
 EXPECT_ERR=
 RUN
+
+NAME=3-cle_bin_plugin.py
+FILE=--
+CMDS=<<EOF
+!echo -e "e scr.color=0\ni\nis\niS\noml\niz" | python3 ../examples/3-cle_bin_plugin.py bins/elf/ls
+echo
+EOF
+EXPECT=<<EOF
+[2K[0m[33m[0x00000000]>[0m [33m[0x00000000]>[0m [2K[2K[0m[33m[0x00000000]>[0m e[33m[0x00000000]>[0m e[2K[2K[0m[33m[0x00000000]>[0m e [33m[0x00000000]>[0m e [2K[2K[0m[33m[0x00000000]>[0m e s[33m[0x00000000]>[0m e s[2K[2K[0m[33m[0x00000000]>[0m e sc[33m[0x00000000]>[0m e sc[2K[2K[0m[33m[0x00000000]>[0m e scr[33m[0x00000000]>[0m e scr[2K[2K[0m[33m[0x00000000]>[0m e scr.[33m[0x00000000]>[0m e scr.[2K[2K[0m[33m[0x00000000]>[0m e scr.c[33m[0x00000000]>[0m e scr.c[2K[2K[0m[33m[0x00000000]>[0m e scr.co[33m[0x00000000]>[0m e scr.co[2K[2K[0m[33m[0x00000000]>[0m e scr.col[33m[0x00000000]>[0m e scr.col[2K[2K[0m[33m[0x00000000]>[0m e scr.colo[33m[0x00000000]>[0m e scr.colo[2K[2K[0m[33m[0x00000000]>[0m e scr.color[33m[0x00000000]>[0m e scr.color[2K[2K[0m[33m[0x00000000]>[0m e scr.color=[33m[0x00000000]>[0m e scr.color=[2K[2K[0m[33m[0x00000000]>[0m e scr.color=0[33m[0x00000000]>[0m e scr.color=0[2K[33m[0x00000000]>[0m e scr.color=0
+[2K[0x00000000]> [0x00000000]> [2K[2K[0x00000000]> i[0x00000000]> i[2K[0x00000000]> i
+fd      3
+file    bins/elf/ls
+size    0x219a8
+humansz 134.4K
+mode    r-x
+format  CLESWIGPlugin
+iorw    false
+block   0x100
+type    
+[2K[0x00000000]> [0x00000000]> [2K[2K[0x00000000]> i[0x00000000]> i[2K[2K[0x00000000]> is[0x00000000]> is[2K[0x00000000]> is
+nth      paddr      vaddr bind type size lib name                          
+―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+  0 0x00000000 0x00400000 NONE FUNC    0     
+  0 0x00000000 0x00400000 NONE FUNC    0     __ctype_toupper_loc
+  0 0x00000000 0x00400000 NONE FUNC    0     getenv
+  0 0x00000000 0x00400000 NONE FUNC    0     cap_to_text
+  0 0x00000000 0x00400000 NONE FUNC    0     sigprocmask
+  0 0x00000000 0x00400000 NONE FUNC    0     __snprintf_chk
+  0 0x00000000 0x00400000 NONE FUNC    0     raise
+  0 0x00000000 0x00400000 NONE FUNC    0     free
+  0 0x00000000 0x00400000 NONE FUNC    0     abort
+  0 0x00000000 0x00400000 NONE FUNC    0     __errno_location
+  0 0x00000000 0x00400000 NONE FUNC    0     strncmp
+  0 0x00000000 0x00400000 NONE FUNC    0     _ITM_deregisterTMCloneTable
+  0 0x00000000 0x00400000 NONE FUNC    0     localtime_r
+  0 0x00000000 0x00400000 NONE FUNC    0     _exit
+  0 0x00000000 0x00400000 NONE FUNC    0     strcpy
+  0 0x00000000 0x00400000 NONE FUNC    0     __fpending
+  0 0x00000000 0x00400000 NONE FUNC    0     isatty
+  0 0x00000000 0x00400000 NONE FUNC    0     sigaction
+  0 0x00000000 0x00400000 NONE FUNC    0     iswcntrl
+  0 0x00000000 0x00400000 NONE FUNC    0     wcswidth
+  0 0x00000000 0x00400000 NONE FUNC    0     localeconv
+  0 0x00000000 0x00400000 NONE FUNC    0     mbstowcs
+  0 0x00000000 0x00400000 NONE FUNC    0     readlink
+  0 0x00000000 0x00400000 NONE FUNC    0     clock_gettime
+  0 0x00000000 0x00400000 NONE FUNC    0     setenv
+  0 0x00000000 0x00400000 NONE FUNC    0     textdomain
+  0 0x00000000 0x00400000 NONE FUNC    0     fclose
+  0 0x00000000 0x00400000 NONE FUNC    0     opendir
+  0 0x00000000 0x00400000 NONE FUNC    0     getpwuid
+  0 0x00000000 0x00400000 NONE FUNC    0     bindtextdomain
+  0 0x00000000 0x00400000 NONE FUNC    0     dcgettext
+  0 0x00000000 0x00400000 NONE FUNC    0     __ctype_get_mb_cur_max
+  0 0x00000000 0x00400000 NONE FUNC    0     strlen
+  0 0x00000000 0x00400000 NONE FUNC    0     __lxstat
+  0 0x00000000 0x00400000 NONE FUNC    0     __stack_chk_fail
+  0 0x00000000 0x00400000 NONE FUNC    0     getopt_long
+  0 0x00000000 0x00400000 NONE FUNC    0     mbrtowc
+  0 0x00000000 0x00400000 NONE FUNC    0     strchr
+  0 0x00000000 0x00400000 NONE FUNC    0     getgrgid
+  0 0x00000000 0x00400000 NONE FUNC    0     __fxstatat
+  0 0x00000000 0x00400000 NONE FUNC    0     snprintf
+  0 0x00000000 0x00400000 NONE FUNC    0     __overflow
+  0 0x00000000 0x00400000 NONE FUNC    0     strrchr
+  0 0x00000000 0x00400000 NONE FUNC    0     gmtime_r
+  0 0x00000000 0x00400000 NONE FUNC    0     lseek
+  0 0x00000000 0x00400000 NONE FUNC    0     gettimeofday
+  0 0x00000000 0x00400000 NONE FUNC    0     __assert_fail
+  0 0x00000000 0x00400000 NONE FUNC    0     __strtoul_internal
+  0 0x00000000 0x00400000 NONE FUNC    0     fnmatch
+  0 0x00000000 0x00400000 NONE FUNC    0     memset
+  0 0x00000000 0x00400000 NONE FUNC    0     ioctl
+  0 0x00000000 0x00400000 NONE FUNC    0     getcwd
+  0 0x00000000 0x00400000 NONE FUNC    0     strspn
+  0 0x00000000 0x00400000 NONE FUNC    0     closedir
+  0 0x00000000 0x00400000 NONE FUNC    0     __libc_start_main
+  0 0x00000000 0x00400000 NONE FUNC    0     memcmp
+  0 0x00000000 0x00400000 NONE FUNC    0     _setjmp
+  0 0x00000000 0x00400000 NONE FUNC    0     fputs_unlocked
+  0 0x00000000 0x00400000 NONE FUNC    0     calloc
+  0 0x00000000 0x00400000 NONE FUNC    0     strcmp
+  0 0x00000000 0x00400000 NONE FUNC    0     signal
+  0 0x00000000 0x00400000 NONE FUNC    0     dirfd
+  0 0x00000000 0x00400000 NONE FUNC    0     getpwnam
+  0 0x00000000 0x00400000 NONE FUNC    0     __memcpy_chk
+  0 0x00000000 0x00400000 NONE FUNC    0     sigemptyset
+  0 0x00000000 0x00400000 NONE FUNC    0     __gmon_start__
+  0 0x00000000 0x00400000 NONE FUNC    0     memcpy
+  0 0x00000000 0x00400000 NONE FUNC    0     getgrnam
+  0 0x00000000 0x00400000 NONE FUNC    0     tzset
+  0 0x00000000 0x00400000 NONE FUNC    0     fileno
+  0 0x00000000 0x00400000 NONE FUNC    0     tcgetpgrp
+  0 0x00000000 0x00400000 NONE FUNC    0     __xstat
+  0 0x00000000 0x00400000 NONE FUNC    0     readdir
+  0 0x00000000 0x00400000 NONE FUNC    0     wcwidth
+  0 0x00000000 0x00400000 NONE FUNC    0     malloc
+  0 0x00000000 0x00400000 NONE FUNC    0     fflush
+  0 0x00000000 0x00400000 NONE FUNC    0     nl_langinfo
+  0 0x00000000 0x00400000 NONE FUNC    0     __fxstat
+  0 0x00000000 0x00400000 NONE FUNC    0     strcoll
+  0 0x00000000 0x00400000 NONE FUNC    0     mktime
+  0 0x00000000 0x00400000 NONE FUNC    0     __freading
+  0 0x00000000 0x00400000 NONE FUNC    0     fwrite_unlocked
+  0 0x00000000 0x00400000 NONE FUNC    0     realloc
+  0 0x00000000 0x00400000 NONE FUNC    0     stpncpy
+  0 0x00000000 0x00400000 NONE FUNC    0     setlocale
+  0 0x00000000 0x00400000 NONE FUNC    0     __printf_chk
+  0 0x00000000 0x00400000 NONE FUNC    0     timegm
+  0 0x00000000 0x00400000 NONE FUNC    0     strftime
+  0 0x00000000 0x00400000 NONE FUNC    0     mempcpy
+  0 0x00000000 0x00400000 NONE FUNC    0     memmove
+  0 0x00000000 0x00400000 NONE FUNC    0     error
+  0 0x00000000 0x00400000 NONE FUNC    0     fseeko
+  0 0x00000000 0x00400000 NONE FUNC    0     cap_get_file
+  0 0x00000000 0x00400000 NONE FUNC    0     unsetenv
+  0 0x00000000 0x00400000 NONE FUNC    0     cap_free
+  0 0x00000000 0x00400000 NONE FUNC    0     strtoul
+  0 0x00000000 0x00400000 NONE FUNC    0     __cxa_atexit
+  0 0x00000000 0x00400000 NONE FUNC    0     wcstombs
+  0 0x00000000 0x00400000 NONE FUNC    0     getxattr
+  0 0x00000000 0x00400000 NONE FUNC    0     gethostname
+  0 0x00000000 0x00400000 NONE FUNC    0     sigismember
+  0 0x00000000 0x00400000 NONE FUNC    0     exit
+  0 0x00000000 0x00400000 NONE FUNC    0     fwrite
+  0 0x00000000 0x00400000 NONE FUNC    0     __fprintf_chk
+  0 0x00000000 0x00400000 NONE FUNC    0     _ITM_registerTMCloneTable
+  0 0x00000000 0x00400000 NONE FUNC    0     fflush_unlocked
+  0 0x00000000 0x00400000 NONE FUNC    0     mbsinit
+  0 0x00000000 0x00400000 NONE FUNC    0     iswprint
+  0 0x00000000 0x00400000 NONE FUNC    0     __cxa_finalize
+  0 0x00000000 0x00400000 NONE FUNC    0     sigaddset
+  0 0x00000000 0x00400000 NONE FUNC    0     __ctype_tolower_loc
+  0 0x00000000 0x00400000 NONE FUNC    0     __ctype_b_loc
+  0 0x00000000 0x00400000 NONE FUNC    0     __sprintf_chk
+  0 0x00000000 0x00400000 NONE FUNC    0     
+  0 0x00000000 0x00400000 NONE FUNC    0     __ctype_toupper_loc
+  0 0x00000000 0x00400000 NONE FUNC    0     getenv
+  0 0x00000000 0x00400000 NONE FUNC    0     cap_to_text
+  0 0x00000000 0x00400000 NONE FUNC    0     sigprocmask
+  0 0x00000000 0x00400000 NONE FUNC    0     __snprintf_chk
+  0 0x00000000 0x00400000 NONE FUNC    0     raise
+  0 0x00000000 0x00400000 NONE FUNC    0     free
+  0 0x00000000 0x00400000 NONE FUNC    0     abort
+  0 0x00000000 0x00400000 NONE FUNC    0     __errno_location
+  0 0x00000000 0x00400000 NONE FUNC    0     strncmp
+  0 0x00000000 0x00400000 NONE FUNC    0     _ITM_deregisterTMCloneTable
+  0 0x00000000 0x00400000 NONE FUNC    0     localtime_r
+  0 0x00000000 0x00400000 NONE FUNC    0     _exit
+  0 0x00000000 0x00400000 NONE FUNC    0     strcpy
+  0 0x00000000 0x00400000 NONE FUNC    0     __fpending
+  0 0x00000000 0x00400000 NONE FUNC    0     isatty
+  0 0x00000000 0x00400000 NONE FUNC    0     sigaction
+  0 0x00000000 0x00400000 NONE FUNC    0     iswcntrl
+  0 0x00000000 0x00400000 NONE FUNC    0     wcswidth
+  0 0x00000000 0x00400000 NONE FUNC    0     localeconv
+  0 0x00000000 0x00400000 NONE FUNC    0     mbstowcs
+  0 0x00000000 0x00400000 NONE FUNC    0     readlink
+  0 0x00000000 0x00400000 NONE FUNC    0     clock_gettime
+  0 0x00000000 0x00400000 NONE FUNC    0     setenv
+  0 0x00000000 0x00400000 NONE FUNC    0     textdomain
+  0 0x00000000 0x00400000 NONE FUNC    0     fclose
+  0 0x00000000 0x00400000 NONE FUNC    0     opendir
+  0 0x00000000 0x00400000 NONE FUNC    0     getpwuid
+  0 0x00000000 0x00400000 NONE FUNC    0     bindtextdomain
+  0 0x00000000 0x00400000 NONE FUNC    0     dcgettext
+  0 0x00000000 0x00400000 NONE FUNC    0     __ctype_get_mb_cur_max
+  0 0x00000000 0x00400000 NONE FUNC    0     strlen
+  0 0x00000000 0x00400000 NONE FUNC    0     __lxstat
+  0 0x00000000 0x00400000 NONE FUNC    0     __stack_chk_fail
+  0 0x00000000 0x00400000 NONE FUNC    0     getopt_long
+  0 0x00000000 0x00400000 NONE FUNC    0     mbrtowc
+  0 0x00000000 0x00400000 NONE FUNC    0     strchr
+  0 0x00000000 0x00400000 NONE FUNC    0     getgrgid
+  0 0x00000000 0x00400000 NONE FUNC    0     __fxstatat
+  0 0x00000000 0x00400000 NONE FUNC    0     snprintf
+  0 0x00000000 0x00400000 NONE FUNC    0     __overflow
+  0 0x00000000 0x00400000 NONE FUNC    0     strrchr
+  0 0x00000000 0x00400000 NONE FUNC    0     gmtime_r
+  0 0x00000000 0x00400000 NONE FUNC    0     lseek
+  0 0x00000000 0x00400000 NONE FUNC    0     gettimeofday
+  0 0x00000000 0x00400000 NONE FUNC    0     __assert_fail
+  0 0x00000000 0x00400000 NONE FUNC    0     __strtoul_internal
+  0 0x00000000 0x00400000 NONE FUNC    0     fnmatch
+  0 0x00000000 0x00400000 NONE FUNC    0     memset
+  0 0x00000000 0x00400000 NONE FUNC    0     ioctl
+  0 0x00000000 0x00400000 NONE FUNC    0     getcwd
+  0 0x00000000 0x00400000 NONE FUNC    0     strspn
+  0 0x00000000 0x00400000 NONE FUNC    0     closedir
+  0 0x00000000 0x00400000 NONE FUNC    0     __libc_start_main
+  0 0x00000000 0x00400000 NONE FUNC    0     memcmp
+  0 0x00000000 0x00400000 NONE FUNC    0     _setjmp
+  0 0x00000000 0x00400000 NONE FUNC    0     fputs_unlocked
+  0 0x00000000 0x00400000 NONE FUNC    0     calloc
+  0 0x00000000 0x00400000 NONE FUNC    0     strcmp
+  0 0x00000000 0x00400000 NONE FUNC    0     signal
+  0 0x00000000 0x00400000 NONE FUNC    0     dirfd
+  0 0x00000000 0x00400000 NONE FUNC    0     getpwnam
+  0 0x00000000 0x00400000 NONE FUNC    0     __memcpy_chk
+  0 0x00000000 0x00400000 NONE FUNC    0     sigemptyset
+  0 0x00000000 0x00400000 NONE FUNC    0     __gmon_start__
+  0 0x00000000 0x00400000 NONE FUNC    0     memcpy
+  0 0x00000000 0x00400000 NONE FUNC    0     getgrnam
+  0 0x00000000 0x00400000 NONE FUNC    0     tzset
+  0 0x00000000 0x00400000 NONE FUNC    0     fileno
+  0 0x00000000 0x00400000 NONE FUNC    0     tcgetpgrp
+  0 0x00000000 0x00400000 NONE FUNC    0     __xstat
+  0 0x00000000 0x00400000 NONE FUNC    0     readdir
+  0 0x00000000 0x00400000 NONE FUNC    0     wcwidth
+  0 0x00000000 0x00400000 NONE FUNC    0     malloc
+  0 0x00000000 0x00400000 NONE FUNC    0     fflush
+  0 0x00000000 0x00400000 NONE FUNC    0     nl_langinfo
+  0 0x00000000 0x00400000 NONE FUNC    0     __fxstat
+  0 0x00000000 0x00400000 NONE FUNC    0     strcoll
+  0 0x00000000 0x00400000 NONE FUNC    0     mktime
+  0 0x00000000 0x00400000 NONE FUNC    0     __freading
+  0 0x00000000 0x00400000 NONE FUNC    0     fwrite_unlocked
+  0 0x00000000 0x00400000 NONE FUNC    0     realloc
+  0 0x00000000 0x00400000 NONE FUNC    0     stpncpy
+  0 0x00000000 0x00400000 NONE FUNC    0     setlocale
+  0 0x00000000 0x00400000 NONE FUNC    0     __printf_chk
+  0 0x00000000 0x00400000 NONE FUNC    0     timegm
+  0 0x00000000 0x00400000 NONE FUNC    0     strftime
+  0 0x00000000 0x00400000 NONE FUNC    0     mempcpy
+  0 0x00000000 0x00400000 NONE FUNC    0     memmove
+  0 0x00000000 0x00400000 NONE FUNC    0     error
+  0 0x00000000 0x00400000 NONE FUNC    0     fseeko
+  0 0x00000000 0x00400000 NONE FUNC    0     cap_get_file
+  0 0x00000000 0x00400000 NONE FUNC    0     unsetenv
+  0 0x00000000 0x00400000 NONE FUNC    0     cap_free
+  0 0x00000000 0x00400000 NONE FUNC    0     strtoul
+  0 0x00000000 0x00400000 NONE FUNC    0     __cxa_atexit
+  0 0x00000000 0x00400000 NONE FUNC    0     wcstombs
+  0 0x00000000 0x00400000 NONE FUNC    0     getxattr
+  0 0x00000000 0x00400000 NONE FUNC    0     gethostname
+  0 0x00000000 0x00400000 NONE FUNC    0     sigismember
+  0 0x00000000 0x00400000 NONE FUNC    0     exit
+  0 0x00000000 0x00400000 NONE FUNC    0     fwrite
+  0 0x00000000 0x00400000 NONE FUNC    0     __fprintf_chk
+  0 0x00000000 0x00400000 NONE FUNC    0     _ITM_registerTMCloneTable
+  0 0x00000000 0x00400000 NONE FUNC    0     fflush_unlocked
+  0 0x00000000 0x00400000 NONE FUNC    0     mbsinit
+  0 0x00000000 0x00400000 NONE FUNC    0     iswprint
+  0 0x00000000 0x00400000 NONE FUNC    0     __cxa_finalize
+  0 0x00000000 0x00400000 NONE FUNC    0     sigaddset
+  0 0x00000000 0x00400000 NONE FUNC    0     __ctype_tolower_loc
+  0 0x00000000 0x00400000 NONE FUNC    0     __ctype_b_loc
+  0 0x00000000 0x00400000 NONE FUNC    0     __sprintf_chk
+  0 0x00015c80 0x00415c80 NONE FUNC   17     _obstack_begin
+  0 0x00015c80 0x00415c80 NONE FUNC   17     _obstack_begin
+  0 0x00015ca0 0x00415ca0 NONE FUNC   21     _obstack_begin_1
+  0 0x00015ca0 0x00415ca0 NONE FUNC   21     _obstack_begin_1
+  0 0x00015cc0 0x00415cc0 NONE FUNC  251     _obstack_newchunk
+  0 0x00015cc0 0x00415cc0 NONE FUNC  251     _obstack_newchunk
+  0 0x00015dc0 0x00415dc0 NONE FUNC   55     _obstack_allocated_p
+  0 0x00015dc0 0x00415dc0 NONE FUNC   55     _obstack_allocated_p
+  0 0x00015e00 0x00415e00 NONE FUNC  101     _obstack_free
+  0 0x00015e00 0x00415e00 NONE FUNC  101     _obstack_free
+  0 0x00015e70 0x00415e70 NONE FUNC   41     _obstack_memory_used
+  0 0x00015e70 0x00415e70 NONE FUNC   41     _obstack_memory_used
+  0 0x00022260 0x00422260 NONE FUNC    8     obstack_alloc_failed_handler
+  0 0x00022260 0x00422260 NONE FUNC    8     obstack_alloc_failed_handler
+  0 0x00022268 0x00422268 NONE FUNC    0     _edata
+  0 0x00022268 0x00422268 NONE FUNC    0     __bss_start
+  0 0x00022268 0x00422268 NONE FUNC    0     _edata
+  0 0x00022268 0x00422268 NONE FUNC    0     __bss_start
+  0 0x00022280 0x00422280 NONE FUNC    8     __progname
+  0 0x00022280 0x00422280 NONE FUNC    8     program_invocation_short_name
+  0 0x00022280 0x00422280 NONE FUNC    8     __progname
+  0 0x00022280 0x00422280 NONE FUNC    8     program_invocation_short_name
+  0 0x00022288 0x00422288 NONE FUNC    8     stdout
+  0 0x00022288 0x00422288 NONE FUNC    8     stdout
+  0 0x00022290 0x00422290 NONE FUNC    4     optind
+  0 0x00022290 0x00422290 NONE FUNC    4     optind
+  0 0x00022298 0x00422298 NONE FUNC    8     optarg
+  0 0x00022298 0x00422298 NONE FUNC    8     optarg
+  0 0x000222a0 0x004222a0 NONE FUNC    8     program_invocation_name
+  0 0x000222a0 0x004222a0 NONE FUNC    8     __progname_full
+  0 0x000222a0 0x004222a0 NONE FUNC    8     program_invocation_name
+  0 0x000222a0 0x004222a0 NONE FUNC    8     __progname_full
+  0 0x000222c0 0x004222c0 NONE FUNC    8     stderr
+  0 0x000222c0 0x004222c0 NONE FUNC    8     stderr
+  0 0x00023558 0x00423558 NONE FUNC    0     _end
+  0 0x00023558 0x00423558 NONE FUNC    0     _end
+[2K[0x00000000]> [0x00000000]> [2K[2K[0x00000000]> i[0x00000000]> i[2K[2K[0x00000000]> iS[0x00000000]> iS[2K[0x00000000]> iS
+     paddr    size      vaddr   vsize align perm name               type flags 
+―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+0x00000000     0x0 0x00400000     0x0   0x0 ----                         
+0x000002a8    0x1c 0x004002a8    0x1c   0x0 ---- .interp                 
+0x000002c4    0x20 0x004002c4    0x20   0x0 ---- .note.ABI-tag           
+0x000002e4    0x24 0x004002e4    0x24   0x0 ---- .note.gnu.build-id      
+0x00000308    0xc8 0x00400308    0xc8   0x0 ---- .gnu.hash               
+0x000003d0   0xc48 0x004003d0   0xc48   0x0 ---- .dynsym                 
+0x00001018   0x5ca 0x00401018   0x5ca   0x0 ---- .dynstr                 
+0x000015e2   0x106 0x004015e2   0x106   0x0 ---- .gnu.version            
+0x000016e8    0x70 0x004016e8    0x70   0x0 ---- .gnu.version_r          
+0x00001758  0x1d28 0x00401758  0x1d28   0x0 ---- .rela.dyn               
+0x00004000    0x1b 0x00404000    0x1b   0x0 ---- .init                   
+0x00004020 0x12763 0x00404020 0x12763   0x0 ---- .text                   
+0x00016784     0xd 0x00416784     0xd   0x0 ---- .fini                   
+0x00017000  0x5109 0x00417000  0x5109   0x0 ---- .rodata                 
+0x0001c10c   0x8c4 0x0041c10c   0x8c4   0x0 ---- .eh_frame_hdr           
+0x0001c9d0  0x2df0 0x0041c9d0  0x2df0   0x0 ---- .eh_frame               
+0x00020050     0x8 0x00421050     0x8   0x0 ---- .init_array             
+0x00020058     0x8 0x00421058     0x8   0x0 ---- .fini_array             
+0x00020060   0xa38 0x00421060   0xa38   0x0 ---- .data.rel.ro            
+0x00020a98   0x1c0 0x00421a98   0x1c0   0x0 ---- .dynamic                
+0x00020c58   0x398 0x00421c58   0x398   0x0 ---- .got                    
+0x00021000   0x268 0x00422000   0x268   0x0 ---- .data                   
+0x00021268  0x12d8 0x00422280  0x12d8   0x0 ---- .bss                    
+0x00021268    0x11 0x00400000    0x11   0x0 ---- .comment                
+0x00021279    0xed 0x00400000    0xed   0x0 ---- .shstrtab               
+[2K[0x00000000]> [0x00000000]> [2K[2K[0x00000000]> o[0x00000000]> o[2K[2K[0x00000000]> om[0x00000000]> om[2K[2K[0x00000000]> oml[0x00000000]> oml[2K[0x00000000]> oml
+ 1 fd: 3 +0x00000000 0x00400000 - 0x0040347f r-- fmap.3
+ 2 fd: 3 +0x00004000 0x00404000 - 0x00416790 r-x fmap.3
+ 3 fd: 3 +0x00017000 0x00417000 - 0x0041f7bf r-- fmap.3
+ 4 fd: 3 +0x00020050 0x00421050 - 0x00421fff r-- fmap.3
+ 5 fd: 4 +0x00000000 0x00422268 - 0x00423557 rw- 
+ 6 fd: 3 +0x00021000 0x00422000 - 0x00422267 r-- fmap.3
+[2K[0x00000000]> [0x00000000]> [2K[2K[0x00000000]> i[0x00000000]> i[2K[2K[0x00000000]> iz[0x00000000]> iz[2K[0x00000000]> iz
+paddr vaddr len size section type string 
+―――――――――――――――――――――――――――――――――――――――――
+[2K[0x00000000]> [0x00000000]> 
+EOF
+EXPECT_ERR=
+RUN

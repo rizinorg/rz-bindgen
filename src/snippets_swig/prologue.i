@@ -29,6 +29,7 @@ void rizin_try_warn_deprecate(const char *name, const char *c_name) {
 %pybuffer_binary(const unsigned char *buf, unsigned long long len);
 %pybuffer_mutable_binary(unsigned char *buf, int len);
 %pybuffer_binary(const unsigned char *buf, int len);
+%pybuffer_mutable_binary(uint8_t *buf, uint64_t len);
 
 // CArrays
 %include <carrays.i>
