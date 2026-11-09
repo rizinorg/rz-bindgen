@@ -85,6 +85,7 @@ Here's an example which uses the angr cle binary loader to populate the symbols 
 ```py
 import rizin
 import sys
+import traceback
 import cle  # https://github.com/angr/cle
 
 
@@ -92,8 +93,8 @@ class RzBufferWrapper:
     def __init__(self, buf):
         self.buf = buf
 
-    def seek(self, where):
-        self.buf.seek(where, 0)
+    def seek(self, where, whence=rizin.RZ_BUF_SET):
+        self.buf.seek(where, whence)
 
     def read(self, length=None):
         if length is None:
@@ -105,6 +106,8 @@ class RzBufferWrapper:
         self.buf.read(b)
         return b
 
+    def tell(self):
+        return self.buf.tell()
 
 class CLEBinPlugin(rizin.RzBinPluginDirector):
     name = "CLESWIGPlugin"
@@ -115,8 +118,8 @@ class CLEBinPlugin(rizin.RzBinPluginDirector):
     def load_buffer(self, bf, obj, buf, sdb):
         try:
             loader = cle.Loader(RzBufferWrapper(buf))
-        except Exception as e:
-            print(e)
+        except Exception:
+            traceback.print_exc()
             return False
         self.loader = loader
         return True
@@ -125,7 +128,7 @@ class CLEBinPlugin(rizin.RzBinPluginDirector):
         return self.loader.main_object.linked_base
 
     def symbols(self, bf):
-        syms = rizin.RzList_RzBinSymbol()
+        syms = rizin.RzPVector_RzBinSymbol()
 
         for sym in self.loader.main_object.symbols:
             binsym = rizin.RzBinSymbol()
@@ -135,11 +138,11 @@ class CLEBinPlugin(rizin.RzBinPluginDirector):
             binsym.paddr = sym.linked_addr
             binsym.vaddr = sym.rebased_addr
             binsym.size = sym.size
-            syms.append(binsym)
+            syms.push(binsym)
         return syms
 
     def sections(self, bf):
-        sections = rizin.RzList_RzBinSection()
+        sections = rizin.RzPVector_RzBinSection()
         for section in self.loader.main_object.sections:
             binsection = rizin.RzBinSection()
             binsection.thisown = False
@@ -148,28 +151,31 @@ class CLEBinPlugin(rizin.RzBinPluginDirector):
             binsection.vsize = section.memsize
             binsection.paddr = section.offset
             binsection.vaddr = section.vaddr
-            sections.append(binsection)
+            sections.push(binsection)
         return sections
 
     def maps(self, bf):
         # virtual memory mappings
-        maps = rizin.RzList_RzBinMap()
+        maps = rizin.RzPVector_RzBinMap()
         for segment in self.loader.main_object.segments:
             binmap = rizin.RzBinMap()
             binmap.thisown = False
-            binmap.perm = segment.flags # must be readable
+            binmap.perm = segment.flags  # must be readable
             binmap.paddr = segment.offset
             binmap.psize = segment.filesize
             binmap.vaddr = segment.vaddr
             binmap.vsize = segment.memsize
-            maps.append(binmap)
+            maps.push(binmap)
         return maps
 
     def strings(self, bf):
         # rz_bin_file_strings
-        # the last parameter enables searching for strings everywhere,
-        # which we disable to limit to searching only in data sections
-        return bf.strings(4, False)
+        # we search for strings only in data sections instead of everywhere
+        opt = rizin.RzBinStringSearchOpt()
+        opt.init()
+        opt.min_length = 4
+        opt.mode = rizin.RZ_BIN_STRING_SEARCH_MODE_AUTO
+        return bf.strings(opt)
 
     def info(self, bf):
         info = rizin.RzBinInfo()
@@ -181,7 +187,7 @@ plugin, plugin_struct = rizin.register_RzBinPlugin(CLEBinPlugin)
 
 core = rizin.RzCore()
 plugin_struct.thisown = False
-core.bin.plugins.append(plugin_struct)
+core.bin.plugin_add(plugin_struct)
 
 # Run rizin and load binary
 core.bin.force_plugin(plugin.name)

@@ -84,26 +84,6 @@ def bind_list(list_h: Header) -> None:
     rz_list.add_python_method("__len__(self)", "return self.length()")
     rz_list.add_python_method("__iter__(self)", "return RzListIterator(self)")
 
-    # Specialized constructors
-    rz_list.add_specialization_extension(
-        "RzBinSymbol",
-        "RzList_RzBinSymbol() {",
-        "    return rz_list_newf((RzListFree)rz_bin_symbol_free);",
-        "}",
-    )
-    rz_list.add_specialization_extension(
-        "RzBinSection",
-        "RzList_RzBinSection() {",
-        "    return rz_list_newf((RzListFree)rz_bin_section_free);",
-        "}",
-    )
-    rz_list.add_specialization_extension(
-        "RzBinMap",
-        "RzList_RzBinMap() {",
-        "    return rz_list_newf((RzListFree)rz_bin_map_free);",
-        "}",
-    )
-
 
 @threaded_header("rz_vector.h")
 def bind_vector(vector_h: Header) -> None:
@@ -135,6 +115,26 @@ def bind_vector(vector_h: Header) -> None:
 
     rz_pvector.add_python_method("__len__(self)", "return self.length()")
     rz_pvector.add_python_method("__iter__(self)", "return RzPVectorIterator(self)")
+
+    # Specialized constructors
+    rz_pvector.add_specialization_extension(
+        "RzBinSymbol",
+        "RzPVector_RzBinSymbol() {",
+        "    return rz_pvector_new((RzPVectorFree)rz_bin_symbol_free);",
+        "}",
+    )
+    rz_pvector.add_specialization_extension(
+        "RzBinSection",
+        "RzPVector_RzBinSection() {",
+        "    return rz_pvector_new((RzPVectorFree)rz_bin_section_free);",
+        "}",
+    )
+    rz_pvector.add_specialization_extension(
+        "RzBinMap",
+        "RzPVector_RzBinMap() {",
+        "    return rz_pvector_new((RzPVectorFree)rz_bin_map_free);",
+        "}",
+    )
 
 
 ###########
@@ -190,9 +190,14 @@ def bind_asm(asm_h: Header) -> None:
 @threaded_header("rz_bin.h")
 def bind_bin(bin_h: Header) -> None:
     """
-    RzBin
+    RzBin, RzBinStringSearchOpt
     """
     bin_h.ignore("rz_bin_version")
+
+    rz_bin_string_search_opt = Class(bin_h, typedef="RzBinStringSearchOpt")
+    rz_bin_string_search_opt.add_prefixed_methods("rz_bin_string_search_opt_")
+
+    Enum(bin_h, typedef="RzBinStringSearchMode")
 
     rz_bin_file = Class(bin_h, typedef="RzBinFile")
     rz_bin_file.add_prefixed_methods("rz_bin_file_")
