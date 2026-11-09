@@ -1,0 +1,14 @@
+NAME=4b-rz_cmd.py
+FILE=bins/elf/ls
+ARGS=-i scripts/4b-rz_cmd.rz
+CMDS=
+EXPECT=<<EOF
+hello from python
+name: main
+number of xrefs from: 745
+number of xrefs to: 169
+EOF
+EXPECT_ERR=<<EOF
+[2KWARNING: config-hold: failed to get 'esil.nonull'
+EOF
+RUN

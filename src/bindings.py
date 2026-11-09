@@ -158,6 +158,7 @@ def bind_analysis(analysis_h: Header) -> None:
     rz_analysis_function.add_prefixed_methods("rz_analysis_function_")
 
     rz_analysis.add_method("rz_analysis_reflines_get", rename="get_reflines")
+    rz_analysis.add_method("rz_analysis_get_function_byname", rename="get_function_byname")
     rz_analysis.add_constructor("rz_analysis_new")
     rz_analysis.add_destructor("rz_analysis_free")
 
