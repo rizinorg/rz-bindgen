@@ -5,7 +5,6 @@ An `RzCmd` struct controls the commands in a Rizin shell.
 The main instance is available in the `rcmd` field of an `RzCore` struct.
 
 ## Adding new commands
-### Withou helper
 Rizin's new shell implementation allows registering commands on the fly.
 Like `RzBinPlugin`s, this feature is exposed in the bindings using SWIG directors.
 
@@ -136,11 +135,15 @@ $ rizin `which ls`
 [x] Analyze all flags starting with sym. and entry0 (aa)
 [x] Analyze function calls
 [x] Analyze len bytes of instructions for references
-[x] Check for classes
 [x] Analyze local variables and arguments
 [x] Type matching analysis for all functions
 [x] Applied 0 FLIRT signatures via sigdb
 [x] Propagate noreturn information
+[x] Check for classes
+[x] Integrate dwarf function information.
+[x] Recover global variables from symbols
+[x] Resolve pointers to data sections
+[x] Mark data-referenced bytes outside functions
 [x] Use -AA or aaaa to perform additional experimental analysis.
 [0x00408820]> uf?
 Error while executing command: uf?
@@ -148,12 +151,12 @@ Error while executing command: uf?
 [0x00408820]> uf?
 Usage: uf <fn>
 [0x00408820]> uf
-Wrong number of arguments passed to `uf`, see its help with `uf?`
-[0x00408820]> uf sym.millerrabin
-sym.millerrabin    sym.millerrabin2
-[0x00408820]> uf sym.millerrabin
-name: sym.millerrabin
-number of xrefs from: 2
-number of xrefs to: 3
+ERROR: Wrong number of arguments passed to `uf`, see its help with `uf?`
+
+ERROR: Usage: uf <fn>
+[0x00408820]> uf main
+name: main
+number of xrefs from: 745
+number of xrefs to: 169
 [0x00408820]>
 ```

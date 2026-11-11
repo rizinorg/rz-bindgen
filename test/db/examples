@@ -366,3 +366,19 @@ paddr vaddr len size section type string
 EOF
 EXPECT_ERR=
 RUN
+
+NAME=4a-rz_cmd.py
+FILE=--
+CMDS=<<EOF
+!echo -e "e scr.color=0\nu?\nuh" | python3 ../examples/4a-rz_cmd.py
+EOF
+EXPECT=<<EOF
+[2K[0m[33m[0x00000000]>[0m [33m[0x00000000]>[0m [2K[2K[0m[33m[0x00000000]>[0m e[33m[0x00000000]>[0m e[2K[2K[0m[33m[0x00000000]>[0m e [33m[0x00000000]>[0m e [2K[2K[0m[33m[0x00000000]>[0m e s[33m[0x00000000]>[0m e s[2K[2K[0m[33m[0x00000000]>[0m e sc[33m[0x00000000]>[0m e sc[2K[2K[0m[33m[0x00000000]>[0m e scr[33m[0x00000000]>[0m e scr[2K[2K[0m[33m[0x00000000]>[0m e scr.[33m[0x00000000]>[0m e scr.[2K[2K[0m[33m[0x00000000]>[0m e scr.c[33m[0x00000000]>[0m e scr.c[2K[2K[0m[33m[0x00000000]>[0m e scr.co[33m[0x00000000]>[0m e scr.co[2K[2K[0m[33m[0x00000000]>[0m e scr.col[33m[0x00000000]>[0m e scr.col[2K[2K[0m[33m[0x00000000]>[0m e scr.colo[33m[0x00000000]>[0m e scr.colo[2K[2K[0m[33m[0x00000000]>[0m e scr.color[33m[0x00000000]>[0m e scr.color[2K[2K[0m[33m[0x00000000]>[0m e scr.color=[33m[0x00000000]>[0m e scr.color=[2K[2K[0m[33m[0x00000000]>[0m e scr.color=0[33m[0x00000000]>[0m e scr.color=0[2K[33m[0x00000000]>[0m e scr.color=0
+[2K[0x00000000]> [0x00000000]> [2K[2K[0x00000000]> u[0x00000000]> u[2K[2K[0x00000000]> u?[0x00000000]> u?[2K[0x00000000]> u?
+Usage: u<h>   # A custom group for user-defined commands
+│ uh 
+[2K[0x00000000]> [0x00000000]> [2K[2K[0x00000000]> u[0x00000000]> u[2K[2K[0x00000000]> uh[0x00000000]> uh[2K[0x00000000]> uh
+[2K[0x00000000]> [0x00000000]> hello from python
+EOF
+EXPECT_ERR=
+RUN

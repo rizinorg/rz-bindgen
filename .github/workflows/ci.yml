@@ -139,5 +139,7 @@ jobs:
         path: rz-bindgen/test/bins
 
     - name: Run rz-test
-      run: rz-test -L db/examples
+      run: |
+        rz-test -L
+        rz-test -L db/extras/examples
       working-directory: rz-bindgen/test
