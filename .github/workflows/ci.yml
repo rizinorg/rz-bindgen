@@ -141,5 +141,5 @@ jobs:
     - name: Run rz-test
       run: |
         rz-test -L
-        rz-test -L db/extras/examples
+        rz-test -L @extras
       working-directory: rz-bindgen/test
