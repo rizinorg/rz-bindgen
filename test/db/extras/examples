@@ -1,11 +1,12 @@
 NAME=4b-rz_cmd.py
 FILE=bins/elf/ls
-ARGS=-1 -i scripts/4b-rz_cmd.rz
+ARGS=-i scripts/4b-rz_cmd.rz
 CMDS=
 EXPECT=<<EOF
-[2Khello from python
+hello from python
 name: main
 number of xrefs from: 745
 number of xrefs to: 169
 EOF
+EXPECT_ERR=
 RUN
